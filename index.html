@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Infusion Pump Dose Calculator</title>
+  <title>Anestha</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,123 +14,214 @@
 
     <section class="app-shell">
       <header class="hero">
-        <p class="eyebrow">Learning Use Only</p>
-        <h1>Infusion Pump Dose Calculator</h1>
+        <p class="eyebrow">Anesthesia Calculators</p>
+        <h1>Anestha</h1>
         <p class="hero-text">
-          환자 체중, 약물 농도, 목표 투여량 범위를 입력하면 예상 infusion rate 범위를 계산합니다.
+          마취과에서 자주 사용하는 계산 도구를 한 곳에서 빠르게 사용할 수 있도록 만드는 계산 도구 웹앱 프로토타입입니다.
         </p>
       </header>
 
-      <section class="calculator-panel">
-        <form id="dose-form" novalidate>
-          <div class="mode-selector" role="radiogroup" aria-label="농도 입력 방식 선택">
-            <p class="mode-title">농도 입력 방식</p>
-            <div class="mode-options">
-              <label class="mode-option">
-                <input type="radio" name="concentration-mode" value="mix" checked>
-                <span>총 mg + 총 mL 입력</span>
-              </label>
-              <label class="mode-option">
-                <input type="radio" name="concentration-mode" value="direct">
-                <span>농도 mg/mL 직접 입력</span>
-              </label>
-            </div>
-          </div>
+      <section class="calculator-switcher" aria-label="계산기 선택">
+        <p class="switcher-label">Available Calculators</p>
+        <div class="calculator-tabs" role="tablist" aria-label="계산기 목록">
+          <button
+            type="button"
+            class="calculator-tab is-active"
+            id="tab-infusion"
+            data-calculator-tab="infusion"
+            role="tab"
+            aria-selected="true"
+            aria-controls="calculator-infusion"
+          >
+            Infusion Pump
+          </button>
+          <button
+            type="button"
+            class="calculator-tab"
+            id="tab-vasopressor"
+            data-calculator-tab="vasopressor"
+            role="tab"
+            aria-selected="false"
+            aria-controls="calculator-vasopressor"
+          >
+            Vasopressor Dilution
+          </button>
+          <button
+            type="button"
+            class="calculator-tab"
+            id="tab-opioid"
+            data-calculator-tab="opioid"
+            role="tab"
+            aria-selected="false"
+            aria-controls="calculator-opioid"
+          >
+            Opioid Conversion
+          </button>
+        </div>
+      </section>
 
-          <div class="drug-selector">
-            <label class="field">
-              <span class="field-label">약물 선택</span>
-              <div class="select-row">
-                <select id="drug-select" name="drug-select">
-                  <option value="">직접 선택</option>
-                  <option value="propofol">propofol</option>
-                  <option value="remifentanil">remifentanil</option>
-                  <option value="dexmedetomidine">dexmedetomidine</option>
-                </select>
-              </div>
-            </label>
-            <p id="drug-help" class="helper-text">
-              약물을 선택하면 예시 농도(mg/mL)가 자동 입력됩니다. 필요하면 직접 수정할 수 있습니다.
+      <section
+        id="calculator-infusion"
+        class="calculator-view"
+        data-calculator-view="infusion"
+        role="tabpanel"
+        aria-labelledby="tab-infusion"
+      >
+        <section class="calculator-panel">
+          <div class="calculator-heading">
+            <p class="calculator-kicker">Calculator 01</p>
+            <h2>Infusion Pump Dose Calculator</h2>
+            <p class="calculator-description">
+              환자 체중, 약물 농도, 목표 투여량 범위를 입력하면 예상 infusion rate 범위를 계산합니다.
             </p>
           </div>
 
-          <div class="form-grid">
-            <label class="field">
-              <span class="field-label">환자 체중</span>
-              <div class="input-row">
-                <input id="weight" name="weight" type="number" inputmode="decimal" step="any" placeholder="예: 70">
-                <span class="unit">kg</span>
+          <form id="dose-form" novalidate>
+            <div class="mode-selector" role="radiogroup" aria-label="농도 입력 방식 선택">
+              <p class="mode-title">농도 입력 방식</p>
+              <div class="mode-options">
+                <label class="mode-option">
+                  <input type="radio" name="concentration-mode" value="direct" checked>
+                  <span>농도 mg/mL 직접 입력</span>
+                </label>
+                <label class="mode-option">
+                  <input type="radio" name="concentration-mode" value="mix">
+                  <span>총 mg + 총 mL 입력</span>
+                </label>
               </div>
-            </label>
+            </div>
 
-            <label class="field mode-field" data-mode="mix">
-              <span class="field-label">약물 총량</span>
-              <div class="input-row">
-                <input id="drug-amount" name="drug-amount" type="number" inputmode="decimal" step="any" placeholder="예: 200">
-                <span class="unit">mg</span>
-              </div>
-            </label>
+            <div class="drug-selector" data-mode="direct">
+              <label class="field">
+                <span class="field-label">약물 선택</span>
+                <div class="select-row">
+                  <select id="drug-select" name="drug-select">
+                    <option value="">직접 선택</option>
+                    <option value="propofol">propofol</option>
+                    <option value="remifentanil">remifentanil</option>
+                    <option value="dexmedetomidine">dexmedetomidine</option>
+                  </select>
+                </div>
+              </label>
+              <p id="drug-help" class="helper-text">
+                약물을 선택하면 예시 농도(mg/mL)가 자동 입력됩니다. 필요하면 직접 수정할 수 있습니다.
+              </p>
+            </div>
 
-            <label class="field mode-field" data-mode="mix">
-              <span class="field-label">희석 후 총 부피</span>
-              <div class="input-row">
-                <input id="total-volume" name="total-volume" type="number" inputmode="decimal" step="any" placeholder="예: 50">
-                <span class="unit">mL</span>
-              </div>
-            </label>
+            <div class="form-grid">
+              <label class="field">
+                <span class="field-label">환자 체중</span>
+                <div class="input-row">
+                  <input id="weight" name="weight" type="number" inputmode="decimal" step="any" placeholder="예: 70">
+                  <span class="unit">kg</span>
+                </div>
+              </label>
 
-            <label class="field mode-field hidden" data-mode="direct">
-              <span class="field-label">약물 농도</span>
-              <div class="input-row">
-                <input id="direct-concentration" name="direct-concentration" type="number" inputmode="decimal" step="any" placeholder="예: 4">
-                <span class="unit">mg/mL</span>
-              </div>
-            </label>
+              <label class="field mode-field hidden" data-mode="mix">
+                <span class="field-label">약물 총량</span>
+                <div class="input-row">
+                  <input id="drug-amount" name="drug-amount" type="number" inputmode="decimal" step="any" placeholder="예: 200">
+                  <span class="unit">mg</span>
+                </div>
+              </label>
 
-            <label class="field">
-              <span class="field-label">목표 투여량 최소값</span>
-              <div class="input-row">
-                <input id="dose-min" name="dose-min" type="number" inputmode="decimal" step="any" placeholder="예: 0.05">
-                <span class="unit">mcg/kg/min</span>
-              </div>
-            </label>
+              <label class="field mode-field hidden" data-mode="mix">
+                <span class="field-label">희석 후 총 부피</span>
+                <div class="input-row">
+                  <input id="total-volume" name="total-volume" type="number" inputmode="decimal" step="any" placeholder="예: 50">
+                  <span class="unit">mL</span>
+                </div>
+              </label>
 
-            <label class="field">
-              <span class="field-label">목표 투여량 최대값</span>
-              <div class="input-row">
-                <input id="dose-max" name="dose-max" type="number" inputmode="decimal" step="any" placeholder="예: 0.1">
-                <span class="unit">mcg/kg/min</span>
-              </div>
-            </label>
+              <label class="field mode-field" data-mode="direct">
+                <span class="field-label">약물 농도</span>
+                <div class="input-row">
+                  <input id="direct-concentration" name="direct-concentration" type="number" inputmode="decimal" step="any" placeholder="예: 4">
+                  <span class="unit">mg/mL</span>
+                </div>
+              </label>
+
+              <label class="field">
+                <span class="field-label">목표 투여량 최소값</span>
+                <div class="input-row">
+                  <input id="dose-min" name="dose-min" type="number" inputmode="decimal" step="any" placeholder="예: 0.05">
+                  <span class="unit">mcg/kg/min</span>
+                </div>
+              </label>
+
+              <label class="field">
+                <span class="field-label">목표 투여량 최대값</span>
+                <div class="input-row">
+                  <input id="dose-max" name="dose-max" type="number" inputmode="decimal" step="any" placeholder="예: 0.1">
+                  <span class="unit">mcg/kg/min</span>
+                </div>
+              </label>
+            </div>
+
+            <p id="error-message" class="error-message" role="alert" aria-live="polite"></p>
+
+            <div class="actions">
+              <button type="submit" class="btn btn-primary">계산하기</button>
+              <button type="button" id="reset-button" class="btn btn-secondary">초기화</button>
+            </div>
+          </form>
+        </section>
+
+        <section id="result-card" class="result-card hidden" aria-live="polite">
+          <p class="result-label">계산 결과</p>
+          <h2 id="rate-range">0.00 mL/hr ~ 0.00 mL/hr</h2>
+          <div class="pump-setting">
+            <p class="pump-setting-label">Recommended pump setting</p>
+            <p id="pump-setting-range" class="pump-setting-range">0.1 mL/hr ~ 0.2 mL/hr</p>
+          </div>
+          <p id="concentration-result" class="concentration-result"></p>
+
+          <div class="calculation-details">
+            <h3>계산 설명</h3>
+            <p id="concentration-explanation"></p>
+            <p id="rate-explanation"></p>
           </div>
 
-          <p id="error-message" class="error-message" role="alert" aria-live="polite"></p>
-
-          <div class="actions">
-            <button type="submit" class="btn btn-primary">계산하기</button>
-            <button type="button" id="reset-button" class="btn btn-secondary">초기화</button>
-          </div>
-        </form>
+          <p class="result-warning">
+            학습용 참고 계산 결과입니다. 실제 사용 전 반드시 별도로 검증해야 합니다.
+          </p>
+        </section>
       </section>
 
-      <section id="result-card" class="result-card hidden" aria-live="polite">
-        <p class="result-label">계산 결과</p>
-        <h2 id="rate-range">0.00 mL/hr ~ 0.00 mL/hr</h2>
-        <div class="pump-setting">
-          <p class="pump-setting-label">Recommended pump setting</p>
-          <p id="pump-setting-range" class="pump-setting-range">0.1 mL/hr ~ 0.2 mL/hr</p>
-        </div>
-        <p id="concentration-result" class="concentration-result"></p>
+      <section
+        id="calculator-vasopressor"
+        class="calculator-view hidden"
+        data-calculator-view="vasopressor"
+        role="tabpanel"
+        aria-labelledby="tab-vasopressor"
+      >
+        <section class="calculator-panel calculator-panel-placeholder">
+          <div class="calculator-heading">
+            <p class="calculator-kicker">Planned</p>
+            <h2>Vasopressor Dilution Calculator</h2>
+            <p class="calculator-description">
+              다음 단계에서 추가하기 좋은 후보입니다. infusion calculator와 유사한 입력/단위 변환 구조를 재사용할 수 있습니다.
+            </p>
+          </div>
+        </section>
+      </section>
 
-        <div class="calculation-details">
-          <h3>계산 설명</h3>
-          <p id="concentration-explanation"></p>
-          <p id="rate-explanation"></p>
-        </div>
-
-        <p class="result-warning">
-          학습용 참고 계산 결과입니다. 실제 사용 전 반드시 별도로 검증해야 합니다.
-        </p>
+      <section
+        id="calculator-opioid"
+        class="calculator-view hidden"
+        data-calculator-view="opioid"
+        role="tabpanel"
+        aria-labelledby="tab-opioid"
+      >
+        <section class="calculator-panel calculator-panel-placeholder">
+          <div class="calculator-heading">
+            <p class="calculator-kicker">Planned</p>
+            <h2>Opioid Conversion Calculator</h2>
+            <p class="calculator-description">
+              약물별 규칙과 예외가 많아 구조 설계를 조금 더 한 뒤 붙이는 것이 적합한 계산기입니다.
+            </p>
+          </div>
+        </section>
       </section>
     </section>
   </main>

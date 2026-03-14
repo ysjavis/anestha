@@ -10,8 +10,11 @@ const concentrationExplanation = document.getElementById("concentration-explanat
 const rateExplanation = document.getElementById("rate-explanation");
 const drugSelect = document.getElementById("drug-select");
 const drugHelp = document.getElementById("drug-help");
+const drugSelector = document.querySelector(".drug-selector");
 const modeInputs = document.querySelectorAll('input[name="concentration-mode"]');
 const modeFields = document.querySelectorAll(".mode-field");
+const calculatorTabs = document.querySelectorAll("[data-calculator-tab]");
+const calculatorViews = document.querySelectorAll("[data-calculator-view]");
 
 // 약물별 예시 농도입니다. 사용자는 이 값을 직접 바꿀 수 있습니다.
 const drugExamples = {
@@ -157,6 +160,11 @@ function updateModeFields() {
     const shouldShow = field.dataset.mode === selectedMode;
     field.classList.toggle("hidden", !shouldShow);
   });
+
+  if (drugSelector) {
+    const shouldShowDrugSelector = drugSelector.dataset.mode === selectedMode;
+    drugSelector.classList.toggle("hidden", !shouldShowDrugSelector);
+  }
 }
 
 function clearResult() {
@@ -166,6 +174,19 @@ function clearResult() {
   concentrationResult.textContent = "";
   concentrationExplanation.textContent = "";
   rateExplanation.textContent = "";
+}
+
+function activateCalculator(calculatorId) {
+  calculatorTabs.forEach(function (tab) {
+    const isActive = tab.dataset.calculatorTab === calculatorId;
+    tab.classList.toggle("is-active", isActive);
+    tab.setAttribute("aria-selected", String(isActive));
+  });
+
+  calculatorViews.forEach(function (view) {
+    const isActive = view.dataset.calculatorView === calculatorId;
+    view.classList.toggle("hidden", !isActive);
+  });
 }
 
 modeInputs.forEach(function (input) {
@@ -206,5 +227,12 @@ resetButton.addEventListener("click", function () {
   updateDrugExample();
 });
 
+calculatorTabs.forEach(function (tab) {
+  tab.addEventListener("click", function () {
+    activateCalculator(tab.dataset.calculatorTab);
+  });
+});
+
 updateModeFields();
 updateDrugExample();
+activateCalculator("infusion");
