@@ -167,6 +167,88 @@ body {
   align-items: center;
 }
 
+.form-stack {
+  display: grid;
+  gap: 18px;
+}
+
+.infusion-submode-selector {
+  margin-bottom: 18px;
+}
+
+.mode-option-button {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.mode-option-button:hover {
+  transform: translateY(-1px);
+}
+
+.mode-option-button.is-active {
+  background: var(--accent-soft);
+  border-color: rgba(15, 118, 110, 0.3);
+  color: var(--accent-dark);
+}
+
+.preset-summary {
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--panel-soft);
+}
+
+.preset-summary-row {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.preset-summary-row:last-of-type {
+  margin-bottom: 0;
+}
+
+.preset-summary-label {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.preset-summary-value {
+  color: var(--text);
+}
+
+.reference-note {
+  margin: 14px 0 0;
+  color: var(--danger);
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.mode-panels {
+  display: grid;
+  gap: 16px;
+}
+
+.submode-panel {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(248, 250, 252, 0.8);
+}
+
+.field-full {
+  grid-column: 1 / -1;
+}
+
 .mode-selector {
   margin-bottom: 22px;
   padding: 16px;
@@ -206,6 +288,124 @@ body {
 
 .drug-selector {
   margin-bottom: 22px;
+}
+
+.quick-drug-actions {
+  margin-top: 10px;
+}
+
+.quick-drug-groups {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.quick-drug-row {
+  display: grid;
+  gap: 8px;
+}
+
+.quick-drug-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.quick-drug-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quick-drug-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chip-button {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chip-button-small {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+.chip-button-secondary {
+  background: var(--panel-soft);
+}
+
+.chip-button.is-active {
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  border-color: rgba(15, 118, 110, 0.3);
+}
+
+.reference-panel {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.reference-list {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.reference-list a {
+  color: var(--accent-dark);
+}
+
+.quick-drug-remove {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.inline-action-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--accent-dark);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.inline-action-button:disabled {
+  color: var(--muted);
+  cursor: default;
+}
+
+.preset-summary-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 .form-grid {
@@ -303,6 +503,137 @@ body {
   margin-top: 12px;
 }
 
+.workspace-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 14px;
+}
+
+.workspace-card-list {
+  display: grid;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.workspace-card {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(248, 250, 252, 0.88);
+  border-left-width: 6px;
+}
+
+.workspace-card.is-vasopressor {
+  border-left-color: #0f766e;
+}
+
+.workspace-card.is-inotrope {
+  border-left-color: #b54708;
+}
+
+.workspace-card.is-vasodilator {
+  border-left-color: #1d4ed8;
+}
+
+.workspace-card.is-other {
+  border-left-color: #64748b;
+}
+
+.workspace-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.workspace-card-title {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.workspace-card-meta {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.workspace-card-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.workspace-card-tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.workspace-card-tag.is-vasopressor {
+  background: rgba(15, 118, 110, 0.12);
+  color: #0f766e;
+}
+
+.workspace-card-tag.is-inotrope {
+  background: rgba(181, 71, 8, 0.12);
+  color: #b54708;
+}
+
+.workspace-card-tag.is-vasodilator {
+  background: rgba(29, 78, 216, 0.12);
+  color: #1d4ed8;
+}
+
+.workspace-card-tag.is-other {
+  background: rgba(100, 116, 139, 0.14);
+  color: #475569;
+}
+
+.workspace-card-result {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(20, 32, 51, 0.04);
+  border: 1px solid rgba(20, 32, 51, 0.08);
+}
+
+.workspace-card-result.is-warning {
+  background: rgba(254, 228, 226, 0.55);
+  border-color: rgba(180, 35, 24, 0.18);
+}
+
+.workspace-card-rate {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.workspace-card-rate.is-warning {
+  color: var(--danger);
+}
+
+.workspace-card-context,
+.workspace-card-warning,
+.workspace-card-reference-note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.workspace-card-warning {
+  color: var(--danger);
+  font-weight: 700;
+}
+
 .btn {
   border: 0;
   border-radius: 999px;
@@ -333,6 +664,12 @@ body {
     linear-gradient(180deg, rgba(215, 243, 239, 0.6) 0%, rgba(255, 255, 255, 0.95) 100%);
 }
 
+.result-card.is-warning {
+  background:
+    linear-gradient(180deg, rgba(254, 228, 226, 0.9) 0%, rgba(255, 255, 255, 0.98) 100%);
+  border-color: rgba(180, 35, 24, 0.28);
+}
+
 .result-label {
   margin: 0 0 10px;
   font-size: 0.88rem;
@@ -345,6 +682,11 @@ body {
 .result-card h2 {
   margin: 0;
   font-size: clamp(1.8rem, 4vw, 2.8rem);
+}
+
+.result-card h2.is-warning,
+.pump-setting-range.is-warning {
+  color: var(--danger);
 }
 
 .pump-setting {
@@ -396,6 +738,74 @@ body {
   line-height: 1.6;
 }
 
+.result-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.result-summary-item {
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(15, 118, 110, 0.08);
+  border: 1px solid rgba(15, 118, 110, 0.16);
+}
+
+.result-summary-item .pump-setting-label {
+  margin-bottom: 8px;
+}
+
+.result-summary-item .pump-setting-range {
+  font-size: 1.3rem;
+}
+
+.reference-table-card {
+  margin-top: 22px;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(216, 224, 234, 0.9);
+}
+
+.reference-table-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.reference-table-wrap {
+  margin-top: 12px;
+  overflow-x: auto;
+}
+
+.reference-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 320px;
+}
+
+.reference-table th,
+.reference-table td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.reference-table tr.is-warning td {
+  color: var(--danger);
+  font-weight: 700;
+  background: rgba(254, 228, 226, 0.55);
+}
+
+.reference-table th {
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
 .result-warning {
   margin: 18px 0 0;
   font-weight: 700;
@@ -423,8 +833,23 @@ body {
     grid-template-columns: 1fr;
   }
 
+  .preset-summary-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
   .actions {
     flex-direction: column;
+  }
+
+  .result-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-toolbar,
+  .workspace-card-header {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .btn {
@@ -440,6 +865,10 @@ body {
   }
 
   .calculator-tab {
+    width: 100%;
+  }
+
+  .mode-option-button {
     width: 100%;
   }
 }

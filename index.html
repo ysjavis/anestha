@@ -33,7 +33,18 @@
             aria-selected="true"
             aria-controls="calculator-infusion"
           >
-            Infusion Pump
+            Infusion
+          </button>
+          <button
+            type="button"
+            class="calculator-tab"
+            id="tab-pediatric"
+            data-calculator-tab="pediatric"
+            role="tab"
+            aria-selected="false"
+            aria-controls="calculator-pediatric"
+          >
+            Pediatric
           </button>
           <button
             type="button"
@@ -44,7 +55,18 @@
             aria-selected="false"
             aria-controls="calculator-vasopressor"
           >
-            Vasopressor Dilution
+            Dilution
+          </button>
+          <button
+            type="button"
+            class="calculator-tab"
+            id="tab-dantrolene"
+            data-calculator-tab="dantrolene"
+            role="tab"
+            aria-selected="false"
+            aria-controls="calculator-dantrolene"
+          >
+            MH / Dantrolene
           </button>
           <button
             type="button"
@@ -55,7 +77,7 @@
             aria-selected="false"
             aria-controls="calculator-opioid"
           >
-            Opioid Conversion
+            Opioid
           </button>
         </div>
       </section>
@@ -72,118 +94,810 @@
             <p class="calculator-kicker">Calculator 01</p>
             <h2>Infusion Pump Dose Calculator</h2>
             <p class="calculator-description">
-              환자 체중, 약물 농도, 목표 투여량 범위를 입력하면 예상 infusion rate 범위를 계산합니다.
+              환자 체중과 약물 농도를 기준으로 dose, infusion rate, 그리고 Reference Dosing Table을 빠르게 확인할 수 있습니다.
+            </p>
+            <p class="reference-note">
+              Multi-drug workflow 준비: 현재 화면의 각 계산은 독립적으로 수행됩니다. 약물 상호작용, compatibility, 혼합 안정성, combined clinical effect는 평가하지 않습니다.
             </p>
           </div>
 
-          <form id="dose-form" novalidate>
-            <div class="mode-selector" role="radiogroup" aria-label="농도 입력 방식 선택">
-              <p class="mode-title">농도 입력 방식</p>
+          <div class="mode-selector infusion-submode-selector" role="tablist" aria-label="Infusion workspace mode">
+            <p class="mode-title">Infusion View</p>
+            <div class="mode-options">
+              <button
+                type="button"
+                class="mode-option-button is-active"
+                data-infusion-view-tab="single-drug"
+                role="tab"
+                aria-selected="true"
+                aria-controls="infusion-view-single-drug"
+              >
+                Single Drug
+              </button>
+              <button
+                type="button"
+                class="mode-option-button"
+                data-infusion-view-tab="workspace"
+                role="tab"
+                aria-selected="false"
+                aria-controls="infusion-view-workspace"
+              >
+                Workspace
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="infusion-view-single-drug"
+          class="infusion-view-panel"
+          data-infusion-view-panel="single-drug"
+          role="tabpanel"
+          aria-labelledby="single-drug"
+        >
+        <section class="calculator-panel">
+          <form id="infusion-form" novalidate>
+            <div class="mode-selector infusion-submode-selector" role="tablist" aria-label="Infusion Pump mode">
+              <p class="mode-title">Calculation Mode</p>
               <div class="mode-options">
-                <label class="mode-option">
-                  <input type="radio" name="concentration-mode" value="direct" checked>
-                  <span>농도 mg/mL 직접 입력</span>
-                </label>
-                <label class="mode-option">
-                  <input type="radio" name="concentration-mode" value="mix">
-                  <span>총 mg + 총 mL 입력</span>
-                </label>
+                <button
+                  type="button"
+                  class="mode-option-button is-active"
+                  data-infusion-mode-tab="dose-to-rate"
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="infusion-mode-dose-to-rate"
+                >
+                  Dose → Infusion Rate
+                </button>
+                <button
+                  type="button"
+                  class="mode-option-button"
+                  data-infusion-mode-tab="rate-to-dose"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="infusion-mode-rate-to-dose"
+                >
+                  Infusion Rate → Dose
+                </button>
+                <button
+                  type="button"
+                  class="mode-option-button"
+                  data-infusion-mode-tab="reference-table"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="infusion-mode-reference-table"
+                >
+                  Reference Dosing Table
+                </button>
               </div>
             </div>
 
-            <div class="drug-selector" data-mode="direct">
-              <label class="field">
-                <span class="field-label">약물 선택</span>
-                <div class="select-row">
-                  <select id="drug-select" name="drug-select">
-                    <option value="">직접 선택</option>
-                    <option value="propofol">propofol</option>
-                    <option value="remifentanil">remifentanil</option>
-                    <option value="dexmedetomidine">dexmedetomidine</option>
-                  </select>
+            <div class="form-stack">
+              <div class="drug-selector">
+                <label class="field">
+                  <span class="field-label">Drug Preset</span>
+                  <div class="select-row">
+                    <select id="drug-select" name="drug-select">
+                      <option value="norepinephrine">Norepinephrine</option>
+                      <option value="epinephrine">Epinephrine</option>
+                      <option value="phenylephrine">Phenylephrine</option>
+                      <option value="vasopressin">Vasopressin</option>
+                      <option value="nitroglycerin">Nitroglycerin</option>
+                      <option value="dopamine">Dopamine</option>
+                      <option value="dobutamine">Dobutamine</option>
+                      <option value="milrinone">Milrinone</option>
+                      <option value="isoproterenol">Isoproterenol</option>
+                      <option value="custom">Custom drug</option>
+                    </select>
+                  </div>
+                </label>
+                <div class="quick-drug-actions">
+                  <button type="button" id="favorite-drug-button" class="chip-button chip-button-secondary">Add to favorites</button>
                 </div>
-              </label>
-              <p id="drug-help" class="helper-text">
-                약물을 선택하면 예시 농도(mg/mL)가 자동 입력됩니다. 필요하면 직접 수정할 수 있습니다.
-              </p>
-            </div>
+                <div class="quick-drug-groups">
+                  <div class="quick-drug-row">
+                    <span class="quick-drug-label">Favorites</span>
+                    <div id="favorite-drugs" class="quick-drug-list"></div>
+                  </div>
+                  <div class="quick-drug-row">
+                    <span class="quick-drug-label">Recent</span>
+                    <div id="recent-drugs" class="quick-drug-list"></div>
+                  </div>
+                </div>
+                <p id="drug-help" class="helper-text">
+                  Preset drug를 선택하면 기본 농도와 Reference Dosing Table 값이 자동으로 입력됩니다.
+                </p>
+              </div>
 
-            <div class="form-grid">
-              <label class="field">
-                <span class="field-label">환자 체중</span>
-                <div class="input-row">
-                  <input id="weight" name="weight" type="number" inputmode="decimal" step="any" placeholder="예: 70">
-                  <span class="unit">kg</span>
+              <div id="preset-summary" class="preset-summary">
+                <div class="preset-summary-row">
+                  <span class="preset-summary-label">Reference range</span>
+                  <strong id="reference-range-text">-</strong>
                 </div>
-              </label>
+                <div class="preset-summary-row">
+                  <span class="preset-summary-label">Notes</span>
+                  <span id="drug-notes-text" class="preset-summary-value">-</span>
+                </div>
+                <div class="preset-summary-row">
+                  <span class="preset-summary-label">Standard dilution</span>
+                  <span class="preset-summary-action">
+                    <span id="drug-dilution-text" class="preset-summary-value">-</span>
+                    <button type="button" id="drug-dilution-button" class="chip-button chip-button-secondary chip-button-small">Apply</button>
+                  </span>
+                </div>
+                <div class="preset-summary-row">
+                  <span class="preset-summary-label">Source</span>
+                  <span id="drug-source-text" class="preset-summary-value">-</span>
+                </div>
+                <div class="preset-summary-row">
+                  <span class="preset-summary-label">Last reviewed</span>
+                  <span id="drug-last-reviewed-text" class="preset-summary-value">-</span>
+                </div>
+                <p class="reference-note">
+                  Reference range - verify with institutional protocols.
+                </p>
+              </div>
 
-              <label class="field mode-field hidden" data-mode="mix">
-                <span class="field-label">약물 총량</span>
-                <div class="input-row">
-                  <input id="drug-amount" name="drug-amount" type="number" inputmode="decimal" step="any" placeholder="예: 200">
-                  <span class="unit">mg</span>
-                </div>
-              </label>
+              <div id="custom-drug-fields" class="form-grid hidden">
+                <label class="field">
+                  <span class="field-label">Custom Drug Name</span>
+                  <div class="input-row">
+                    <input id="custom-drug-name" name="custom-drug-name" type="text" placeholder="예: Nicardipine">
+                  </div>
+                </label>
+                <label class="field">
+                  <span class="field-label">Custom Notes</span>
+                  <div class="input-row">
+                    <input id="custom-drug-notes" name="custom-drug-notes" type="text" placeholder="예: 병원 프로토콜에 따라 확인">
+                  </div>
+                </label>
+              </div>
 
-              <label class="field mode-field hidden" data-mode="mix">
-                <span class="field-label">희석 후 총 부피</span>
-                <div class="input-row">
-                  <input id="total-volume" name="total-volume" type="number" inputmode="decimal" step="any" placeholder="예: 50">
-                  <span class="unit">mL</span>
-                </div>
-              </label>
+              <div class="form-grid">
+                <label class="field">
+                  <span class="field-label">Patient Weight</span>
+                  <div class="input-row">
+                    <input id="weight" name="weight" type="number" inputmode="decimal" step="any" placeholder="예: 70">
+                    <span class="unit">kg</span>
+                  </div>
+                </label>
 
-              <label class="field mode-field" data-mode="direct">
-                <span class="field-label">약물 농도</span>
-                <div class="input-row">
-                  <input id="direct-concentration" name="direct-concentration" type="number" inputmode="decimal" step="any" placeholder="예: 4">
-                  <span class="unit">mg/mL</span>
-                </div>
-              </label>
+                <label class="field">
+                  <span class="field-label">Drug Concentration</span>
+                  <div class="input-row">
+                    <input id="concentration" name="concentration" type="number" inputmode="decimal" step="any" placeholder="예: 100">
+                    <span id="concentration-unit-label" class="unit">mcg/mL</span>
+                  </div>
+                </label>
+              </div>
 
-              <label class="field">
-                <span class="field-label">목표 투여량 최소값</span>
-                <div class="input-row">
-                  <input id="dose-min" name="dose-min" type="number" inputmode="decimal" step="any" placeholder="예: 0.05">
-                  <span class="unit">mcg/kg/min</span>
-                </div>
-              </label>
+              <div class="mode-panels">
+                <section
+                  id="infusion-mode-dose-to-rate"
+                  class="submode-panel"
+                  data-infusion-mode-panel="dose-to-rate"
+                  role="tabpanel"
+                  aria-labelledby="dose-to-rate"
+                >
+                  <div class="form-grid">
+                    <label class="field">
+                      <span class="field-label">Target Dose</span>
+                      <div class="input-row">
+                        <input id="target-dose" name="target-dose" type="number" inputmode="decimal" step="any" placeholder="예: 0.1">
+                        <span id="dose-unit-label" class="unit">mcg/kg/min</span>
+                      </div>
+                    </label>
+                  </div>
+                </section>
 
-              <label class="field">
-                <span class="field-label">목표 투여량 최대값</span>
-                <div class="input-row">
-                  <input id="dose-max" name="dose-max" type="number" inputmode="decimal" step="any" placeholder="예: 0.1">
-                  <span class="unit">mcg/kg/min</span>
-                </div>
-              </label>
+                <section
+                  id="infusion-mode-rate-to-dose"
+                  class="submode-panel hidden"
+                  data-infusion-mode-panel="rate-to-dose"
+                  role="tabpanel"
+                  aria-labelledby="rate-to-dose"
+                >
+                  <div class="form-grid">
+                    <label class="field">
+                      <span class="field-label">Pump Rate</span>
+                      <div class="input-row">
+                        <input id="pump-rate" name="pump-rate" type="number" inputmode="decimal" step="any" placeholder="예: 4.5">
+                        <span class="unit">mL/hr</span>
+                      </div>
+                    </label>
+                  </div>
+                </section>
+
+                <section
+                  id="infusion-mode-reference-table"
+                  class="submode-panel hidden"
+                  data-infusion-mode-panel="reference-table"
+                  role="tabpanel"
+                  aria-labelledby="reference-table"
+                >
+                  <div class="form-grid">
+                    <label class="field field-full">
+                      <span class="field-label">Reference Dose List</span>
+                      <div class="input-row">
+                        <input id="reference-dose-list" name="reference-dose-list" type="text" placeholder="예: 0.02, 0.05, 0.1, 0.2, 0.3">
+                      </div>
+                    </label>
+                  </div>
+                  <p class="helper-text">
+                    쉼표로 구분해 dose 값을 입력하세요. 이 값들은 참고용이며 병원별 관행에 따라 달라질 수 있습니다.
+                  </p>
+                </section>
+              </div>
             </div>
 
             <p id="error-message" class="error-message" role="alert" aria-live="polite"></p>
 
             <div class="actions">
-              <button type="submit" class="btn btn-primary">계산하기</button>
-              <button type="button" id="reset-button" class="btn btn-secondary">초기화</button>
+              <button type="submit" class="btn btn-primary">Calculate</button>
+              <button type="button" id="reset-button" class="btn btn-secondary">Reset</button>
             </div>
           </form>
         </section>
 
         <section id="result-card" class="result-card hidden" aria-live="polite">
-          <p class="result-label">계산 결과</p>
-          <h2 id="rate-range">0.00 mL/hr ~ 0.00 mL/hr</h2>
+          <p id="result-label" class="result-label">Calculation Result</p>
+          <h2 id="primary-result">0.00 mL/hr</h2>
           <div class="pump-setting">
-            <p class="pump-setting-label">Recommended pump setting</p>
-            <p id="pump-setting-range" class="pump-setting-range">0.1 mL/hr ~ 0.2 mL/hr</p>
+            <p id="secondary-result-label" class="pump-setting-label">Supporting information</p>
+            <p id="secondary-result" class="pump-setting-range">-</p>
           </div>
           <p id="concentration-result" class="concentration-result"></p>
 
           <div class="calculation-details">
-            <h3>계산 설명</h3>
+            <h3>Calculation Details</h3>
             <p id="concentration-explanation"></p>
             <p id="rate-explanation"></p>
           </div>
 
-          <p class="result-warning">
-            학습용 참고 계산 결과입니다. 실제 사용 전 반드시 별도로 검증해야 합니다.
+          <div class="reference-panel">
+            <p class="preset-summary-label">References</p>
+            <ul id="infusion-reference-list" class="reference-list"></ul>
+          </div>
+
+          <div id="reference-table-card" class="reference-table-card hidden">
+            <div class="reference-table-header">
+              <div>
+                <p class="result-label">Reference Dosing Table</p>
+                <p id="reference-table-caption" class="helper-text">-</p>
+              </div>
+            </div>
+            <div class="reference-table-wrap">
+              <table class="reference-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Dose</th>
+                    <th scope="col">Infusion Rate</th>
+                  </tr>
+                </thead>
+                <tbody id="reference-table-body"></tbody>
+              </table>
+            </div>
+            <p class="reference-note">
+              Reference Dosing Table is informational only. Verify with institutional protocols.
+            </p>
+          </div>
+
+          <p id="result-warning" class="result-warning">
+            계산 결과는 참고용입니다. 실제 사용 전 반드시 별도로 검증해야 합니다.
+          </p>
+        </section>
+        </section>
+
+        <section
+          id="infusion-view-workspace"
+          class="infusion-view-panel hidden"
+          data-infusion-view-panel="workspace"
+          role="tabpanel"
+          aria-labelledby="workspace"
+        >
+        <section class="calculator-panel">
+          <div class="calculator-heading">
+            <p class="calculator-kicker">Workflow Preview</p>
+            <h2>Infusion Workspace</h2>
+            <p class="calculator-description">
+              한 환자에서 여러 infusion drug를 같은 화면에 쌓아 보는 1차 workspace입니다. 각 card는 shared weight를 사용하지만 계산은 서로 독립적으로 수행됩니다.
+            </p>
+            <p class="reference-note">
+              Workspace cards do not assess drug-drug interactions, compatibility, or combined clinical effects.
+            </p>
+          </div>
+
+          <div class="workspace-toolbar">
+            <label class="field">
+              <span class="field-label">Shared Patient Weight</span>
+              <div class="input-row">
+                <input id="workspace-shared-weight" name="workspace-shared-weight" type="number" inputmode="decimal" step="any" placeholder="예: 70">
+                <span class="unit">kg</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="workspace-toolbar">
+            <label class="field">
+              <span class="field-label">Template Name</span>
+              <div class="input-row">
+                <input id="workspace-template-name" name="workspace-template-name" type="text" placeholder="예: Open Heart Surgery">
+              </div>
+            </label>
+
+            <label class="field">
+              <span class="field-label">Saved Templates</span>
+              <div class="select-row">
+                <select id="workspace-template-select" name="workspace-template-select">
+                  <option value="">No saved templates</option>
+                </select>
+              </div>
+            </label>
+
+            <div class="quick-drug-actions">
+              <button type="button" id="workspace-load-template-button" class="btn btn-secondary">Load template</button>
+              <button type="button" id="workspace-save-template-button" class="btn btn-secondary">Save current setup</button>
+              <button type="button" id="workspace-delete-template-button" class="btn btn-secondary">Delete template</button>
+            </div>
+          </div>
+
+          <p id="workspace-help" class="helper-text">
+            Shared weight를 입력하면 각 infusion card의 target dose와 Reference Dosing Table이 같은 환자 기준으로 계산됩니다.
+          </p>
+
+          <div id="workspace-card-list" class="workspace-card-list" aria-live="polite"></div>
+
+          <div class="actions">
+            <button type="button" id="workspace-add-card-button" class="btn btn-secondary">+ Add drug</button>
+          </div>
+        </section>
+        </section>
+      </section>
+
+      <section
+        id="calculator-pediatric"
+        class="calculator-view hidden"
+        data-calculator-view="pediatric"
+        role="tabpanel"
+        aria-labelledby="tab-pediatric"
+      >
+        <section class="calculator-panel">
+          <div class="calculator-heading">
+            <p class="calculator-kicker">Calculator 02</p>
+            <h2>Pediatric Calculator</h2>
+            <p class="calculator-description">
+              소아 약물 dose, airway / ETT reference, 그리고 향후 소아 마취 workflow 도구를 한 곳에서 다룰 수 있도록 확장 중입니다.
+            </p>
+          </div>
+
+          <form id="pediatric-form" novalidate>
+            <div class="mode-selector infusion-submode-selector" role="tablist" aria-label="Pediatric mode">
+              <p class="mode-title">Pediatric Mode</p>
+              <div class="mode-options">
+                <button
+                  type="button"
+                  class="mode-option-button is-active"
+                  data-pediatric-mode-tab="dosing"
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="pediatric-mode-dosing"
+                >
+                  Dosing
+                </button>
+                <button
+                  type="button"
+                  class="mode-option-button"
+                  data-pediatric-mode-tab="airway"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="pediatric-mode-airway"
+                >
+                  Airway / ETT
+                </button>
+              </div>
+            </div>
+
+            <div class="mode-panels">
+              <section id="pediatric-mode-dosing" class="form-stack" data-pediatric-mode-panel="dosing">
+              <div class="drug-selector">
+                <label class="field">
+                  <span class="field-label">Drug Preset</span>
+                  <div class="select-row">
+                    <select id="pediatric-drug-select" name="pediatric-drug-select">
+                      <option value="fentanyl">Fentanyl</option>
+                      <option value="rocuronium">Rocuronium</option>
+                      <option value="sugammadex">Sugammadex</option>
+                      <option value="neostigmine">Neostigmine</option>
+                      <option value="pyridostigmine">Pyridostigmine</option>
+                      <option value="propofol">Propofol</option>
+                      <option value="ketamine">Ketamine</option>
+                      <option value="thiopental">Thiopental</option>
+                      <option value="atropine">Atropine</option>
+                      <option value="ondansetron">Ondansetron</option>
+                      <option value="dexamethasone">Dexamethasone</option>
+                      <option value="custom">Custom drug</option>
+                    </select>
+                  </div>
+                </label>
+                <p id="pediatric-drug-help" class="helper-text">
+                  Pediatric preset drug를 선택하면 권장 bolus dose range와 예시 농도가 표시됩니다.
+                </p>
+                <div class="quick-drug-actions">
+                  <button type="button" id="pediatric-toggle-unverified-button" class="chip-button chip-button-secondary">
+                    Show unverified presets
+                  </button>
+                </div>
+              </div>
+
+              <div id="pediatric-custom-fields" class="form-grid hidden">
+                <label class="field">
+                  <span class="field-label">Custom Drug Name</span>
+                  <div class="input-row">
+                    <input id="pediatric-custom-drug-name" name="pediatric-custom-drug-name" type="text" placeholder="예: Glycopyrrolate">
+                  </div>
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Custom Notes</span>
+                  <div class="input-row">
+                    <input id="pediatric-custom-drug-notes" name="pediatric-custom-drug-notes" type="text" placeholder="예: 병원 프로토콜 기준 참고">
+                  </div>
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Min Dose per kg</span>
+                  <div class="input-row">
+                    <input id="pediatric-min-dose-per-kg" name="pediatric-min-dose-per-kg" type="number" inputmode="decimal" step="any" placeholder="예: 0.01">
+                  </div>
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Max Dose per kg</span>
+                  <div class="input-row">
+                    <input id="pediatric-max-dose-per-kg" name="pediatric-max-dose-per-kg" type="number" inputmode="decimal" step="any" placeholder="예: 0.02">
+                  </div>
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Dose Unit</span>
+                  <div class="select-row">
+                    <select id="pediatric-dose-unit" name="pediatric-dose-unit">
+                      <option value="mg/kg">mg/kg</option>
+                      <option value="mcg/kg">mcg/kg</option>
+                    </select>
+                  </div>
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Concentration Unit</span>
+                  <div class="select-row">
+                    <select id="pediatric-concentration-unit" name="pediatric-concentration-unit">
+                      <option value="mg/mL">mg/mL</option>
+                      <option value="mcg/mL">mcg/mL</option>
+                    </select>
+                  </div>
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Optional Max Total Dose</span>
+                  <div class="input-row">
+                    <input id="pediatric-max-total-dose" name="pediatric-max-total-dose" type="number" inputmode="decimal" step="any" placeholder="예: 4">
+                  </div>
+                </label>
+
+                <div class="quick-drug-actions">
+                  <button type="button" id="pediatric-save-custom-button" class="chip-button chip-button-secondary">Save custom drug</button>
+                  <button type="button" id="pediatric-delete-custom-button" class="chip-button chip-button-secondary hidden">Delete saved drug</button>
+                </div>
+                <p id="pediatric-custom-save-help" class="helper-text">
+                  Save custom drug를 누르면 현재 입력값이 로컬에 저장됩니다.
+                </p>
+              </div>
+
+              <div id="pediatric-preset-summary" class="preset-summary">
+                <div class="preset-summary-row">
+                  <span class="preset-summary-label">Recommended range</span>
+                  <strong id="pediatric-range-text">-</strong>
+                </div>
+                <div class="preset-summary-row">
+                  <span class="preset-summary-label">Age-specific note</span>
+                  <span id="pediatric-age-note-text" class="preset-summary-value">-</span>
+                </div>
+                <div class="preset-summary-row">
+                  <span class="preset-summary-label">Concentration</span>
+                  <span id="pediatric-concentration-text" class="preset-summary-value">-</span>
+                </div>
+                <div class="preset-summary-row">
+                  <span class="preset-summary-label">Verification</span>
+                  <span id="pediatric-verification-text" class="preset-summary-value">-</span>
+                </div>
+                <div class="preset-summary-row">
+                  <span class="preset-summary-label">Notes</span>
+                  <span id="pediatric-notes-text" class="preset-summary-value">-</span>
+                </div>
+                <p class="reference-note">
+                  Pediatric dosing presets are examples only. Verify with institutional protocols and current references.
+                </p>
+              </div>
+
+              <div class="form-grid">
+                <label class="field">
+                  <span class="field-label">Patient Weight</span>
+                  <div class="input-row">
+                    <input id="pediatric-weight" name="pediatric-weight" type="number" inputmode="decimal" step="any" placeholder="예: 12">
+                    <span class="unit">kg</span>
+                  </div>
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Age Group</span>
+                  <div class="select-row">
+                    <select id="pediatric-age-group" name="pediatric-age-group">
+                      <option value="neonate">Neonate</option>
+                      <option value="infant">Infant</option>
+                      <option value="child" selected>Child</option>
+                      <option value="adolescent">Adolescent</option>
+                    </select>
+                  </div>
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Drug Concentration</span>
+                  <div class="input-row">
+                    <input id="pediatric-concentration" name="pediatric-concentration" type="number" inputmode="decimal" step="any" placeholder="예: 50">
+                    <span id="pediatric-concentration-unit-label" class="unit">mcg/mL</span>
+                  </div>
+                </label>
+              </div>
+
+              <p id="pediatric-age-warning" class="reference-note">
+                Weight-based estimate only. Neonates, infants, and selected drugs may require age-specific adjustment.
+              </p>
+              </section>
+
+              <section id="pediatric-mode-airway" class="form-stack hidden" data-pediatric-mode-panel="airway">
+                <div class="preset-summary">
+                  <div class="preset-summary-row">
+                    <span class="preset-summary-label">Reference guides</span>
+                    <strong>Equipment selection support</strong>
+                  </div>
+                  <div class="preset-summary-row">
+                    <span class="preset-summary-label">ETT</span>
+                    <span class="preset-summary-value">Age-based size and oral depth estimate</span>
+                  </div>
+                  <div class="preset-summary-row">
+                    <span class="preset-summary-label">Other airway tools</span>
+                    <span class="preset-summary-value">Supraglottic, oral airway, nasal airway, laryngoscope, face mask reference guides</span>
+                  </div>
+                  <p class="reference-note">
+                    Airway equipment guidance is for reference only. Verify fit, anatomy, device availability, and local practice.
+                  </p>
+                </div>
+
+                <div class="form-grid">
+                  <label class="field">
+                    <span class="field-label">Age</span>
+                    <div class="input-row">
+                      <input id="pediatric-airway-age-years" name="pediatric-airway-age-years" type="number" inputmode="decimal" step="any" placeholder="예: 4">
+                      <span class="unit">yr</span>
+                    </div>
+                  </label>
+
+                  <label class="field">
+                    <span class="field-label">Weight (optional)</span>
+                    <div class="input-row">
+                      <input id="pediatric-airway-weight" name="pediatric-airway-weight" type="number" inputmode="decimal" step="any" placeholder="예: 16">
+                      <span class="unit">kg</span>
+                    </div>
+                  </label>
+
+                  <label class="field">
+                    <span class="field-label">Device Category</span>
+                    <div class="select-row">
+                      <select id="pediatric-airway-device-category" name="pediatric-airway-device-category">
+                        <option value="ett">ETT</option>
+                        <option value="supraglottic">Supraglottic Airway</option>
+                        <option value="oral-airway">Oral Airway</option>
+                        <option value="nasal-airway">Nasal Airway</option>
+                        <option value="laryngoscope">Laryngoscope</option>
+                        <option value="face-mask">Face Mask</option>
+                      </select>
+                    </div>
+                  </label>
+
+                  <label id="pediatric-airway-device-model-field" class="field hidden">
+                    <span class="field-label">Device Model</span>
+                    <div class="select-row">
+                      <select id="pediatric-airway-device-model" name="pediatric-airway-device-model">
+                        <option value="i-gel">i-gel</option>
+                        <option value="lma-supreme">LMA Supreme</option>
+                      </select>
+                    </div>
+                  </label>
+                </div>
+
+                <p id="pediatric-airway-warning" class="reference-note">
+                  Select an airway device type to see the matching guide. Confirm anatomy, fit, and clinical position before use.
+                </p>
+              </section>
+            </div>
+
+            <p id="pediatric-error-message" class="error-message" role="alert" aria-live="polite"></p>
+
+            <div class="actions">
+              <button type="submit" class="btn btn-primary">Calculate</button>
+              <button type="button" id="pediatric-reset-button" class="btn btn-secondary">Reset</button>
+            </div>
+          </form>
+        </section>
+
+        <section id="pediatric-result-card" class="result-card hidden" aria-live="polite">
+          <p id="pediatric-result-label" class="result-label">Pediatric Dosing Result</p>
+          <h2 id="pediatric-primary-result">0.00 - 0.00</h2>
+          <div class="pump-setting">
+            <p id="pediatric-secondary-result-label" class="pump-setting-label">Calculated dose range</p>
+            <p id="pediatric-secondary-result" class="pump-setting-range">-</p>
+          </div>
+          <p id="pediatric-concentration-result" class="concentration-result"></p>
+
+          <div class="calculation-details">
+            <h3>Calculation Details</h3>
+            <p id="pediatric-dose-explanation"></p>
+            <p id="pediatric-volume-explanation"></p>
+          </div>
+
+          <div class="reference-panel">
+            <p class="preset-summary-label">References</p>
+            <ul id="pediatric-dose-reference-list" class="reference-list"></ul>
+          </div>
+
+          <p id="pediatric-result-warning" class="result-warning">
+            Pediatric dosing examples are for reference only. Verify before clinical use.
+          </p>
+        </section>
+
+        <section id="pediatric-airway-result-card" class="result-card hidden" aria-live="polite">
+          <p class="result-label">Pediatric Airway / ETT Result</p>
+          <h2 id="pediatric-airway-primary-result">-</h2>
+          <div class="pump-setting">
+            <p id="pediatric-airway-secondary-label" class="pump-setting-label">Estimated oral depth (from lip)</p>
+            <p id="pediatric-airway-secondary-result" class="pump-setting-range">-</p>
+          </div>
+          <p id="pediatric-airway-context" class="concentration-result"></p>
+          <p id="pediatric-airway-device-result" class="concentration-result"></p>
+
+          <div class="calculation-details">
+            <h3>Calculation Details</h3>
+            <p id="pediatric-airway-size-explanation"></p>
+            <p id="pediatric-airway-depth-explanation"></p>
+          </div>
+
+          <div class="reference-panel">
+            <p class="preset-summary-label">References</p>
+            <ul id="pediatric-airway-reference-list" class="reference-list"></ul>
+          </div>
+
+          <p id="pediatric-airway-result-warning" class="result-warning">
+            Airway estimates are reference formulas only. Confirm tube fit, leak, depth, and position clinically.
+          </p>
+        </section>
+      </section>
+
+      <section
+        id="calculator-dantrolene"
+        class="calculator-view hidden"
+        data-calculator-view="dantrolene"
+        role="tabpanel"
+        aria-labelledby="tab-dantrolene"
+      >
+        <section class="calculator-panel">
+          <div class="calculator-heading">
+            <p class="calculator-kicker">Emergency Tool</p>
+            <h2>Dantrolene / MH Quick Reference</h2>
+            <p class="calculator-description">
+              Malignant hyperthermia emergency 상황에서 체중과 제형을 기준으로 초기 용량, 누적 최대 용량, 예상 vial 수를 빠르게 확인합니다.
+            </p>
+            <p class="reference-note">
+              Emergency quick reference only. 실제 crisis management workflow, 재투여, cooling, labs, ICU 계획은 별도 MH protocol로 확인해야 합니다.
+            </p>
+          </div>
+
+          <form id="dantrolene-form" novalidate>
+            <div class="form-stack">
+              <div class="preset-summary">
+                <div class="preset-summary-row">
+                  <span class="preset-summary-label">Default initial dose</span>
+                  <strong>2.5 mg/kg</strong>
+                </div>
+                <div class="preset-summary-row">
+                  <span class="preset-summary-label">Cumulative max</span>
+                  <span class="preset-summary-value">10 mg/kg</span>
+                </div>
+                <div class="preset-summary-row">
+                  <span class="preset-summary-label">Workflow note</span>
+                  <span class="preset-summary-value">Formulation and reconstitution change the number of vials and prep speed.</span>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <label class="field">
+                  <span class="field-label">Patient Weight</span>
+                  <div class="input-row">
+                    <input id="dantrolene-weight" name="dantrolene-weight" type="number" inputmode="decimal" step="any" placeholder="예: 70">
+                    <span class="unit">kg</span>
+                  </div>
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Formulation</span>
+                  <div class="select-row">
+                    <select id="dantrolene-formulation" name="dantrolene-formulation">
+                      <option value="standard-20mg">Standard 20 mg vial</option>
+                      <option value="ryanodex-250mg">RYANODEX 250 mg vial</option>
+                    </select>
+                  </div>
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Initial dose target</span>
+                  <div class="input-row">
+                    <input id="dantrolene-initial-dose" name="dantrolene-initial-dose" type="number" inputmode="decimal" step="any" placeholder="예: 2.5">
+                    <span class="unit">mg/kg</span>
+                  </div>
+                </label>
+              </div>
+
+              <p id="dantrolene-error-message" class="error-message" role="alert" aria-live="polite"></p>
+
+              <div class="actions">
+                <button type="submit" class="btn btn-primary">Calculate</button>
+                <button type="button" id="dantrolene-reset-button" class="btn btn-secondary">Reset</button>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        <section id="dantrolene-result-card" class="result-card hidden" aria-live="polite">
+          <p class="result-label">Dose Target</p>
+          <h2 id="dantrolene-primary-result">0 mg</h2>
+          <div class="pump-setting">
+            <p class="pump-setting-label">Maximum cumulative dose</p>
+            <p id="dantrolene-secondary-result" class="pump-setting-range">-</p>
+          </div>
+          <p id="dantrolene-context" class="concentration-result"></p>
+
+          <div class="result-summary-grid">
+            <div class="result-summary-item">
+              <p class="pump-setting-label">Initial vials needed</p>
+              <p id="dantrolene-initial-vials" class="pump-setting-range">-</p>
+            </div>
+            <div class="result-summary-item">
+              <p class="pump-setting-label">Max vials at 10 mg/kg</p>
+              <p id="dantrolene-max-vials" class="pump-setting-range">-</p>
+            </div>
+          </div>
+
+          <div class="calculation-details">
+            <h3>Preparation</h3>
+            <p id="dantrolene-vial-explanation"></p>
+            <p id="dantrolene-reconstitution-explanation"></p>
+          </div>
+
+          <div class="calculation-details">
+            <h3>MH Quick Guide</h3>
+            <p id="dantrolene-initial-guide"></p>
+            <p id="dantrolene-repeat-guide"></p>
+            <p id="dantrolene-maintenance-guide"></p>
+          </div>
+
+          <div class="reference-panel">
+            <p class="preset-summary-label">References</p>
+            <ul id="dantrolene-reference-list" class="reference-list"></ul>
+          </div>
+
+          <p id="dantrolene-result-warning" class="result-warning">
+            Verify institutional MH protocol, redosing plan, and emergency workflow.
           </p>
         </section>
       </section>
