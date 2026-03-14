@@ -1,0 +1,358 @@
+:root {
+  --bg: #f3f5f8;
+  --panel: #ffffff;
+  --panel-soft: #f8fafc;
+  --text: #142033;
+  --muted: #5f6c80;
+  --accent: #0f766e;
+  --accent-dark: #0a5c56;
+  --accent-soft: #d7f3ef;
+  --danger: #b42318;
+  --danger-soft: #fee4e2;
+  --border: #d8e0ea;
+  --shadow: 0 18px 45px rgba(20, 32, 51, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 30%),
+    linear-gradient(180deg, #f8fbfd 0%, var(--bg) 100%);
+  color: var(--text);
+}
+
+.page {
+  min-height: 100vh;
+  padding: 24px 16px 40px;
+}
+
+.warning-banner {
+  max-width: 960px;
+  margin: 0 auto 20px;
+  padding: 14px 18px;
+  border: 1px solid rgba(180, 35, 24, 0.18);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fff2f1, var(--danger-soft));
+  color: var(--danger);
+  box-shadow: var(--shadow);
+}
+
+.app-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  gap: 20px;
+}
+
+.hero,
+.calculator-panel,
+.result-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(216, 224, 234, 0.9);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+}
+
+.hero {
+  padding: 28px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.hero h1 {
+  margin: 0 0 12px;
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  line-height: 1.1;
+}
+
+.hero-text {
+  margin: 0;
+  max-width: 680px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.calculator-panel {
+  padding: 28px;
+}
+
+.mode-selector {
+  margin-bottom: 22px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--panel-soft);
+}
+
+.mode-title {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.mode-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mode-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mode-option input {
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.drug-selector {
+  margin-bottom: 22px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field-label {
+  font-weight: 700;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel-soft);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-row:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.14);
+}
+
+.input-row input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  padding: 15px 16px;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.input-row input::placeholder {
+  color: #94a3b8;
+}
+
+.select-row {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel-soft);
+  overflow: hidden;
+}
+
+.select-row select {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  padding: 15px 16px;
+  font-size: 1rem;
+  color: var(--text);
+  appearance: none;
+  cursor: pointer;
+}
+
+.helper-text {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.unit {
+  padding: 0 14px;
+  border-left: 1px solid var(--border);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.error-message {
+  min-height: 24px;
+  margin: 16px 0 0;
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 13px 22px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #fff;
+}
+
+.btn-secondary {
+  background: #e8edf3;
+  color: var(--text);
+}
+
+.result-card {
+  padding: 28px;
+  background:
+    linear-gradient(180deg, rgba(215, 243, 239, 0.6) 0%, rgba(255, 255, 255, 0.95) 100%);
+}
+
+.result-label {
+  margin: 0 0 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.result-card h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+}
+
+.pump-setting {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(20, 32, 51, 0.04);
+  border: 1px solid rgba(20, 32, 51, 0.08);
+}
+
+.pump-setting-label {
+  margin: 0 0 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.pump-setting-range {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.concentration-result {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.calculation-details {
+  margin-top: 22px;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(216, 224, 234, 0.9);
+}
+
+.calculation-details h3 {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+}
+
+.calculation-details p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.result-warning {
+  margin: 18px 0 0;
+  font-weight: 700;
+  color: var(--danger);
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 18px 12px 28px;
+  }
+
+  .hero,
+  .calculator-panel,
+  .result-card {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .mode-options {
+    flex-direction: column;
+  }
+}
