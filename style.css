@@ -360,15 +360,106 @@ body {
 
 .reference-list {
   margin: 8px 0 0;
-  padding-left: 18px;
+  padding-left: 0;
+  list-style: none;
   display: grid;
-  gap: 6px;
+  gap: 10px;
   color: var(--muted);
   font-size: 0.92rem;
 }
 
 .reference-list a {
   color: var(--accent-dark);
+}
+
+.reference-item {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.reference-details {
+  display: block;
+}
+
+.reference-summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.reference-summary::-webkit-details-marker {
+  display: none;
+}
+
+.reference-summary-title {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.reference-summary-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.reference-summary-meta {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.reference-badge {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.reference-badge.is-label {
+  background: rgba(33, 94, 60, 0.12);
+  color: #215e3c;
+}
+
+.reference-badge.is-clinical {
+  background: rgba(18, 92, 140, 0.12);
+  color: #125c8c;
+}
+
+.reference-badge.is-study {
+  background: rgba(140, 86, 18, 0.14);
+  color: #8c5612;
+}
+
+.reference-reviewed {
+  color: var(--text-muted);
+}
+
+.reference-detail-body {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.reference-usage-note {
+  margin: 0 0 8px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.reference-disclaimer {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.reference-external-link {
+  font-weight: 600;
 }
 
 .quick-drug-remove {

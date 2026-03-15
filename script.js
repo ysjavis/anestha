@@ -172,21 +172,39 @@ const dantroleneInputs = {
 // Calculation engine
 // -----------------------------
 
-function doseToRate(weightKg, concentrationPerMl, dosePerKgTime, timeUnit = "min") {
-  const timeFactor = timeUnit === "hr" ? 1 : 60;
-  return (dosePerKgTime * weightKg * timeFactor) / concentrationPerMl;
+function isWeightBasedReferenceRange(referenceRange) {
+  return !referenceRange || referenceRange.weightBased !== false;
 }
 
-function rateToDose(weightKg, concentrationPerMl, rateMlHr, timeUnit = "min") {
-  const timeFactor = timeUnit === "hr" ? 1 : 60;
-  return (rateMlHr * concentrationPerMl) / (weightKg * timeFactor);
+function getReferenceTimeFactor(referenceRange) {
+  return referenceRange && referenceRange.timeUnit === "hr" ? 1 : 60;
 }
 
-function buildReferenceTable(weightKg, concentrationPerMl, doseList, timeUnit = "min") {
+function doseToRate(weightKg, concentrationPerMl, doseValue, referenceRange) {
+  const timeFactor = getReferenceTimeFactor(referenceRange);
+
+  if (isWeightBasedReferenceRange(referenceRange)) {
+    return (doseValue * weightKg * timeFactor) / concentrationPerMl;
+  }
+
+  return (doseValue * timeFactor) / concentrationPerMl;
+}
+
+function rateToDose(weightKg, concentrationPerMl, rateMlHr, referenceRange) {
+  const timeFactor = getReferenceTimeFactor(referenceRange);
+
+  if (isWeightBasedReferenceRange(referenceRange)) {
+    return (rateMlHr * concentrationPerMl) / (weightKg * timeFactor);
+  }
+
+  return (rateMlHr * concentrationPerMl) / timeFactor;
+}
+
+function buildReferenceTable(weightKg, concentrationPerMl, doseList, referenceRange) {
   return doseList.map(function (dose) {
     return {
       dose: dose,
-      rate: doseToRate(weightKg, concentrationPerMl, dose, timeUnit)
+      rate: doseToRate(weightKg, concentrationPerMl, dose, referenceRange)
     };
   });
 }
@@ -453,57 +471,147 @@ const REFERENCE_REGISTRY = {
     lastReviewed: "2026-03-14"
   },
   infusion_norepinephrine_dailymed: {
-    title: "Norepinephrine bitartrate injection",
+    title: "Norepinephrine label dose",
     source: "DailyMed",
-    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=a27fb6e0-8f7a-11db-9739-0050c2490048",
+    url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=a27fb6e0-8f7a-11db-9739-0050c2490048",
+    linkLabel: "Open full label",
+    usageNote: "Label dosing: initial 8-12 mcg/min by IV infusion, then adjust to hemodynamic effect. Typical maintenance is 2-4 mcg/min.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_norepinephrine_openanesthesia: {
+    title: "Norepinephrine anesthesia clinical dosing",
+    source: "OpenAnesthesia",
+    url: "https://www.openanesthesia.org/keywords/epinephrine-and-norepinephrine/",
+    linkLabel: "Open article",
+    usageNote: "Anesthesia reference: adult infusion commonly starts around 0.02-0.15 mcg/kg/min and is titrated to target MAP. Use as a perioperative weight-based reference, not as a product label dose.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_norepinephrine_periop_study: {
+    title: "Norepinephrine perioperative induction study",
+    source: "PubMed",
+    url: "https://pubmed.ncbi.nlm.nih.gov/40744797/",
+    linkLabel: "Open abstract",
+    usageNote: "Study-specific perioperative evidence: high-risk noncardiac surgery induction data support continuous norepinephrine infusion as a blood pressure stabilization strategy. Treat this as context evidence rather than a universal standard dose range.",
     lastReviewed: "2026-03-15"
   },
   infusion_epinephrine_dailymed: {
-    title: "Epinephrine injection",
+    title: "Epinephrine label dose",
     source: "DailyMed",
-    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=3b1ac82f-6920-4e40-a77e-598398679f2d",
+    url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=3b1ac82f-6920-4e40-a77e-598398679f2d",
+    linkLabel: "Open full label",
+    usageNote: "Adult continuous infusion labeling commonly falls in the 0.05-2 mcg/kg/min range, titrated to hemodynamic effect.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_epinephrine_openanesthesia: {
+    title: "Epinephrine anesthesia clinical context",
+    source: "OpenAnesthesia",
+    url: "https://www.openanesthesia.org/keywords/epinephrine-and-norepinephrine/",
+    linkLabel: "Open article",
+    usageNote: "Perioperative context: epinephrine provides mixed alpha and beta support, with stronger beta effects at lower doses and increasing alpha vasoconstriction as dose rises.",
     lastReviewed: "2026-03-15"
   },
   infusion_phenylephrine_dailymed: {
-    title: "Phenylephrine hydrochloride injection",
+    title: "Phenylephrine label dose",
     source: "DailyMed",
-    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?audience=consumer&setid=1e77b9c8-fa17-4aa4-adc8-ff716ab2e5d7",
+    url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=1e77b9c8-fa17-4aa4-adc8-ff716ab2e5d7",
+    linkLabel: "Open full label",
+    usageNote: "For anesthesia-induced hypotension, labeling supports infusion around 0.5-1.4 mcg/kg/min with titration to blood pressure response.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_phenylephrine_periop_study: {
+    title: "Phenylephrine perioperative infusion study",
+    source: "PubMed",
+    url: "https://pubmed.ncbi.nlm.nih.gov/39544834/",
+    linkLabel: "Open abstract",
+    usageNote: "Operating-room context: anesthesia safety initiative describing peripheral phenylephrine infusions during anesthesia and highlighting concentration standardization and infusion safety.",
     lastReviewed: "2026-03-15"
   },
   infusion_vasopressin_dailymed: {
-    title: "Vasopressin injection",
+    title: "Vasopressin label dose",
     source: "DailyMed",
-    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?audience=consumer&setid=ad3ac280-49da-4816-9097-14517d0c0f85",
+    url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=ad3ac280-49da-4816-9097-14517d0c0f85",
+    linkLabel: "Open full label",
+    usageNote: "Shock: 0.01 – 0.04 units/min. Not weight-based. Typically added to norepinephrine.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_vasopressin_openanesthesia: {
+    title: "Vasopressin anesthesia clinical dosing",
+    source: "OpenAnesthesia",
+    url: "https://www.openanesthesia.org/keywords/vasopressin/",
+    linkLabel: "Open article",
+    usageNote: "Perioperative refractory hypotension reference: low-dose infusion or boluses of 0.01-0.04 U/min or 0.5-1 U bolus can be used during general anesthesia.",
     lastReviewed: "2026-03-15"
   },
   infusion_nitroglycerin_dailymed: {
-    title: "Nitroglycerin injection, solution",
+    title: "Nitroglycerin label dose",
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=b8af0974-33ea-4dd5-9ff7-3b61272aeb25",
+    linkLabel: "Open full label",
+    usageNote: "Label dosing starts at 5 mcg/min IV infusion with stepwise upward titration; non-PVC tubing and glass bottles are commonly recommended.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_nitroglycerin_openanesthesia: {
+    title: "Nitroglycerin anesthesia clinical dosing",
+    source: "OpenAnesthesia",
+    url: "https://www.openanesthesia.org/keywords/nitroglycerin/",
+    linkLabel: "Open article",
+    usageNote: "Operating-room reference: continuous IV nitroglycerin is commonly started at 5 mcg/min and titrated every 3-5 minutes. Common OR uses include hypertensive urgency and myocardial ischemia.",
     lastReviewed: "2026-03-15"
   },
   infusion_dopamine_dailymed: {
-    title: "Dopamine hydrochloride injection",
+    title: "Dopamine label dose",
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=0e499952-46c7-4172-8c70-186312e240a3",
+    linkLabel: "Open full label",
+    usageNote: "Label dosing spans about 2-50 mcg/kg/min IV infusion. Hemodynamic effects shift across lower, intermediate, and higher dose bands.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_dopamine_periop_study: {
+    title: "Dopamine perioperative hemodynamic study",
+    source: "PubMed",
+    url: "https://pubmed.ncbi.nlm.nih.gov/117821/",
+    linkLabel: "Open abstract",
+    usageNote: "Cardiac-surgery context: anesthesia study describing dopamine 8 mcg/kg/min before bypass, with improved cardiac index but higher filling pressures unless balanced with nitroglycerin.",
     lastReviewed: "2026-03-15"
   },
   infusion_dobutamine_dailymed: {
-    title: "Dobutamine injection, solution, concentrate",
+    title: "Dobutamine label dose",
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=9794e9d0-c8b7-4d18-8cd1-15cc4f2a9a55",
+    linkLabel: "Open full label",
+    usageNote: "Adult infusion labeling commonly uses 2.5-20 mcg/kg/min, titrated to cardiac output and perfusion goals.",
     lastReviewed: "2026-03-15"
   },
   infusion_milrinone_dailymed: {
-    title: "Milrinone lactate injection, solution",
+    title: "Milrinone label dose",
     source: "DailyMed",
-    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=fde1e354-4f15-4ade-9ae3-db2ba67e0431",
+    url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=fde1e354-4f15-4ade-9ae3-db2ba67e0431",
+    linkLabel: "Open full label",
+    usageNote: "Maintenance infusion is typically 0.375-0.75 mcg/kg/min after any loading dose. Adjust carefully for renal impairment.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_milrinone_openanesthesia: {
+    title: "Milrinone perioperative dosing",
+    source: "OpenAnesthesia",
+    url: "https://www.openanesthesia.org/keywords/milrinone_pharmacology/",
+    linkLabel: "Open article",
+    usageNote: "Cardiac anesthesia reference: 50 mcg/kg IV over 10 minutes followed by 0.375-0.75 mcg/kg/min infusion, commonly used for perioperative low-output states and RV dysfunction.",
     lastReviewed: "2026-03-15"
   },
   infusion_isoproterenol_dailymed: {
-    title: "Isoproterenol hydrochloride injection, solution",
+    title: "Isoproterenol label dose",
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=d2a9b767-0274-49bf-83cd-2fcce9bedc78",
+    linkLabel: "Open full label",
+    usageNote: "Adult infusion labeling commonly starts at 0.5 mcg/min with titration; usual effective rates are often 0.5-5 mcg/min.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_isoproterenol_tiva_study: {
+    title: "Isoproterenol during TIVA study",
+    source: "PubMed",
+    url: "https://pubmed.ncbi.nlm.nih.gov/22366997/",
+    linkLabel: "Open abstract",
+    usageNote: "Electrophysiology/TIVA context: isoproterenol infusion increased BIS and consciousness level during atrial fibrillation ablation, so anesthetic depth may need adjustment when it is used intraoperatively.",
     lastReviewed: "2026-03-15"
   },
   dantrolene_standard_dailymed: {
@@ -525,27 +633,67 @@ const REFERENCE_REGISTRY = {
     lastReviewed: "2026-03-15"
   },
   infusion_remifentanil_dailymed: {
-    title: "Remifentanil hydrochloride injection",
+    title: "Remifentanil label dose",
     source: "DailyMed",
-    url: "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=remifentanil",
+    url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=d2374b84-81c9-44f9-a4a9-1071281b2531",
+    linkLabel: "Open full label",
+    usageNote: "Maintenance infusion for general anesthesia commonly ranges from about 0.05-2 mcg/kg/min depending on the anesthetic technique.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_remifentanil_periop_study: {
+    title: "Remifentanil general anesthesia study",
+    source: "PubMed",
+    url: "https://pubmed.ncbi.nlm.nih.gov/41142244/",
+    linkLabel: "Open abstract",
+    usageNote: "General anesthesia context: remifentanil-based induction was associated with more stable early hemodynamics than fentanyl in thoracoscopic esophagectomy, while bradycardia remained a relevant adverse effect.",
     lastReviewed: "2026-03-15"
   },
   infusion_propofol_dailymed: {
-    title: "Propofol injectable emulsion",
+    title: "Propofol label dose",
     source: "DailyMed",
-    url: "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=propofol",
+    url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=800646b8-83a8-01d9-3dc8-bb2ddcb8570c",
+    linkLabel: "Open full label",
+    usageNote: "For maintenance of general anesthesia in healthy adults under 55 years, labeling commonly cites 100-200 mcg/kg/min, with lower rates often needed in older or sicker patients.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_propofol_openanesthesia: {
+    title: "Propofol anesthesia clinical context",
+    source: "OpenAnesthesia",
+    url: "https://www.openanesthesia.org/keywords/propofol/",
+    linkLabel: "Open article",
+    usageNote: "General anesthesia reference: propofol remains the most common IV induction and maintenance agent, and continuous infusion is standard for precise TIVA depth control.",
     lastReviewed: "2026-03-15"
   },
   infusion_esmolol_dailymed: {
-    title: "Esmolol hydrochloride injection",
+    title: "Esmolol label dose",
     source: "DailyMed",
-    url: "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=esmolol",
+    url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=4cfdfa50-579b-43e7-bc0a-e831d3099bfd",
+    linkLabel: "Open full label",
+    usageNote: "Initial dose: 50 – 300 mcg/kg/min. Ultra-short acting beta blocker.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_esmolol_meta_analysis: {
+    title: "Esmolol anesthesia meta-analysis",
+    source: "PubMed",
+    url: "https://pubmed.ncbi.nlm.nih.gov/41134986/",
+    linkLabel: "Open abstract",
+    usageNote: "General anesthesia adjunct evidence: perioperative esmolol infusions across randomized trials ranged from about 0.3-6 mg/kg/h and were associated with reduced intraoperative and postoperative opioid use.",
     lastReviewed: "2026-03-15"
   },
   infusion_dexmedetomidine_dailymed: {
-    title: "Dexmedetomidine hydrochloride injection",
+    title: "Dexmedetomidine label dose",
     source: "DailyMed",
-    url: "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=dexmedetomidine",
+    url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=8fb7886c-7762-4b72-989b-0fe8e963b4b8",
+    linkLabel: "Open full label",
+    usageNote: "Perioperative maintenance infusions are commonly 0.2-0.7 mcg/kg/hr, while some ICU labeling permits higher rates in selected settings.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_dexmedetomidine_openanesthesia: {
+    title: "Dexmedetomidine anesthesia clinical dosing",
+    source: "OpenAnesthesia",
+    url: "https://www.openanesthesia.org/keywords/dexmedetomidine/",
+    linkLabel: "Open article",
+    usageNote: "General anesthesia adjunct reference: dexmedetomidine shows linear pharmacokinetics in the 0.2-0.7 mcg/kg/h range and can reduce sevoflurane, propofol, and opioid requirements.",
     lastReviewed: "2026-03-15"
   }
 };
@@ -582,6 +730,46 @@ function getReferenceItems(referenceIds) {
   }).filter(Boolean);
 }
 
+function getReferenceType(item) {
+  if (!item) {
+    return "";
+  }
+
+  if (item.referenceType) {
+    return item.referenceType;
+  }
+
+  if (item.source === "DailyMed" || item.source === "FDA" || /label dose/i.test(item.title)) {
+    return "label";
+  }
+
+  if (item.source === "PubMed" || /study|meta-analysis/i.test(item.title)) {
+    return "study";
+  }
+
+  if (item.source === "OpenAnesthesia" || /clinical|context|dosing/i.test(item.title)) {
+    return "clinical";
+  }
+
+  return "";
+}
+
+function getReferenceTypeBadge(type) {
+  if (type === "label") {
+    return '<span class="reference-badge is-label">Label</span>';
+  }
+
+  if (type === "clinical") {
+    return '<span class="reference-badge is-clinical">Clinical</span>';
+  }
+
+  if (type === "study") {
+    return '<span class="reference-badge is-study">Study-specific</span>';
+  }
+
+  return "";
+}
+
 function renderReferenceList(container, referenceIds) {
   if (!container) {
     return;
@@ -595,7 +783,36 @@ function renderReferenceList(container, referenceIds) {
   }
 
   container.innerHTML = referenceItems.map(function (item) {
-    return `<li><a href="${item.url}" target="_blank" rel="noreferrer">${item.source}</a> - ${item.title} (Last reviewed: ${item.lastReviewed})</li>`;
+    const reviewedStr = `<span class="reference-reviewed">(Reviewed: ${item.lastReviewed})</span>`;
+    const badgeStr = getReferenceTypeBadge(getReferenceType(item));
+
+    if (item.usageNote) {
+      return `<li class="reference-item">
+                <details class="reference-details">
+                  <summary class="reference-summary">
+                    <span class="reference-summary-title-row">
+                      <span class="reference-summary-title">${item.title}</span>
+                      ${badgeStr}
+                    </span>
+                    <span class="reference-summary-meta">${item.source} ${reviewedStr}</span>
+                  </summary>
+                  <div class="reference-detail-body">
+                    <p class="reference-usage-note"><strong>Usage note:</strong> ${item.usageNote}</p>
+                    <p class="reference-disclaimer">Clinical and study-based references describe common practice patterns or selected study settings. They should not be treated as universal dosing standards without protocol review.</p>
+                    <a class="reference-external-link" href="${item.url}" target="_blank" rel="noreferrer">${item.linkLabel || "Open reference"}</a>
+                  </div>
+                </details>
+              </li>`;
+    }
+
+    return `<li class="reference-item">
+              <span class="reference-summary-title-row">
+                <span class="reference-summary-title">${item.title}</span>
+                ${badgeStr}
+              </span>
+              <span class="reference-summary-meta">${item.source} ${reviewedStr}</span>
+              <a class="reference-external-link" href="${item.url}" target="_blank" rel="noreferrer">${item.linkLabel || "Open reference"}</a>
+            </li>`;
   }).join("");
 }
 
@@ -909,13 +1126,13 @@ const DRUG_PRESETS = [
     name: "Norepinephrine",
     concentration: 100,
     concentrationUnit: "mcg/mL",
-    referenceDoses: [0.02, 0.05, 0.1, 0.2, 0.3],
+    referenceDoses: [0.02, 0.05, 0.1, 0.15],
     referenceRange: {
-      min: 0.01,
-      max: 0.3,
+      min: 0.02,
+      max: 0.15,
       unit: "mcg/kg/min"
     },
-    notes: "Common vasopressor reference doses. Adjust to institutional standards.",
+    notes: "Perioperative weight-based reference aligned to OpenAnesthesia adult dosing; product label uses absolute mcg/min dosing.",
     dilutionPresets: [
       {
         id: "ne-4mg-50ml",
@@ -929,7 +1146,11 @@ const DRUG_PRESETS = [
         note: "Common syringe pump example"
       }
     ],
-    references: ["infusion_norepinephrine_dailymed"],
+    references: [
+      "infusion_norepinephrine_dailymed",
+      "infusion_norepinephrine_openanesthesia",
+      "infusion_norepinephrine_periop_study"
+    ],
     metadata: {
       source: "Editable local preset",
       lastReviewed: "2026-03-14"
@@ -940,13 +1161,13 @@ const DRUG_PRESETS = [
     name: "Epinephrine",
     concentration: 100,
     concentrationUnit: "mcg/mL",
-    referenceDoses: [0.01, 0.02, 0.05, 0.1, 0.2],
+    referenceDoses: [0.05, 0.1, 0.2, 0.5, 1, 2],
     referenceRange: {
-      min: 0.01,
-      max: 0.2,
+      min: 0.05,
+      max: 2,
       unit: "mcg/kg/min"
     },
-    notes: "Reference values only. Verify concentration and local pump labeling conventions.",
+    notes: "Reference range aligned to DailyMed adult continuous infusion labeling.",
     dilutionPresets: [
       {
         id: "epi-5mg-50ml",
@@ -960,7 +1181,7 @@ const DRUG_PRESETS = [
         note: "Example infusion syringe"
       }
     ],
-    references: ["infusion_epinephrine_dailymed"],
+    references: ["infusion_epinephrine_dailymed", "infusion_epinephrine_openanesthesia"],
     metadata: {
       source: "Editable local preset",
       lastReviewed: "2026-03-14"
@@ -971,13 +1192,13 @@ const DRUG_PRESETS = [
     name: "Phenylephrine",
     concentration: 100,
     concentrationUnit: "mcg/mL",
-    referenceDoses: [0.1, 0.2, 0.5, 1, 2],
+    referenceDoses: [0.5, 0.75, 1, 1.2, 1.4],
     referenceRange: {
-      min: 0.1,
-      max: 2,
+      min: 0.5,
+      max: 1.4,
       unit: "mcg/kg/min"
     },
-    notes: "Dose conventions vary between institutions. Use as a quick reference only.",
+    notes: "Reference range aligned to DailyMed anesthesia-induced hypotension infusion dosing.",
     dilutionPresets: [
       {
         id: "phe-10mg-100ml",
@@ -991,7 +1212,7 @@ const DRUG_PRESETS = [
         note: "Common vasopressor dilution example"
       }
     ],
-    references: ["infusion_phenylephrine_dailymed"],
+    references: ["infusion_phenylephrine_dailymed", "infusion_phenylephrine_periop_study"],
     metadata: {
       source: "Editable local preset",
       lastReviewed: "2026-03-14"
@@ -1002,13 +1223,14 @@ const DRUG_PRESETS = [
     name: "Vasopressin",
     concentration: 1,
     concentrationUnit: "unit/mL",
-    referenceDoses: [0.0003, 0.0006, 0.001, 0.002, 0.003],
+    referenceDoses: [0.01, 0.02, 0.03, 0.04],
     referenceRange: {
-      min: 0.0003,
-      max: 0.003,
-      unit: "unit/kg/min"
+      min: 0.01,
+      max: 0.04,
+      unit: "unit/min",
+      weightBased: false
     },
-    notes: "Unit-based example preset included for workflow planning; confirm local conventions before use.",
+    notes: "Absolute-dose infusion aligned to perioperative low-dose vasopressin use; weight input is not used for this drug.",
     dilutionPresets: [
       {
         id: "vaso-20u-20ml",
@@ -1022,7 +1244,7 @@ const DRUG_PRESETS = [
         note: "Example only"
       }
     ],
-    references: ["infusion_vasopressin_dailymed"],
+    references: ["infusion_vasopressin_dailymed", "infusion_vasopressin_openanesthesia"],
     metadata: {
       source: "Editable local preset",
       lastReviewed: "2026-03-14"
@@ -1033,13 +1255,14 @@ const DRUG_PRESETS = [
     name: "Nitroglycerin",
     concentration: 200,
     concentrationUnit: "mcg/mL",
-    referenceDoses: [0.25, 0.5, 1, 2, 3],
+    referenceDoses: [5, 10, 20, 40, 80, 160],
     referenceRange: {
-      min: 0.25,
-      max: 3,
-      unit: "mcg/kg/min"
+      min: 5,
+      max: 200,
+      unit: "mcg/min",
+      weightBased: false
     },
-    notes: "Use local hemodynamic protocol and titrate to clinical context.",
+    notes: "Absolute-dose infusion aligned to DailyMed and OpenAnesthesia titration guidance; weight input is not used for this drug.",
     dilutionPresets: [
       {
         id: "ntg-10mg-50ml",
@@ -1053,7 +1276,7 @@ const DRUG_PRESETS = [
         note: "Common NTG syringe example"
       }
     ],
-    references: ["infusion_nitroglycerin_dailymed"],
+    references: ["infusion_nitroglycerin_dailymed", "infusion_nitroglycerin_openanesthesia"],
     metadata: {
       source: "Editable local preset",
       lastReviewed: "2026-03-14"
@@ -1064,13 +1287,13 @@ const DRUG_PRESETS = [
     name: "Dopamine",
     concentration: 4000,
     concentrationUnit: "mcg/mL",
-    referenceDoses: [3, 5, 10, 15, 20],
+    referenceDoses: [2, 5, 10, 20, 40, 50],
     referenceRange: {
       min: 2,
-      max: 20,
+      max: 50,
       unit: "mcg/kg/min"
     },
-    notes: "Dose-response varies by range; verify local standards before use.",
+    notes: "Reference range aligned to DailyMed adult infusion labeling; physiologic effects vary by dose band.",
     dilutionPresets: [
       {
         id: "dopamine-200mg-50ml",
@@ -1084,7 +1307,7 @@ const DRUG_PRESETS = [
         note: "Example only"
       }
     ],
-    references: ["infusion_dopamine_dailymed"],
+    references: ["infusion_dopamine_dailymed", "infusion_dopamine_periop_study"],
     metadata: {
       source: "Editable local preset",
       lastReviewed: "2026-03-14"
@@ -1095,13 +1318,13 @@ const DRUG_PRESETS = [
     name: "Dobutamine",
     concentration: 5000,
     concentrationUnit: "mcg/mL",
-    referenceDoses: [2.5, 5, 7.5, 10, 15],
+    referenceDoses: [2.5, 5, 7.5, 10, 15, 20],
     referenceRange: {
       min: 2.5,
-      max: 15,
+      max: 20,
       unit: "mcg/kg/min"
     },
-    notes: "Reference only. Match final concentration to institutional practice.",
+    notes: "Reference range aligned to common DailyMed adult infusion dosing; rare higher doses should be protocol-specific.",
     dilutionPresets: [
       {
         id: "dobutamine-250mg-50ml",
@@ -1126,13 +1349,13 @@ const DRUG_PRESETS = [
     name: "Milrinone",
     concentration: 200,
     concentrationUnit: "mcg/mL",
-    referenceDoses: [0.125, 0.25, 0.375, 0.5, 0.75],
+    referenceDoses: [0.375, 0.5, 0.6, 0.7, 0.75],
     referenceRange: {
-      min: 0.125,
+      min: 0.375,
       max: 0.75,
       unit: "mcg/kg/min"
     },
-    notes: "Loading and maintenance should be interpreted separately if needed.",
+    notes: "Maintenance infusion range aligned to DailyMed and OpenAnesthesia; loading dose should be considered separately.",
     dilutionPresets: [
       {
         id: "milrinone-10mg-50ml",
@@ -1146,7 +1369,7 @@ const DRUG_PRESETS = [
         note: "Example only"
       }
     ],
-    references: ["infusion_milrinone_dailymed"],
+    references: ["infusion_milrinone_dailymed", "infusion_milrinone_openanesthesia"],
     metadata: {
       source: "Editable local preset",
       lastReviewed: "2026-03-14"
@@ -1157,13 +1380,14 @@ const DRUG_PRESETS = [
     name: "Isoproterenol",
     concentration: 4,
     concentrationUnit: "mcg/mL",
-    referenceDoses: [0.01, 0.02, 0.05, 0.1, 0.2],
+    referenceDoses: [0.5, 1, 2, 3, 5],
     referenceRange: {
-      min: 0.01,
-      max: 0.2,
-      unit: "mcg/kg/min"
+      min: 0.5,
+      max: 5,
+      unit: "mcg/min",
+      weightBased: false
     },
-    notes: "High-alert drug; verify pump setup carefully.",
+    notes: "Absolute-dose infusion aligned to DailyMed adult infusion dosing; weight input is not used for this drug.",
     dilutionPresets: [
       {
         id: "isoproterenol-200mcg-50ml",
@@ -1177,7 +1401,7 @@ const DRUG_PRESETS = [
         note: "Example only"
       }
     ],
-    references: ["infusion_isoproterenol_dailymed"],
+    references: ["infusion_isoproterenol_dailymed", "infusion_isoproterenol_tiva_study"],
     metadata: {
       source: "Editable local preset",
       lastReviewed: "2026-03-14"
@@ -1188,13 +1412,13 @@ const DRUG_PRESETS = [
     name: "Remifentanil",
     concentration: 50,
     concentrationUnit: "mcg/mL",
-    referenceDoses: [0.05, 0.1, 0.15, 0.2, 0.25],
+    referenceDoses: [0.05, 0.1, 0.2, 0.5, 1, 2],
     referenceRange: {
       min: 0.05,
-      max: 0.3,
+      max: 2,
       unit: "mcg/kg/min"
     },
-    notes: "Potent ultra-short acting opioid. Ensure continuous infusion line patency.",
+    notes: "Maintenance infusion range aligned to remifentanil labeling for general anesthesia.",
     dilutionPresets: [
       {
         id: "remi-2mg-40ml",
@@ -1208,7 +1432,7 @@ const DRUG_PRESETS = [
         note: "Common remifentanil dilution"
       }
     ],
-    references: ["infusion_remifentanil_dailymed"],
+    references: ["infusion_remifentanil_dailymed", "infusion_remifentanil_periop_study"],
     metadata: {
       source: "Editable local preset",
       lastReviewed: "2026-03-15"
@@ -1219,13 +1443,13 @@ const DRUG_PRESETS = [
     name: "Propofol (TIVA)",
     concentration: 10000,
     concentrationUnit: "mcg/mL",
-    referenceDoses: [25, 50, 75, 100, 150],
+    referenceDoses: [100, 125, 150, 175, 200],
     referenceRange: {
-      min: 25,
+      min: 100,
       max: 200,
       unit: "mcg/kg/min"
     },
-    notes: "TIVA continuous infusion mode. Standard 1% emulsion is 10 mg/mL (10,000 mcg/mL).",
+    notes: "Maintenance infusion range aligned to DailyMed adult general-anesthesia labeling; elderly or cardiac patients may require lower rates.",
     dilutionPresets: [
       {
         id: "propofol-10mg-ml",
@@ -1239,7 +1463,7 @@ const DRUG_PRESETS = [
         note: "Neat 1% emulsion"
       }
     ],
-    references: ["infusion_propofol_dailymed"],
+    references: ["infusion_propofol_dailymed", "infusion_propofol_openanesthesia"],
     metadata: {
       source: "Editable local preset",
       lastReviewed: "2026-03-15"
@@ -1256,7 +1480,7 @@ const DRUG_PRESETS = [
       max: 300,
       unit: "mcg/kg/min"
     },
-    notes: "Ultra-short acting beta blocker. Titrate to heart rate and blood pressure.",
+    notes: "Reference range aligned to DailyMed perioperative infusion dosing; most patients respond within 50-200 mcg/kg/min.",
     dilutionPresets: [
       {
         id: "esmolol-2500mg-250ml",
@@ -1270,7 +1494,7 @@ const DRUG_PRESETS = [
         note: "Pre-mixed bag standard"
       }
     ],
-    references: ["infusion_esmolol_dailymed"],
+    references: ["infusion_esmolol_dailymed", "infusion_esmolol_meta_analysis"],
     metadata: {
       source: "Editable local preset",
       lastReviewed: "2026-03-15"
@@ -1281,15 +1505,15 @@ const DRUG_PRESETS = [
     name: "Dexmedetomidine",
     concentration: 4,
     concentrationUnit: "mcg/mL",
-    referenceDoses: [0.2, 0.4, 0.6, 0.8, 1.0],
+    referenceDoses: [0.2, 0.3, 0.4, 0.5, 0.7],
     referenceRange: {
       min: 0.2,
-      max: 1.4,
+      max: 0.7,
       unit: "mcg/kg/hr",
       timeUnit: "hr",
       weightBased: true
     },
-    notes: "Alpha-2 agonist. Dosed in mcg/kg/hr. Use caution if using loading doses.",
+    notes: "Perioperative maintenance range aligned to OpenAnesthesia and common anesthesia use; ICU label dosing may extend higher.",
     dilutionPresets: [
       {
         id: "dex-200mcg-50ml",
@@ -1303,7 +1527,7 @@ const DRUG_PRESETS = [
         note: "Standard 4 mcg/mL infusion"
       }
     ],
-    references: ["infusion_dexmedetomidine_dailymed"],
+    references: ["infusion_dexmedetomidine_dailymed", "infusion_dexmedetomidine_openanesthesia"],
     metadata: {
       source: "Editable local preset",
       lastReviewed: "2026-03-15"
@@ -3053,8 +3277,9 @@ function renderInfusionWorkspace() {
     const drugCategory = getInfusionDrugCategory(card.selectedDrugId);
     const concentration = Number(card.concentration);
     const targetDose = Number(card.targetDose);
-    const hasReadyCalculation = isPositiveNumber(sharedWeight) && isPositiveNumber(concentration) && isPositiveNumber(targetDose);
-    const targetRate = hasReadyCalculation ? doseToRate(sharedWeight, concentration, targetDose, preset.referenceRange ? preset.referenceRange.timeUnit : "min") : null;
+    const usesWeight = isWeightBasedReferenceRange(preset.referenceRange);
+    const hasReadyCalculation = (usesWeight ? isPositiveNumber(sharedWeight) : true) && isPositiveNumber(concentration) && isPositiveNumber(targetDose);
+    const targetRate = hasReadyCalculation ? doseToRate(sharedWeight, concentration, targetDose, preset.referenceRange) : null;
     const isOutOfRange = hasReadyCalculation && !isWithinReferenceRange(targetDose, preset.referenceRange);
     const dilutionPreset = preset.dilutionPresets[0] || null;
     const optionMarkup = DRUG_PRESETS.map(function (drugPreset) {
@@ -3128,7 +3353,7 @@ function renderInfusionWorkspace() {
 
         <div class="workspace-card-result ${isOutOfRange ? "is-warning" : ""}">
           <p class="workspace-card-rate ${isOutOfRange ? "is-warning is-out-of-range" : ""}">
-            ${hasReadyCalculation ? `${formatNumber(targetRate, 2)} mL/hr` : "Enter shared weight and valid card values"}
+            ${hasReadyCalculation ? `${formatNumber(targetRate, 2)} mL/hr` : (usesWeight ? "Enter shared weight and valid card values" : "Enter valid card values")}
           </p>
           <p class="workspace-card-context">
             ${hasReadyCalculation
@@ -3139,7 +3364,7 @@ function renderInfusionWorkspace() {
         </div>
 
         <p class="workspace-card-reference-note">
-          Reference range: ${preset.referenceRange.min} - ${preset.referenceRange.max} ${preset.referenceRange.unit}. Standard dilution: ${formatDilutionPreset(preset.dilutionPresets[0] || null)}.
+          Reference range: ${preset.referenceRange.min} - ${preset.referenceRange.max} ${preset.referenceRange.unit}.${usesWeight ? "" : " Shared weight is not used for this drug."} Standard dilution: ${formatDilutionPreset(preset.dilutionPresets[0] || null)}.
         </p>
 
         <div class="quick-drug-actions">
@@ -3175,7 +3400,7 @@ function readInfusionFormValues() {
 }
 
 function validateInfusionValues(values) {
-  if (!isPositiveNumber(values.weight)) {
+  if (isWeightBasedReferenceRange(values.drug.referenceRange) && !isPositiveNumber(values.weight)) {
     return "Patient Weight must be a number greater than 0.";
   }
 
@@ -3379,7 +3604,9 @@ function renderReferenceRows(rows, doseUnit) {
 }
 
 function showDoseToRateResult(values) {
-  const rate = doseToRate(values.weight, values.concentration, values.targetDose, values.drug.referenceRange ? values.drug.referenceRange.timeUnit : "min");
+  const referenceRange = values.drug.referenceRange || null;
+  const usesWeight = isWeightBasedReferenceRange(referenceRange);
+  const rate = doseToRate(values.weight, values.concentration, values.targetDose, referenceRange);
   const doseUnit = values.drug.referenceRange.unit || "mcg/kg/min";
   const concentrationUnit = values.drug.concentrationUnit || "mcg/mL";
   const isOutOfRange = !isWithinReferenceRange(values.targetDose, values.drug.referenceRange);
@@ -3389,9 +3616,13 @@ function showDoseToRateResult(values) {
   primaryResult.textContent = `${formatNumber(rate, 2)} mL/hr`;
   secondaryResultLabel.textContent = "Target dose";
   secondaryResult.textContent = `${formatNumber(values.targetDose, 3)} ${doseUnit}`;
-  concentrationResult.textContent = `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / ${formatNumber(values.weight, 1)} kg`;
+  concentrationResult.textContent = usesWeight
+    ? `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / ${formatNumber(values.weight, 1)} kg`
+    : `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / absolute-dose mode`;
   concentrationExplanation.textContent = `농도 입력: ${formatNumber(values.concentration, 2)} ${concentrationUnit}를 사용했습니다.`;
-  rateExplanation.textContent = `주입 속도 계산: (${formatNumber(values.targetDose, 3)} x ${formatNumber(values.weight, 1)} x 60) / ${formatNumber(values.concentration, 2)} = ${formatNumber(rate, 2)} mL/hr`;
+  rateExplanation.textContent = usesWeight
+    ? `주입 속도 계산: (${formatNumber(values.targetDose, 3)} x ${formatNumber(values.weight, 1)} x ${getReferenceTimeFactor(referenceRange)}) / ${formatNumber(values.concentration, 2)} = ${formatNumber(rate, 2)} mL/hr`
+    : `주입 속도 계산: (${formatNumber(values.targetDose, 3)} x ${getReferenceTimeFactor(referenceRange)}) / ${formatNumber(values.concentration, 2)} = ${formatNumber(rate, 2)} mL/hr`;
   renderReferenceList(infusionReferenceList, referenceIds);
   resultCard.classList.toggle("is-warning", isOutOfRange);
   primaryResult.classList.toggle("is-warning", isOutOfRange);
@@ -3399,13 +3630,15 @@ function showDoseToRateResult(values) {
   secondaryResult.classList.toggle("is-warning", isOutOfRange);
   secondaryResult.classList.toggle("is-out-of-range", isOutOfRange);
   resultWarning.textContent = isOutOfRange
-    ? "Outside preset reference range - verify institutional protocol before use."
-    : "Reference dose values and ranges are informational only. Verify with institutional protocols.";
+    ? "Outside preset reference range. Clinical and study-based ranges may reflect common practice rather than universal standards, so verify the original source and your institutional protocol before use."
+    : "Reference dose values are informational only. Label, clinical, and study-based sources do not represent a single universal standard, so verify the original source and institutional protocol before use.";
   resultCard.classList.remove("hidden");
 }
 
 function showRateToDoseResult(values) {
-  const dose = rateToDose(values.weight, values.concentration, values.pumpRate, values.drug.referenceRange ? values.drug.referenceRange.timeUnit : "min");
+  const referenceRange = values.drug.referenceRange || null;
+  const usesWeight = isWeightBasedReferenceRange(referenceRange);
+  const dose = rateToDose(values.weight, values.concentration, values.pumpRate, referenceRange);
   const doseUnit = values.drug.referenceRange.unit || "mcg/kg/min";
   const concentrationUnit = values.drug.concentrationUnit || "mcg/mL";
   const isOutOfRange = !isWithinReferenceRange(dose, values.drug.referenceRange);
@@ -3415,9 +3648,13 @@ function showRateToDoseResult(values) {
   primaryResult.textContent = `${formatNumber(dose, 3)} ${doseUnit}`;
   secondaryResultLabel.textContent = "Pump rate";
   secondaryResult.textContent = `${formatNumber(values.pumpRate, 2)} mL/hr`;
-  concentrationResult.textContent = `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / ${formatNumber(values.weight, 1)} kg`;
+  concentrationResult.textContent = usesWeight
+    ? `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / ${formatNumber(values.weight, 1)} kg`
+    : `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / absolute-dose mode`;
   concentrationExplanation.textContent = `농도 입력: ${formatNumber(values.concentration, 2)} ${concentrationUnit}를 사용했습니다.`;
-  rateExplanation.textContent = `용량 계산: (${formatNumber(values.pumpRate, 2)} x ${formatNumber(values.concentration, 2)}) / (${formatNumber(values.weight, 1)} x 60) = ${formatNumber(dose, 3)} ${doseUnit}`;
+  rateExplanation.textContent = usesWeight
+    ? `용량 계산: (${formatNumber(values.pumpRate, 2)} x ${formatNumber(values.concentration, 2)}) / (${formatNumber(values.weight, 1)} x ${getReferenceTimeFactor(referenceRange)}) = ${formatNumber(dose, 3)} ${doseUnit}`
+    : `용량 계산: (${formatNumber(values.pumpRate, 2)} x ${formatNumber(values.concentration, 2)}) / ${getReferenceTimeFactor(referenceRange)} = ${formatNumber(dose, 3)} ${doseUnit}`;
   renderReferenceList(infusionReferenceList, referenceIds);
   resultCard.classList.toggle("is-warning", isOutOfRange);
   primaryResult.classList.toggle("is-warning", isOutOfRange);
@@ -3425,14 +3662,16 @@ function showRateToDoseResult(values) {
   secondaryResult.classList.toggle("is-warning", isOutOfRange);
   secondaryResult.classList.toggle("is-out-of-range", isOutOfRange);
   resultWarning.textContent = isOutOfRange
-    ? "Calculated dose is outside preset reference range - verify institutional protocol and pump settings."
-    : "Calculated dose is for reference only. Verify with institutional protocols and pump settings.";
+    ? "Calculated dose is outside the preset reference range. Clinical and study-based ranges may reflect common practice rather than universal standards, so verify the original source, pump setup, and institutional protocol."
+    : "Calculated dose is for reference only. Label, clinical, and study-based sources may reflect different contexts, so verify the original source, pump setup, and institutional protocol.";
   resultCard.classList.remove("hidden");
 }
 
 function showReferenceTableResult(values) {
+  const referenceRange = values.drug.referenceRange || null;
+  const usesWeight = isWeightBasedReferenceRange(referenceRange);
   const doseList = values.referenceDoseList || values.drug.referenceDoses;
-  const rows = buildReferenceTable(values.weight, values.concentration, doseList, values.drug.referenceRange ? values.drug.referenceRange.timeUnit : "min").map(function (row) {
+  const rows = buildReferenceTable(values.weight, values.concentration, doseList, referenceRange).map(function (row) {
     return {
       ...row,
       isOutOfRange: !isWithinReferenceRange(row.dose, values.drug.referenceRange)
@@ -3448,20 +3687,28 @@ function showReferenceTableResult(values) {
   resultLabel.textContent = "Reference Dosing Table";
   primaryResult.textContent = values.drug.name;
   secondaryResultLabel.textContent = "Setup";
-  secondaryResult.textContent = `${formatNumber(values.weight, 1)} kg / ${formatNumber(values.concentration, 2)} ${concentrationUnit}`;
+  secondaryResult.textContent = usesWeight
+    ? `${formatNumber(values.weight, 1)} kg / ${formatNumber(values.concentration, 2)} ${concentrationUnit}`
+    : `${formatNumber(values.concentration, 2)} ${concentrationUnit} / absolute-dose mode`;
   concentrationResult.textContent = `Reference doses: ${doseList.join(", ")}`;
-  concentrationExplanation.textContent = "Reference Dosing Table은 선택한 농도와 체중 기준으로 각 dose에 대응하는 mL/hr를 보여줍니다.";
-  rateExplanation.textContent = "표의 모든 행은 동일한 공식으로 계산됩니다: (dose x weight x 60) / concentration.";
+  concentrationExplanation.textContent = usesWeight
+    ? "Reference Dosing Table은 선택한 농도와 체중 기준으로 각 dose에 대응하는 mL/hr를 보여줍니다."
+    : "Reference Dosing Table은 선택한 농도 기준으로 absolute dose에 대응하는 mL/hr를 보여줍니다.";
+  rateExplanation.textContent = usesWeight
+    ? `표의 모든 행은 동일한 공식으로 계산됩니다: (dose x weight x ${getReferenceTimeFactor(referenceRange)}) / concentration.`
+    : `표의 모든 행은 동일한 공식으로 계산됩니다: (dose x ${getReferenceTimeFactor(referenceRange)}) / concentration.`;
   renderReferenceList(infusionReferenceList, referenceIds);
-  referenceTableCaption.textContent = `${values.drug.name} / ${formatNumber(values.weight, 1)} kg / ${formatNumber(values.concentration, 2)} ${concentrationUnit}`;
+  referenceTableCaption.textContent = usesWeight
+    ? `${values.drug.name} / ${formatNumber(values.weight, 1)} kg / ${formatNumber(values.concentration, 2)} ${concentrationUnit}`
+    : `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / absolute-dose mode`;
   renderReferenceRows(rows, doseUnit);
   resultCard.classList.toggle("is-warning", hasOutOfRangeRow);
   primaryResult.classList.remove("is-warning");
   secondaryResult.classList.toggle("is-warning", hasOutOfRangeRow);
   referenceTableCard.classList.remove("hidden");
   resultWarning.textContent = hasOutOfRangeRow
-    ? "Some reference doses are outside the preset reference range - verify institutional protocol."
-    : "Reference Dosing Table is informational only. Verify with institutional protocols.";
+    ? "Some reference doses are outside the preset reference range. Clinical and study-based ranges may reflect common practice or selected study settings, so verify the original source and institutional protocol."
+    : "Reference Dosing Table is informational only. Label, clinical, and study-based sources may reflect different contexts, so verify the original source and institutional protocol before use.";
   resultCard.classList.remove("hidden");
 }
 
