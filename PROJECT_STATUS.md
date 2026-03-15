@@ -208,38 +208,93 @@ There is already groundwork for future expansion:
 
 ## Product Direction
 
-Current product direction:
-- focus on `Infusion` and `Pediatric`
-- improve practical OR workflow usefulness
-- keep structure lightweight
-- preserve mobile friendliness
-- prepare for long-term App Store / Google Play release
+## Product Direction & Long-Term Roadmap
 
-Important product principle:
+Current product principle:
 - this app does **not** currently assess drug interactions or recommend drug combinations
 - workspace templates are routine setup helpers only
 
-## Recommended Next Steps
+**Release & QA Checklist:**
+- [ ] Review all reference values before release
+- [ ] Implement login / custom configuration saving (cloud persistence?)
+- [ ] Multi-language support toggle
 
-Most natural next steps from current state:
+### Focus Area 1: Infusion (Infusion Pump Calculator)
+*   **Enhancements:**
+    - [x] Indicate rate limits visually (e.g., turn text/background red if target rate exceeds reference range).
+    - [ ] Create distinct Case Workspaces (Case 1, Case 2...) via horizontal tabs or similar UI layout.
+*   **Implemented Features (Review list):**
+    - [x] Drug presets included: NE, Epi, Phenylephrine, Vasopressin, NTG, Dopamine, Dobutamine, Milrinone, Isoproterenol.
+    - [x] Standard dilution presets displayed.
+    - [x] Favorites and recent drugs list.
+    - [x] Multiple drugs on one page (vertical stack with Add Drug button).
+    - [x] Linked drug cards with dosing and references.
 
-1. Add `template note / use case note` to infusion templates
-- example: `Open Heart Surgery`, `Routine TIVA`
+### Focus Area 2: Pediatric (Pediatric Anesthesia)
+*   **Dosing Enhancements:**
+    - [ ] Calculate drug dose limits (min/max dose).
+    - [x] Calculate expected volume (mL) when concentration is entered.
+    - [ ] Implement emergency drug dosing quick reference for code situations.
+*   **Implemented Features (Review list):**
+    - [x] Weight and age-based dosing guidelines.
+    - [x] Selected presets (Rocuronium, Sugammadex, Neostigmine, Pyridostigmine, Propofol, Ketamine, Thiopental, Fentanyl, Atropine, Ondansetron, Dexamethasone).
+    - [x] Airway equipment size guidelines (ETT depth, Laryngoscope, LMA/i-gel, Oral/Nasal airway) based on age/weight.
+    - [x] Ventilation settings recommendations (Mode, Tv, RR, Pressure).
 
-2. Improve workspace quality
-- stronger template labeling
-- maybe case name / case note
-- maybe shared case-level quick memo
+---
 
-3. Continue pediatric QA
-- strengthen references
-- review verification status before release
+### Future Modules (Backlog)
 
-4. Later expansion
-- true `Case View / Room View`
-- `Dilution`
-- `Opioid`
-- more emergency / quick calculators
+**3. Obstetrics (산모마취)**
+- Obstetric-safe drug dosing.
+- Regional anesthesia dosing.
+- Hypotension treatment quick guide (Ephedrine, Phenylephrine etc.).
+
+**4. Dilution (희석 계산기)**
+- **Mode 1: Vasopressor dilution:**
+  - Standard presets (Phenylephrine, NE, Epi).
+  - Calculate final concentration from amount + volume.
+  - Calculate required amount from target concentration + volume.
+  - Automatically calculate required Ampule/Vial counts.
+  - Display ready-to-use syringe recipes and directly link to Infusion Pump calculator.
+- **Mode 2: Custom syringe dilution:**
+  - Universal dilution calculator (amount + volume -> concentration, amount + concentration -> volume, etc.).
+  - Useful for Remifentanil, Dexmedetomidine, Ketamine, Lidocaine.
+
+**5. Opioid Conversion**
+- Morphine / Fentanyl / Hydromorphone / Oxycodone IV equivalents.
+- IV <-> PO conversion.
+- Intraoperative dose to PACU equivalent.
+- PCA conversion reference.
+
+**6. Local Anesthetic Toxicity (LAST)**
+- Lidocaine / Bupivacaine / Ropivacaine max dose calculator.
+- Epinephrine inclusion adjustments.
+- Weight-based safe range display.
+- LAST management quick reference.
+
+**7. MAC Equivalent**
+- Sevoflurane / Desflurane / Isoflurane MAC conversion.
+- Age-corrected MAC.
+- Target MAC calculator.
+
+**8. Fluid Deficit**
+- NPO deficit calculation.
+- Maintenance fluid calculation.
+- Intraoperative volume replacement guide.
+
+**9. Cardiac Drug Dosing**
+- Adenosine, Amiodarone, Diltiazem, Lidocaine antiarrhythmic dosing.
+
+**10. General Quick Calculators**
+- Drug bolus calculator (mg/kg -> total dose).
+- Unit converter (mcg/kg/min <-> mL/hr).
+
+**11. Workflow Features (Long-Term)**
+- Manage multiple infusion drugs in a single case (OR workflow).
+- Share patient weight/age across the entire case level.
+- Add Case Note / Quick Memo.
+- Save and load recent cases.
 
 ## Migration / Resume Notes
 
@@ -250,7 +305,6 @@ Provide this summary plus the new project path, and mention:
 - `Infusion > Single Drug / Workspace` is already implemented
 - templates are localStorage-based
 - `Pediatric` and `MH / Dantrolene` are already active
-- next likely task is `template note / use case note`
 
 ## Validation Notes
 

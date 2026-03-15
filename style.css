@@ -621,6 +621,10 @@ body {
   color: var(--danger);
 }
 
+.is-out-of-range {
+  color: var(--danger) !important;
+}
+
 .workspace-card-context,
 .workspace-card-warning,
 .workspace-card-reference-note {

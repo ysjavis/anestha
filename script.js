@@ -15,6 +15,7 @@ const concentrationExplanation = document.getElementById("concentration-explanat
 const rateExplanation = document.getElementById("rate-explanation");
 const infusionReferenceList = document.getElementById("infusion-reference-list");
 const resultWarning = document.getElementById("result-warning");
+const multiDrugWarning = document.getElementById("multi-drug-warning");
 const drugSelect = document.getElementById("drug-select");
 const drugHelp = document.getElementById("drug-help");
 const favoriteDrugButton = document.getElementById("favorite-drug-button");
@@ -110,6 +111,7 @@ const inputs = {
 const workspaceSharedWeightInput = document.getElementById("workspace-shared-weight");
 const workspaceAddCardButton = document.getElementById("workspace-add-card-button");
 const workspaceTemplateNameInput = document.getElementById("workspace-template-name");
+const workspaceTemplateNoteInput = document.getElementById("workspace-template-note");
 const workspaceTemplateSelect = document.getElementById("workspace-template-select");
 const workspaceLoadTemplateButton = document.getElementById("workspace-load-template-button");
 const workspaceSaveTemplateButton = document.getElementById("workspace-save-template-button");
@@ -134,6 +136,32 @@ const pediatricInputs = {
   airwayDeviceModel: document.getElementById("pediatric-airway-device-model")
 };
 
+const dilutionInputs = {
+  targetConcentration: document.getElementById("dilution-target-concentration"),
+  targetUnit: document.getElementById("dilution-target-unit"),
+  finalVolume: document.getElementById("dilution-final-volume"),
+  stockConcentration: document.getElementById("dilution-stock-concentration"),
+  stockUnit: document.getElementById("dilution-stock-unit"),
+  errorMessage: document.getElementById("dilution-error-message"),
+  form: document.getElementById("dilution-form"),
+  resetButton: document.getElementById("dilution-reset-button"),
+  resultCard: document.getElementById("dilution-result-card"),
+  resultLabel: document.getElementById("dilution-result-label"),
+  resultBox1: document.getElementById("dilution-result-box-1"),
+  resultBox2: document.getElementById("dilution-result-box-2"),
+  resultTitle1: document.getElementById("dilution-result-title-1"),
+  resultTitle2: document.getElementById("dilution-result-title-2"),
+  resultValue1: document.getElementById("dilution-result-value-1"),
+  resultValue2: document.getElementById("dilution-result-value-2"),
+  summaryHeading: document.getElementById("dilution-summary-heading"),
+  summaryText: document.getElementById("dilution-summary-text"),
+  modeTabs: document.querySelectorAll("[data-dilution-mode-tab]"),
+  modePanels: document.querySelectorAll("[data-dilution-mode-panel]"),
+  reverseDrugAmount: document.getElementById("dilution-reverse-drug-amount"),
+  reverseDrugUnit: document.getElementById("dilution-reverse-drug-unit"),
+  reverseFinalVolume: document.getElementById("dilution-reverse-final-volume")
+};
+
 const dantroleneInputs = {
   weight: document.getElementById("dantrolene-weight"),
   formulation: document.getElementById("dantrolene-formulation"),
@@ -144,19 +172,21 @@ const dantroleneInputs = {
 // Calculation engine
 // -----------------------------
 
-function doseToRate(weightKg, concentrationPerMl, dosePerKgMin) {
-  return (dosePerKgMin * weightKg * 60) / concentrationPerMl;
+function doseToRate(weightKg, concentrationPerMl, dosePerKgTime, timeUnit = "min") {
+  const timeFactor = timeUnit === "hr" ? 1 : 60;
+  return (dosePerKgTime * weightKg * timeFactor) / concentrationPerMl;
 }
 
-function rateToDose(weightKg, concentrationPerMl, rateMlHr) {
-  return (rateMlHr * concentrationPerMl) / (weightKg * 60);
+function rateToDose(weightKg, concentrationPerMl, rateMlHr, timeUnit = "min") {
+  const timeFactor = timeUnit === "hr" ? 1 : 60;
+  return (rateMlHr * concentrationPerMl) / (weightKg * timeFactor);
 }
 
-function buildReferenceTable(weightKg, concentrationPerMl, doseList) {
+function buildReferenceTable(weightKg, concentrationPerMl, doseList, timeUnit = "min") {
   return doseList.map(function (dose) {
     return {
       dose: dose,
-      rate: doseToRate(weightKg, concentrationPerMl, dose)
+      rate: doseToRate(weightKg, concentrationPerMl, dose, timeUnit)
     };
   });
 }
@@ -492,6 +522,30 @@ const REFERENCE_REGISTRY = {
     title: "How much dantrolene should be kept on hand?",
     source: "MHAUS",
     url: "https://www.mhaus.org/faqs/how-much-dantrolene-should-be-kept-on-hand/",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_remifentanil_dailymed: {
+    title: "Remifentanil hydrochloride injection",
+    source: "DailyMed",
+    url: "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=remifentanil",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_propofol_dailymed: {
+    title: "Propofol injectable emulsion",
+    source: "DailyMed",
+    url: "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=propofol",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_esmolol_dailymed: {
+    title: "Esmolol hydrochloride injection",
+    source: "DailyMed",
+    url: "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=esmolol",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_dexmedetomidine_dailymed: {
+    title: "Dexmedetomidine hydrochloride injection",
+    source: "DailyMed",
+    url: "https://dailymed.nlm.nih.gov/dailymed/search.cfm?query=dexmedetomidine",
     lastReviewed: "2026-03-15"
   }
 };
@@ -1127,6 +1181,132 @@ const DRUG_PRESETS = [
     metadata: {
       source: "Editable local preset",
       lastReviewed: "2026-03-14"
+    }
+  },
+  {
+    id: "remifentanil",
+    name: "Remifentanil",
+    concentration: 50,
+    concentrationUnit: "mcg/mL",
+    referenceDoses: [0.05, 0.1, 0.15, 0.2, 0.25],
+    referenceRange: {
+      min: 0.05,
+      max: 0.3,
+      unit: "mcg/kg/min"
+    },
+    notes: "Potent ultra-short acting opioid. Ensure continuous infusion line patency.",
+    dilutionPresets: [
+      {
+        id: "remi-2mg-40ml",
+        label: "2 mg / 40 mL",
+        drugAmount: 2,
+        drugAmountUnit: "mg",
+        finalVolume: 40,
+        finalVolumeUnit: "mL",
+        finalConcentration: 50,
+        finalConcentrationUnit: "mcg/mL",
+        note: "Common remifentanil dilution"
+      }
+    ],
+    references: ["infusion_remifentanil_dailymed"],
+    metadata: {
+      source: "Editable local preset",
+      lastReviewed: "2026-03-15"
+    }
+  },
+  {
+    id: "propofol",
+    name: "Propofol (TIVA)",
+    concentration: 10000,
+    concentrationUnit: "mcg/mL",
+    referenceDoses: [25, 50, 75, 100, 150],
+    referenceRange: {
+      min: 25,
+      max: 200,
+      unit: "mcg/kg/min"
+    },
+    notes: "TIVA continuous infusion mode. Standard 1% emulsion is 10 mg/mL (10,000 mcg/mL).",
+    dilutionPresets: [
+      {
+        id: "propofol-10mg-ml",
+        label: "1% (10 mg/mL) neat",
+        drugAmount: 500,
+        drugAmountUnit: "mg",
+        finalVolume: 50,
+        finalVolumeUnit: "mL",
+        finalConcentration: 10000,
+        finalConcentrationUnit: "mcg/mL",
+        note: "Neat 1% emulsion"
+      }
+    ],
+    references: ["infusion_propofol_dailymed"],
+    metadata: {
+      source: "Editable local preset",
+      lastReviewed: "2026-03-15"
+    }
+  },
+  {
+    id: "esmolol",
+    name: "Esmolol",
+    concentration: 10000,
+    concentrationUnit: "mcg/mL",
+    referenceDoses: [50, 100, 150, 200, 300],
+    referenceRange: {
+      min: 50,
+      max: 300,
+      unit: "mcg/kg/min"
+    },
+    notes: "Ultra-short acting beta blocker. Titrate to heart rate and blood pressure.",
+    dilutionPresets: [
+      {
+        id: "esmolol-2500mg-250ml",
+        label: "2500 mg / 250 mL",
+        drugAmount: 2500,
+        drugAmountUnit: "mg",
+        finalVolume: 250,
+        finalVolumeUnit: "mL",
+        finalConcentration: 10000,
+        finalConcentrationUnit: "mcg/mL",
+        note: "Pre-mixed bag standard"
+      }
+    ],
+    references: ["infusion_esmolol_dailymed"],
+    metadata: {
+      source: "Editable local preset",
+      lastReviewed: "2026-03-15"
+    }
+  },
+  {
+    id: "dexmedetomidine",
+    name: "Dexmedetomidine",
+    concentration: 4,
+    concentrationUnit: "mcg/mL",
+    referenceDoses: [0.2, 0.4, 0.6, 0.8, 1.0],
+    referenceRange: {
+      min: 0.2,
+      max: 1.4,
+      unit: "mcg/kg/hr",
+      timeUnit: "hr",
+      weightBased: true
+    },
+    notes: "Alpha-2 agonist. Dosed in mcg/kg/hr. Use caution if using loading doses.",
+    dilutionPresets: [
+      {
+        id: "dex-200mcg-50ml",
+        label: "200 mcg / 50 mL",
+        drugAmount: 200,
+        drugAmountUnit: "mcg",
+        finalVolume: 50,
+        finalVolumeUnit: "mL",
+        finalConcentration: 4,
+        finalConcentrationUnit: "mcg/mL",
+        note: "Standard 4 mcg/mL infusion"
+      }
+    ],
+    references: ["infusion_dexmedetomidine_dailymed"],
+    metadata: {
+      source: "Editable local preset",
+      lastReviewed: "2026-03-15"
     }
   }
 ];
@@ -1940,12 +2120,13 @@ function createDefaultInfusionWorkspaceState() {
   };
 }
 
-function createInfusionTemplateState(name, cards, existingTemplateId) {
+function createInfusionTemplateState(name, note, cards, existingTemplateId) {
   const timestamp = new Date().toISOString();
 
   return {
     id: existingTemplateId || createClientId("template"),
     name: name.trim(),
+    note: (note || "").trim(),
     createdAt: timestamp,
     updatedAt: timestamp,
     cards: cards.map(function (card) {
@@ -2009,6 +2190,7 @@ function normalizeInfusionTemplate(rawTemplate) {
   return {
     id: sanitizeString(source.id, createClientId("template")),
     name: sanitizeString(source.name, "Untitled template").trim() || "Untitled template",
+    note: sanitizeString(source.note, "").trim(),
     createdAt: sanitizeString(source.createdAt, ""),
     updatedAt: sanitizeString(source.updatedAt, ""),
     cards: normalizedCards.length ? normalizedCards : [createDefaultInfusionWorkspaceCardState()]
@@ -2654,9 +2836,29 @@ function activateInfusionView(viewId) {
     panel.classList.toggle("hidden", !isActive);
   });
 
+  if (multiDrugWarning) {
+    multiDrugWarning.classList.toggle("hidden", normalizedViewId !== "workspace");
+  }
+
   updateInfusionWorkspaceState({
     activeView: normalizedViewId
   });
+}
+
+function activateDilutionMode(modeId) {
+  dilutionInputs.modeTabs.forEach(function (tab) {
+    const isActive = tab.dataset.dilutionModeTab === modeId;
+    tab.classList.toggle("is-active", isActive);
+    tab.setAttribute("aria-selected", String(isActive));
+  });
+
+  dilutionInputs.modePanels.forEach(function (panel) {
+    const isActive = panel.dataset.dilutionModePanel === modeId;
+    panel.classList.toggle("hidden", !isActive);
+  });
+  
+  dilutionInputs.errorMessage.textContent = "";
+  dilutionInputs.resultCard.classList.add("hidden");
 }
 
 function activatePediatricMode(modeId) {
@@ -2809,6 +3011,7 @@ function renderInfusionWorkspace() {
 
   workspaceSharedWeightInput.value = workspaceState.sharedWeight;
   workspaceTemplateNameInput.value = "";
+  workspaceTemplateNoteInput.value = "";
   workspaceTemplateSelect.innerHTML = templates.length
     ? `<option value="">Select template</option>${templates.map(function (template) {
       return `<option value="${template.id}" ${template.id === workspaceState.selectedTemplateId ? "selected" : ""}>${template.name}</option>`;
@@ -2831,7 +3034,13 @@ function renderInfusionWorkspace() {
 
     if (selectedTemplate) {
       workspaceTemplateNameInput.value = selectedTemplate.name;
-      workspaceHelp.textContent = `${workspaceHelp.textContent} Loaded template: ${selectedTemplate.name}.`;
+      workspaceTemplateNoteInput.value = selectedTemplate.note;
+      
+      let helpText = `Loaded template: ${selectedTemplate.name}.`;
+      if (selectedTemplate.note) {
+        helpText += ` (Note: ${selectedTemplate.note})`;
+      }
+      workspaceHelp.textContent = `${workspaceHelp.textContent} ${helpText}`;
     }
   }
 
@@ -2845,7 +3054,7 @@ function renderInfusionWorkspace() {
     const concentration = Number(card.concentration);
     const targetDose = Number(card.targetDose);
     const hasReadyCalculation = isPositiveNumber(sharedWeight) && isPositiveNumber(concentration) && isPositiveNumber(targetDose);
-    const targetRate = hasReadyCalculation ? doseToRate(sharedWeight, concentration, targetDose) : null;
+    const targetRate = hasReadyCalculation ? doseToRate(sharedWeight, concentration, targetDose, preset.referenceRange ? preset.referenceRange.timeUnit : "min") : null;
     const isOutOfRange = hasReadyCalculation && !isWithinReferenceRange(targetDose, preset.referenceRange);
     const dilutionPreset = preset.dilutionPresets[0] || null;
     const optionMarkup = DRUG_PRESETS.map(function (drugPreset) {
@@ -2918,12 +3127,12 @@ function renderInfusionWorkspace() {
         </div>
 
         <div class="workspace-card-result ${isOutOfRange ? "is-warning" : ""}">
-          <p class="workspace-card-rate ${isOutOfRange ? "is-warning" : ""}">
+          <p class="workspace-card-rate ${isOutOfRange ? "is-warning is-out-of-range" : ""}">
             ${hasReadyCalculation ? `${formatNumber(targetRate, 2)} mL/hr` : "Enter shared weight and valid card values"}
           </p>
           <p class="workspace-card-context">
             ${hasReadyCalculation
-              ? `Target ${formatNumber(targetDose, 3)} ${preset.referenceRange.unit} at ${formatNumber(concentration, 1)} ${preset.concentrationUnit}`
+              ? `Target <span class="${isOutOfRange ? "is-out-of-range" : ""}">${formatNumber(targetDose, 3)} ${preset.referenceRange.unit}</span> at ${formatNumber(concentration, 1)} ${preset.concentrationUnit}`
               : `Reference range ${preset.referenceRange.min} - ${preset.referenceRange.max} ${preset.referenceRange.unit}`}
           </p>
           ${isOutOfRange ? `<p class="workspace-card-warning">Outside reference range - verify institutional protocol.</p>` : ""}
@@ -3170,7 +3379,7 @@ function renderReferenceRows(rows, doseUnit) {
 }
 
 function showDoseToRateResult(values) {
-  const rate = doseToRate(values.weight, values.concentration, values.targetDose);
+  const rate = doseToRate(values.weight, values.concentration, values.targetDose, values.drug.referenceRange ? values.drug.referenceRange.timeUnit : "min");
   const doseUnit = values.drug.referenceRange.unit || "mcg/kg/min";
   const concentrationUnit = values.drug.concentrationUnit || "mcg/mL";
   const isOutOfRange = !isWithinReferenceRange(values.targetDose, values.drug.referenceRange);
@@ -3186,7 +3395,9 @@ function showDoseToRateResult(values) {
   renderReferenceList(infusionReferenceList, referenceIds);
   resultCard.classList.toggle("is-warning", isOutOfRange);
   primaryResult.classList.toggle("is-warning", isOutOfRange);
+  primaryResult.classList.toggle("is-out-of-range", isOutOfRange);
   secondaryResult.classList.toggle("is-warning", isOutOfRange);
+  secondaryResult.classList.toggle("is-out-of-range", isOutOfRange);
   resultWarning.textContent = isOutOfRange
     ? "Outside preset reference range - verify institutional protocol before use."
     : "Reference dose values and ranges are informational only. Verify with institutional protocols.";
@@ -3194,7 +3405,7 @@ function showDoseToRateResult(values) {
 }
 
 function showRateToDoseResult(values) {
-  const dose = rateToDose(values.weight, values.concentration, values.pumpRate);
+  const dose = rateToDose(values.weight, values.concentration, values.pumpRate, values.drug.referenceRange ? values.drug.referenceRange.timeUnit : "min");
   const doseUnit = values.drug.referenceRange.unit || "mcg/kg/min";
   const concentrationUnit = values.drug.concentrationUnit || "mcg/mL";
   const isOutOfRange = !isWithinReferenceRange(dose, values.drug.referenceRange);
@@ -3210,7 +3421,9 @@ function showRateToDoseResult(values) {
   renderReferenceList(infusionReferenceList, referenceIds);
   resultCard.classList.toggle("is-warning", isOutOfRange);
   primaryResult.classList.toggle("is-warning", isOutOfRange);
+  primaryResult.classList.toggle("is-out-of-range", isOutOfRange);
   secondaryResult.classList.toggle("is-warning", isOutOfRange);
+  secondaryResult.classList.toggle("is-out-of-range", isOutOfRange);
   resultWarning.textContent = isOutOfRange
     ? "Calculated dose is outside preset reference range - verify institutional protocol and pump settings."
     : "Calculated dose is for reference only. Verify with institutional protocols and pump settings.";
@@ -3219,7 +3432,7 @@ function showRateToDoseResult(values) {
 
 function showReferenceTableResult(values) {
   const doseList = values.referenceDoseList || values.drug.referenceDoses;
-  const rows = buildReferenceTable(values.weight, values.concentration, doseList).map(function (row) {
+  const rows = buildReferenceTable(values.weight, values.concentration, doseList, values.drug.referenceRange ? values.drug.referenceRange.timeUnit : "min").map(function (row) {
     return {
       ...row,
       isOutOfRange: !isWithinReferenceRange(row.dose, values.drug.referenceRange)
@@ -3913,6 +4126,7 @@ function handleWorkspaceTemplateSelectChange() {
 
 function handleWorkspaceSaveTemplate() {
   const templateName = workspaceTemplateNameInput.value.trim();
+  const templateNote = workspaceTemplateNoteInput.value.trim();
 
   if (!templateName) {
     workspaceHelp.textContent = "Template name을 입력한 뒤 저장해 주세요.";
@@ -3924,7 +4138,7 @@ function handleWorkspaceSaveTemplate() {
   const existingTemplate = templates.find(function (template) {
     return template.id === workspaceState.selectedTemplateId || template.name.toLowerCase() === templateName.toLowerCase();
   });
-  const savedTemplate = createInfusionTemplateState(templateName, workspaceState.cards, existingTemplate && existingTemplate.id);
+  const savedTemplate = createInfusionTemplateState(templateName, templateNote, workspaceState.cards, existingTemplate && existingTemplate.id);
 
   if (existingTemplate && existingTemplate.createdAt) {
     savedTemplate.createdAt = existingTemplate.createdAt;
@@ -4118,6 +4332,105 @@ pediatricInputs.concentrationUnit.addEventListener("change", function () {
   if (input.tagName === "SELECT") {
     input.addEventListener("change", handleDantroleneInputChange);
   }
+});
+
+// -----------------------------
+// Dilution Calculator Event Listeners
+// -----------------------------
+
+dilutionInputs.modeTabs.forEach(function (tab) {
+  tab.addEventListener("click", function () {
+    const modeId = tab.dataset.dilutionModeTab;
+    activateDilutionMode(modeId);
+  });
+});
+
+dilutionInputs.form.addEventListener("submit", function (e) {
+  e.preventDefault();
+  dilutionInputs.errorMessage.textContent = "";
+
+  const activeModeTab = document.querySelector("[data-dilution-mode-tab].is-active");
+  const modeId = activeModeTab ? activeModeTab.dataset.dilutionModeTab : "target-to-mix";
+
+  try {
+    if (modeId === "target-to-mix") {
+      const targetConc = Number(dilutionInputs.targetConcentration.value);
+      const targetUnit = dilutionInputs.targetUnit.value; // "mcg" or "mg"
+      const finalVolume = Number(dilutionInputs.finalVolume.value);
+      const stockConc = Number(dilutionInputs.stockConcentration.value);
+      const stockUnit = dilutionInputs.stockUnit.value; // "mcg" or "mg"
+
+      if (!isPositiveNumber(targetConc)) throw new Error("Target concentration must be a positive number.");
+      if (!isPositiveNumber(finalVolume)) throw new Error("Final volume must be a positive number.");
+      if (!isPositiveNumber(stockConc)) throw new Error("Stock concentration must be a positive number.");
+
+      // Convert target back to mg/mL for calculation base
+      const targetConcMg = targetUnit === "mcg" ? targetConc / 1000 : targetConc;
+      const totalDrugMgNeeded = targetConcMg * finalVolume;
+      
+      const stockConcMg = stockUnit === "mcg" ? stockConc / 1000 : stockConc;
+      const drawVolume = totalDrugMgNeeded / stockConcMg;
+
+      if (drawVolume > finalVolume) {
+        throw new Error("Target concentration is higher than the stock concentration. Dilution impossible.");
+      }
+
+      const diluentVolume = finalVolume - drawVolume;
+
+      const formattedDrawVol = Number(drawVolume.toFixed(2));
+      const formattedDiluentVol = Number(diluentVolume.toFixed(2));
+      const totalDrugDisplay = targetUnit === "mcg" ? (totalDrugMgNeeded * 1000).toFixed(1) + " mcg" : totalDrugMgNeeded.toFixed(2) + " mg";
+
+      dilutionInputs.resultLabel.textContent = "Mixing Instructions";
+      dilutionInputs.resultBox2.classList.remove("hidden");
+      dilutionInputs.resultTitle1.textContent = "Draw Drug Volume";
+      dilutionInputs.resultValue1.textContent = `${formattedDrawVol} mL`;
+      dilutionInputs.resultTitle2.textContent = "Add Diluent (NS/D5W)";
+      dilutionInputs.resultValue2.textContent = `${formattedDiluentVol} mL`;
+      dilutionInputs.summaryHeading.textContent = "Summary";
+      dilutionInputs.summaryText.innerHTML = `To achieve <strong>${targetConc} ${targetUnit}/mL</strong> in <strong>${finalVolume} mL</strong> (Total drug: ${totalDrugDisplay}):<br>Draw <strong>${formattedDrawVol} mL</strong> of stock drug and mix with <strong>${formattedDiluentVol} mL</strong> of diluent.`;
+
+    } else if (modeId === "mix-to-conc") {
+      const drugAmount = Number(dilutionInputs.reverseDrugAmount.value);
+      const drugUnit = dilutionInputs.reverseDrugUnit.value; // "mcg" or "mg"
+      const finalVolume = Number(dilutionInputs.reverseFinalVolume.value);
+
+      if (!isPositiveNumber(drugAmount)) throw new Error("Drug amount must be a positive number.");
+      if (!isPositiveNumber(finalVolume)) throw new Error("Final volume must be a positive number.");
+
+      const drugAmountMg = drugUnit === "mcg" ? drugAmount / 1000 : drugAmount;
+      const finalConcMg = drugAmountMg / finalVolume;
+      const finalConcMcg = finalConcMg * 1000;
+
+      const formattedMg = Number(finalConcMg.toFixed(2));
+      const formattedMcg = Number(finalConcMcg.toFixed(1));
+
+      dilutionInputs.resultLabel.textContent = "Final Concentration";
+      dilutionInputs.resultBox2.classList.add("hidden");
+      dilutionInputs.resultTitle1.textContent = "Target Conc.";
+      
+      if (formattedMg >= 1) {
+        dilutionInputs.resultValue1.textContent = `${formattedMg} mg/mL`;
+      } else {
+        dilutionInputs.resultValue1.textContent = `${formattedMcg} mcg/mL`;
+      }
+
+      dilutionInputs.summaryHeading.textContent = "Calculated Result";
+      dilutionInputs.summaryText.innerHTML = `Mixing <strong>${drugAmount} ${drugUnit}</strong> in a total volume of <strong>${finalVolume} mL</strong> yields a final concentration of:<br><strong style="font-size: 1.1em; color: var(--primary);">${formattedMg} mg/mL</strong> (or ${formattedMcg} mcg/mL).`;
+    }
+
+    dilutionInputs.resultCard.classList.remove("hidden");
+    
+  } catch (error) {
+    dilutionInputs.errorMessage.textContent = error.message;
+    dilutionInputs.resultCard.classList.add("hidden");
+  }
+});
+
+dilutionInputs.resetButton.addEventListener("click", function () {
+  dilutionInputs.form.reset();
+  dilutionInputs.resultCard.classList.add("hidden");
+  dilutionInputs.errorMessage.textContent = "";
 });
 
 // -----------------------------
