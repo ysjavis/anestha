@@ -830,6 +830,21 @@ body {
   white-space: nowrap;
 }
 
+.unit-select {
+  border: 0;
+  border-left: 1px solid var(--border);
+  outline: none;
+  background: transparent;
+  padding: 0 14px;
+  min-width: 128px;
+  height: 52px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--muted);
+  appearance: none;
+  cursor: pointer;
+}
+
 .error-message {
   min-height: 24px;
   margin: 16px 0 0;

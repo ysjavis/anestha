@@ -318,21 +318,6 @@
                 </label>
               </div>
 
-              <div id="nitroglycerin-dose-view-field" class="form-grid hidden">
-                <label class="field field-full">
-                  <span class="field-label" data-i18n="dose_unit_view">Dose Unit View</span>
-                  <div class="select-row">
-                    <select id="nitroglycerin-dose-view" name="nitroglycerin-dose-view">
-                      <option value="mcg/min">mcg/min</option>
-                      <option value="mcg/kg/min">mcg/kg/min</option>
-                    </select>
-                  </div>
-                  <p id="nitroglycerin-dose-view-help" class="helper-text" data-i18n="nitroglycerin_unit_help">
-                    Nitroglycerin keeps the label-style default in mcg/min. Weight-based view is available for clinical convenience.
-                  </p>
-                </label>
-              </div>
-
               <div class="mode-panels">
                 <section
                   id="infusion-mode-dose-to-rate"
@@ -347,7 +332,14 @@
                       <div class="input-row">
                         <input id="target-dose" name="target-dose" type="number" inputmode="decimal" step="any" placeholder="예: 0.1" data-i18n-placeholder="placeholder_target_dose">
                         <span id="dose-unit-label" class="unit">mcg/kg/min</span>
+                        <select id="nitroglycerin-dose-view" name="nitroglycerin-dose-view" class="unit-select hidden">
+                          <option value="mcg/min">mcg/min</option>
+                          <option value="mcg/kg/min">mcg/kg/min</option>
+                        </select>
                       </div>
+                      <p id="nitroglycerin-dose-view-help" class="helper-text hidden" data-i18n="nitroglycerin_unit_help">
+                        Nitroglycerin keeps the label-style default in mcg/min. Weight-based view is available for clinical convenience.
+                      </p>
                     </label>
                   </div>
                 </section>

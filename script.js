@@ -40,7 +40,6 @@ const drugSourceText = document.getElementById("drug-source-text");
 const drugLastReviewedText = document.getElementById("drug-last-reviewed-text");
 const concentrationUnitLabel = document.getElementById("concentration-unit-label");
 const doseUnitLabel = document.getElementById("dose-unit-label");
-const nitroglycerinDoseViewField = document.getElementById("nitroglycerin-dose-view-field");
 const nitroglycerinDoseViewSelect = document.getElementById("nitroglycerin-dose-view");
 const nitroglycerinDoseViewHelp = document.getElementById("nitroglycerin-dose-view-help");
 const customDrugFields = document.getElementById("custom-drug-fields");
@@ -4534,9 +4533,11 @@ function updateDrugUI() {
   concentrationUnitLabel.textContent = selectedDrug.concentrationUnit || "mcg/mL";
   doseUnitLabel.textContent = displayDoseUnit;
 
-  if (nitroglycerinDoseViewField && nitroglycerinDoseViewSelect && nitroglycerinDoseViewHelp) {
+  if (nitroglycerinDoseViewSelect && nitroglycerinDoseViewHelp && doseUnitLabel) {
     const shouldShowNitroglycerinUnitView = !isCustomDrug && isNitroglycerinDrug(selectedDrug);
-    nitroglycerinDoseViewField.classList.toggle("hidden", !shouldShowNitroglycerinUnitView);
+    doseUnitLabel.classList.toggle("hidden", shouldShowNitroglycerinUnitView);
+    nitroglycerinDoseViewSelect.classList.toggle("hidden", !shouldShowNitroglycerinUnitView);
+    nitroglycerinDoseViewHelp.classList.toggle("hidden", !shouldShowNitroglycerinUnitView);
     nitroglycerinDoseViewSelect.value = displayDoseUnit;
     nitroglycerinDoseViewHelp.textContent = isPositiveNumber(weightValue)
       ? t("nitroglycerin_unit_help")
@@ -4838,17 +4839,13 @@ function renderInfusionWorkspace() {
             <span class="field-label">${t("workspace_target_dose")}</span>
             <div class="input-row">
               <input data-workspace-field="targetDose" data-workspace-card-id="${card.cardId}" data-workspace-dose-display-unit="${displayDoseUnit}" type="number" inputmode="decimal" step="any" value="${targetDoseInputValue}">
-              <span class="unit">${displayDoseUnit}</span>
+              ${showNitroglycerinUnitView
+                ? `<select class="unit-select" data-workspace-field="nitroglycerinDoseUnitView" data-workspace-card-id="${card.cardId}">
+                    <option value="mcg/min" ${displayDoseUnit === "mcg/min" ? "selected" : ""}>mcg/min</option>
+                    <option value="mcg/kg/min" ${displayDoseUnit === "mcg/kg/min" ? "selected" : ""}>mcg/kg/min</option>
+                  </select>`
+                : `<span class="unit">${displayDoseUnit}</span>`}
             </div>
-            ${showNitroglycerinUnitView ? `
-              <div class="select-row">
-                <select data-workspace-field="nitroglycerinDoseUnitView" data-workspace-card-id="${card.cardId}">
-                  <option value="mcg/min" ${displayDoseUnit === "mcg/min" ? "selected" : ""}>mcg/min</option>
-                  <option value="mcg/kg/min" ${displayDoseUnit === "mcg/kg/min" ? "selected" : ""}>mcg/kg/min</option>
-                </select>
-              </div>
-              <p class="helper-text">${t("workspace_ntg_unit_hint")}</p>
-            ` : ""}
           </label>
         </div>
 
