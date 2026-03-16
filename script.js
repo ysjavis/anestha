@@ -4535,11 +4535,18 @@ function updateDrugUI() {
 
   if (nitroglycerinDoseViewSelect && nitroglycerinDoseViewHelp && doseUnitLabel) {
     const shouldShowNitroglycerinUnitView = !isCustomDrug && isNitroglycerinDrug(selectedDrug);
+    const weightReadyForKgUnit = isPositiveNumber(weightValue);
+    const kgUnitOption = nitroglycerinDoseViewSelect.querySelector('option[value="mcg/kg/min"]');
+
+    if (kgUnitOption) {
+      kgUnitOption.disabled = !weightReadyForKgUnit;
+    }
+
     doseUnitLabel.classList.toggle("hidden", shouldShowNitroglycerinUnitView);
     nitroglycerinDoseViewSelect.classList.toggle("hidden", !shouldShowNitroglycerinUnitView);
     nitroglycerinDoseViewHelp.classList.toggle("hidden", !shouldShowNitroglycerinUnitView);
     nitroglycerinDoseViewSelect.value = displayDoseUnit;
-    nitroglycerinDoseViewHelp.textContent = isPositiveNumber(weightValue)
+    nitroglycerinDoseViewHelp.textContent = weightReadyForKgUnit
       ? t("nitroglycerin_unit_help")
       : t("nitroglycerin_unit_help_weight_needed");
   }
@@ -4842,10 +4849,11 @@ function renderInfusionWorkspace() {
               ${showNitroglycerinUnitView
                 ? `<select class="unit-select" data-workspace-field="nitroglycerinDoseUnitView" data-workspace-card-id="${card.cardId}">
                     <option value="mcg/min" ${displayDoseUnit === "mcg/min" ? "selected" : ""}>mcg/min</option>
-                    <option value="mcg/kg/min" ${displayDoseUnit === "mcg/kg/min" ? "selected" : ""}>mcg/kg/min</option>
+                    <option value="mcg/kg/min" ${displayDoseUnit === "mcg/kg/min" ? "selected" : ""} ${isPositiveNumber(sharedWeight) ? "" : "disabled"}>mcg/kg/min</option>
                   </select>`
                 : `<span class="unit">${displayDoseUnit}</span>`}
             </div>
+            ${showNitroglycerinUnitView ? `<p class="helper-text">${isPositiveNumber(sharedWeight) ? t("workspace_ntg_unit_hint") : t("validation_ntg_weight_for_kg_unit")}</p>` : ""}
           </label>
         </div>
 
