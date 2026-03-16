@@ -204,8 +204,8 @@ const SUPPORT_CONFIG = {
 
 const TRANSLATIONS = {
   ko: {
-    warning_banner_aria: "중요 경고",
-    warning_banner_text: "이 도구는 학습용/참고용이며 실제 임상 판단에 사용하면 안 됩니다. 반드시 별도의 검증이 필요합니다.",
+    warning_banner_aria: "중요 고지",
+    warning_banner_text: "이 도구는 참고용입니다. 실제 임상 결정은 기관 프로토콜, 원문 레퍼런스, 환자 상태를 함께 확인해 판단하세요.",
     hero_eyebrow: "Anesthesia Calculators",
     hero_text: "마취과에서 자주 쓰는 계산 도구를 한곳에서 빠르게 확인할 수 있도록 만든 웹앱입니다.",
     feedback_eyebrow: "Feedback",
@@ -526,8 +526,8 @@ const TRANSLATIONS = {
     dilution_error_drug_amount: "Drug amount는 양수여야 합니다."
   },
   en: {
-    warning_banner_aria: "Important warning",
-    warning_banner_text: "This tool is for learning and reference only and must not be used as a sole basis for clinical judgment. Independent verification is required.",
+    warning_banner_aria: "Important notice",
+    warning_banner_text: "This tool is for reference support. For clinical decisions, confirm institutional protocol, original sources, and patient context together.",
     hero_eyebrow: "Anesthesia Calculators",
     hero_text: "A web app for quickly accessing commonly used anesthesia calculators in one place.",
     feedback_eyebrow: "Feedback",

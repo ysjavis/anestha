@@ -35,11 +35,15 @@ body {
   max-width: 960px;
   margin: 0 auto 20px;
   padding: 14px 18px;
-  border: 1px solid rgba(180, 35, 24, 0.18);
+  border: 1px solid rgba(15, 118, 110, 0.2);
   border-radius: 16px;
-  background: linear-gradient(135deg, #fff2f1, var(--danger-soft));
-  color: var(--danger);
+  background: linear-gradient(135deg, #f4fbf9, #edf5fb);
+  color: var(--muted);
   box-shadow: var(--shadow);
+}
+
+.warning-banner strong {
+  font-weight: 700;
 }
 
 .app-shell {
