@@ -40,6 +40,9 @@ const drugSourceText = document.getElementById("drug-source-text");
 const drugLastReviewedText = document.getElementById("drug-last-reviewed-text");
 const concentrationUnitLabel = document.getElementById("concentration-unit-label");
 const doseUnitLabel = document.getElementById("dose-unit-label");
+const nitroglycerinDoseViewField = document.getElementById("nitroglycerin-dose-view-field");
+const nitroglycerinDoseViewSelect = document.getElementById("nitroglycerin-dose-view");
+const nitroglycerinDoseViewHelp = document.getElementById("nitroglycerin-dose-view-help");
 const customDrugFields = document.getElementById("custom-drug-fields");
 const referenceTableCard = document.getElementById("reference-table-card");
 const referenceTableCaption = document.getElementById("reference-table-caption");
@@ -213,10 +216,10 @@ const TRANSLATIONS = {
     feedback_reference: "레퍼런스 오류 제보",
     feedback_bug: "버그 제보",
     feedback_kicker: "Feedback",
-    feedback_support_description: "bug, reference issue, usability suggestion은 support 탭에서 함께 받는 쪽이 더 자연스럽습니다. 유지보수와 업데이트 우선순위를 같은 흐름에서 관리할 수 있습니다.",
-    feedback_support_note: "현재는 세 버튼이 같은 Google Form으로 연결되어 있어도 괜찮습니다. 나중에 general / reference / bug를 별도 form으로 분리할 수 있습니다.",
-    feedback_status_unconfigured: "아직 실제 피드백 수신 주소가 연결되지 않았습니다. `script.js`에서 feedback 링크나 이메일을 설정하면 바로 사용할 수 있습니다.",
-    feedback_status_configured: "피드백 Google Form이 연결되었습니다. 현재는 일반 의견, 레퍼런스 오류, 버그 제보가 같은 폼으로 수집됩니다.",
+    feedback_support_description: "bug, reference issue, usability suggestion을 이곳에서 바로 보낼 수 있습니다.",
+    feedback_support_note: "",
+    feedback_status_unconfigured: "",
+    feedback_status_configured: "",
     calculator_switcher_aria: "계산기 선택",
     calculator_tablist_aria: "계산기 목록",
     available_calculators: "사용 가능한 계산기",
@@ -227,16 +230,16 @@ const TRANSLATIONS = {
     tab_support: "Support",
     support_kicker: "Support",
     support_heading: "Support Anestha",
-    support_description: "앱 업데이트, reference review, bug fix, usability 개선을 위한 support와 feedback를 한곳에서 정리합니다.",
+    support_description: "업데이트 지원과 feedback 채널을 한곳에서 확인할 수 있습니다.",
     support_donate_kicker: "Support",
     support_donate_heading: "지속적인 업데이트 지원",
-    support_donate_description: "이 앱이 도움이 되었다면 업데이트, reference audit, 유지보수를 위한 support를 보낼 수 있습니다.",
+    support_donate_description: "이 앱이 도움이 되었다면 업데이트와 유지보수를 위한 support를 보낼 수 있습니다.",
     support_toss: "Toss로 지원하기",
     support_kofi: "Ko-fi로 지원하기",
-    support_donate_note: "한국 사용자 중심이면 Toss, 해외 결제나 카드 support까지 열어두려면 Ko-fi를 같이 두는 구성이 현실적입니다.",
-    support_status_unconfigured: "아직 실제 support 링크가 연결되지 않았습니다. `script.js`에서 Toss 또는 Ko-fi 링크를 설정하면 바로 사용할 수 있습니다.",
-    support_status_configured: "Support 링크가 연결되었습니다. Toss 또는 Ko-fi 중 원하는 채널로 support를 받을 수 있습니다.",
-    support_legal_note: "더 넓게 공유하기 전에는 사용자가 로컬 저장 항목과 앱 사용 범위를 이해할 수 있도록 기본 Privacy / Disclaimer 페이지를 함께 두는 편이 좋습니다.",
+    support_donate_note: "Toss 또는 Ko-fi 중 편한 경로로 ongoing updates를 support할 수 있습니다.",
+    support_status_unconfigured: "",
+    support_status_configured: "",
+    support_legal_note: "앱 사용 범위와 로컬 저장 항목은 Privacy / Disclaimer에서 확인할 수 있습니다.",
     privacy_page_link: "Privacy",
     disclaimer_page_link: "Disclaimer",
     footer_reference_note: "Anestha는 reference-oriented tool입니다. independent verification과 institutional protocol 확인이 계속 필요합니다.",
@@ -259,7 +262,7 @@ const TRANSLATIONS = {
     no_drugs_yet: "아직 약물이 없습니다",
     drug_help_default: "Drug preset을 선택하면 기본 농도와 Reference Dosing Table 값이 자동으로 입력됩니다.",
     drug_help_custom: "Custom drug를 선택했습니다. 이름, 농도, Reference Dosing Table 값을 자유롭게 입력하세요.",
-    drug_help_selected: "{drug} preset이 적용되었습니다. 농도와 Reference Dosing Table 값은 필요하면 수정할 수 있습니다.",
+    drug_help_selected: "{drug} 기준값이 표시됩니다. 필요하면 직접 조정할 수 있습니다.",
     reference_range: "참고 범위",
     use_case: "사용 맥락",
     range_basis: "범위 근거",
@@ -285,7 +288,7 @@ const TRANSLATIONS = {
     workflow_preview: "사용 흐름 미리보기",
     multi_drug_heading: "Multi Drug Infusion",
     multi_drug_description: "한 환자에서 여러 infusion drug를 한 화면에서 함께 볼 수 있는 화면입니다. 각 card는 shared weight를 사용할 수 있지만 계산은 서로 독립적으로 이뤄집니다.",
-    multi_drug_note: "Multi Drug 카드는 drug-drug interaction, compatibility, combined clinical effect를 평가하지 않습니다.",
+    multi_drug_note: "Multi Drug 계산은 각 card별 참고용입니다. 약물 상호작용과 compatibility는 별도로 확인해야 합니다.",
     shared_patient_weight: "공통 Patient Weight",
     template_name: "Template 이름",
     template_note_optional: "메모 / 사용 맥락 (선택)",
@@ -311,10 +314,10 @@ const TRANSLATIONS = {
     pediatric_dosing_result: "Pediatric Dosing 결과",
     calculated_dose_range: "계산된 dose 범위",
     calculation_details: "계산 과정",
-    pediatric_dosing_audit_note: "Pediatric dosing reference 링크는 확인을 마쳤습니다. preset 문구와 source-to-logic 대조는 계속 다듬는 중입니다.",
+    pediatric_dosing_audit_note: "Pediatric dosing preset은 참고용입니다. 투여 전 기관 프로토콜과 최신 레퍼런스로 다시 확인하세요.",
     pediatric_airway_result: "Pediatric Airway / ETT 결과",
     estimated_oral_depth: "예상 oral depth (lip 기준)",
-    pediatric_airway_audit_note: "Pediatric airway reference 링크는 확인을 마쳤습니다. sizing logic가 바뀌면 formula와 source의 대응 관계를 다시 점검해야 합니다.",
+    pediatric_airway_audit_note: "Pediatric airway/ETT 값은 추정 참고치입니다. 실제 size, depth, leak, position은 임상적으로 반드시 확인하세요.",
     emergency_tool: "응급 상황 도구",
     dantrolene_heading: "Dantrolene / MH Quick Reference",
     dantrolene_description: "체중과 제형을 기준으로 MH 초기 용량, 누적 최대 용량, 예상 vial 수를 빠르게 확인합니다.",
@@ -351,11 +354,11 @@ const TRANSLATIONS = {
     placeholder_initial_dose: "예: 2.5",
     result_label_calc: "계산 결과",
     supporting_information: "참고 정보",
-    current_references_verified: "현재 infusion reference 링크는 audit 파일 기준으로 검증되었습니다.",
+    current_references_verified: "각 reference 링크를 열어 원문을 직접 확인할 수 있습니다.",
     reference_table_info_only: "Reference Dosing Table은 참고용입니다. 기관 프로토콜과 함께 확인하세요.",
     result_warning_default: "계산 결과는 참고용입니다. 실제 사용 전 반드시 별도로 검증해야 합니다.",
     infusion_result_reference_only: "Reference dose 값은 참고용입니다. Label, Clinical, Study-specific source는 하나의 절대 기준이 아니므로 원문과 기관 프로토콜을 함께 확인하세요.",
-    infusion_result_out_of_range: "Preset reference range를 벗어났습니다. Clinical / Study-based range는 공통 관행을 반영한 값일 수 있으므로 원문과 기관 프로토콜을 다시 확인하세요.",
+    infusion_result_out_of_range: "현재 입력값이 선택한 preset reference range를 벗어났습니다. 빨간 표시는 오류 확정이 아니라 기본 preset 범위 밖이라는 뜻이며, 원문 레퍼런스와 기관 프로토콜을 다시 확인해야 합니다.",
     infusion_dose_calculation: "농도 입력: {concentration} {unit}를 사용했습니다.",
     infusion_rate_formula_weight: "주입 속도 계산: ({dose} x {weight} x {factor}) / {concentration} = {rate} mL/hr",
     infusion_rate_formula_absolute: "주입 속도 계산: ({dose} x {factor}) / {concentration} = {rate} mL/hr",
@@ -377,7 +380,10 @@ const TRANSLATIONS = {
     infusion_rate: "주입 속도",
     concentration: "농도",
     concentration_unit: "농도 단위",
-    verification: "검토 상태",
+    dose_unit_view: "Dose unit view",
+    nitroglycerin_unit_help: "Nitroglycerin 기본 reference는 mcg/min입니다. 체중기반 mcg/kg/min 보기는 계산 편의를 위한 선택 보기입니다.",
+    nitroglycerin_unit_help_weight_needed: "Nitroglycerin 기본 reference는 5 - 200 mcg/min입니다. mcg/kg/min 보기와 입력 해석에는 체중 입력이 필요합니다.",
+    verification: "근거 분류",
     recommended_range: "권장 범위",
     age_specific_note: "연령별 메모",
     reference_guides: "참고 가이드",
@@ -405,6 +411,7 @@ const TRANSLATIONS = {
     calculate_mix: "희석 계산",
     dilution_warning_note: "Mix 전 unit(mcg vs mg)을 다시 확인하고, 선택한 diluent와의 compatibility를 확인하세요.",
     validation_patient_weight: "Patient Weight는 0보다 큰 숫자여야 합니다.",
+    validation_ntg_weight_for_kg_unit: "Nitroglycerin을 mcg/kg/min으로 사용하려면 Patient Weight가 필요합니다.",
     validation_drug_concentration: "Drug Concentration은 0보다 큰 숫자여야 합니다.",
     validation_custom_drug_name: "Custom Drug Name을 입력해 주세요.",
     validation_target_dose: "Target Dose는 0보다 큰 숫자여야 합니다.",
@@ -499,6 +506,7 @@ const TRANSLATIONS = {
     workspace_drug: "Drug",
     workspace_concentration: "Concentration",
     workspace_target_dose: "Target Dose",
+    workspace_ntg_unit_hint: "Nitroglycerin 기본 reference는 mcg/min입니다. mcg/kg/min 선택 시 shared weight가 필요합니다.",
     workspace_enter_shared_weight: "shared weight와 유효한 card 값을 입력하세요.",
     workspace_enter_valid_values: "유효한 card 값을 입력하세요.",
     workspace_target_at_concentration: "Target {dose} {unit} at {concentration} {concentrationUnit}",
@@ -530,10 +538,10 @@ const TRANSLATIONS = {
     feedback_reference: "Report reference issue",
     feedback_bug: "Report bug",
     feedback_kicker: "Feedback",
-    feedback_support_description: "It is more natural to collect bug reports, reference issues, and usability suggestions inside the Support tab, where maintenance and update priorities can be managed together.",
-    feedback_support_note: "It is fine for all three buttons to use the same Google Form for now. You can split them into separate general / reference / bug forms later.",
-    feedback_status_unconfigured: "No live feedback destination is connected yet. Set feedback links or an email in `script.js` to enable these buttons.",
-    feedback_status_configured: "The feedback Google Form is connected. General feedback, reference issues, and bug reports currently go to the same form.",
+    feedback_support_description: "Send bug reports, reference issues, and usability suggestions here.",
+    feedback_support_note: "",
+    feedback_status_unconfigured: "",
+    feedback_status_configured: "",
     calculator_switcher_aria: "Calculator selector",
     calculator_tablist_aria: "Calculator tabs",
     available_calculators: "Available Calculators",
@@ -544,16 +552,16 @@ const TRANSLATIONS = {
     tab_support: "Support",
     support_kicker: "Support",
     support_heading: "Support Anestha",
-    support_description: "Keep support and feedback in one place for updates, reference review, bug fixes, and usability improvements.",
+    support_description: "Find update support and feedback channels in one place.",
     support_donate_kicker: "Support",
     support_donate_heading: "Support ongoing updates",
-    support_donate_description: "If this app has been helpful, you can support ongoing updates, reference audits, and maintenance.",
+    support_donate_description: "If this app has been helpful, you can support ongoing updates and maintenance.",
     support_toss: "Support via Toss",
     support_kofi: "Support via Ko-fi",
-    support_donate_note: "For Korean users, Toss is usually the easiest path. Keeping Ko-fi alongside it helps if you also want card or international support.",
-    support_status_unconfigured: "No live support link is connected yet. Set a Toss or Ko-fi URL in `script.js` to enable these buttons.",
-    support_status_configured: "Support links are connected. Users can now support the app through Toss or Ko-fi.",
-    support_legal_note: "Before broader sharing, it helps to keep basic Privacy and Disclaimer pages available so users understand what is stored locally and how the app should be used.",
+    support_donate_note: "Use Toss or Ko-fi if you want to support ongoing updates.",
+    support_status_unconfigured: "",
+    support_status_configured: "",
+    support_legal_note: "See Privacy and Disclaimer for local storage details and intended use.",
     privacy_page_link: "Privacy",
     disclaimer_page_link: "Disclaimer",
     footer_reference_note: "Anestha is a reference-oriented tool. Independent verification and institutional protocols remain necessary.",
@@ -576,7 +584,7 @@ const TRANSLATIONS = {
     no_drugs_yet: "No drugs yet",
     drug_help_default: "When you select a preset drug, the default concentration and Reference Dosing Table values are filled in automatically.",
     drug_help_custom: "Custom drug selected. Enter the name, concentration, and Reference Dosing Table values directly.",
-    drug_help_selected: "{drug} preset applied. You can adjust the concentration and Reference Dosing Table values if needed.",
+    drug_help_selected: "{drug} default values are shown. Adjust them if needed.",
     reference_range: "Reference range",
     use_case: "Use case",
     range_basis: "Range basis",
@@ -602,7 +610,7 @@ const TRANSLATIONS = {
     workflow_preview: "Workflow Preview",
     multi_drug_heading: "Multi Drug Infusion",
     multi_drug_description: "View multiple infusion drugs for one patient on a single screen. Each card can share the patient weight, but calculations remain independent.",
-    multi_drug_note: "Multi Drug cards do not assess drug-drug interactions, compatibility, or combined clinical effects.",
+    multi_drug_note: "Multi Drug calculations are reference-only for each card. Check interactions and compatibility separately.",
     shared_patient_weight: "Shared Patient Weight",
     template_name: "Template Name",
     template_note_optional: "Note / Use Case (optional)",
@@ -628,10 +636,10 @@ const TRANSLATIONS = {
     pediatric_dosing_result: "Pediatric Dosing Result",
     calculated_dose_range: "Calculated dose range",
     calculation_details: "Calculation Details",
-    pediatric_dosing_audit_note: "Pediatric dosing reference links have been link-verified. Preset wording and source-to-logic review are still being refined.",
+    pediatric_dosing_audit_note: "Pediatric dosing presets are reference-only. Verify with your institutional protocol and current sources before use.",
     pediatric_airway_result: "Pediatric Airway / ETT Result",
     estimated_oral_depth: "Estimated oral depth (from lip)",
-    pediatric_airway_audit_note: "Pediatric airway reference links have been link-verified. Formula-to-source alignment should still be re-checked whenever sizing logic changes.",
+    pediatric_airway_audit_note: "Pediatric airway/ETT values are estimate references only. Always confirm size, depth, leak, and position clinically.",
     emergency_tool: "Emergency Tool",
     dantrolene_heading: "Dantrolene / MH Quick Reference",
     dantrolene_description: "Quickly review MH initial dose, cumulative maximum dose, and estimated vial count based on patient weight and formulation.",
@@ -668,11 +676,11 @@ const TRANSLATIONS = {
     placeholder_initial_dose: "e.g. 2.5",
     result_label_calc: "Calculation Result",
     supporting_information: "Supporting information",
-    current_references_verified: "Current infusion references have been link-verified in the audit file.",
+    current_references_verified: "You can open each reference link and review the original source directly.",
     reference_table_info_only: "Reference Dosing Table is informational only. Verify with institutional protocols.",
     result_warning_default: "Calculation results are for reference only. Independently verify before clinical use.",
     infusion_result_reference_only: "Reference dose values are informational only. Label, Clinical, and Study-specific sources may reflect different contexts, so verify the original source and institutional protocol.",
-    infusion_result_out_of_range: "Outside the preset reference range. Clinical and study-based ranges may reflect common practice rather than a universal standard, so verify the original source and institutional protocol.",
+    infusion_result_out_of_range: "The current value is outside the selected preset reference range. Red text does not automatically mean incorrect dosing; it means the value is outside this preset's default bounds and should be checked against the original source and institutional protocol.",
     infusion_dose_calculation: "Concentration used: {concentration} {unit}.",
     infusion_rate_formula_weight: "Rate calculation: ({dose} x {weight} x {factor}) / {concentration} = {rate} mL/hr",
     infusion_rate_formula_absolute: "Rate calculation: ({dose} x {factor}) / {concentration} = {rate} mL/hr",
@@ -694,7 +702,10 @@ const TRANSLATIONS = {
     infusion_rate: "Infusion Rate",
     concentration: "Concentration",
     concentration_unit: "Concentration Unit",
-    verification: "Verification",
+    dose_unit_view: "Dose unit view",
+    nitroglycerin_unit_help: "Nitroglycerin keeps the default label-style reference in mcg/min. A weight-based mcg/kg/min view is available for convenience.",
+    nitroglycerin_unit_help_weight_needed: "The default nitroglycerin reference remains 5 - 200 mcg/min. Enter patient weight to use or interpret the mcg/kg/min view.",
+    verification: "Reference type",
     recommended_range: "Recommended range",
     age_specific_note: "Age-specific note",
     reference_guides: "Reference guides",
@@ -722,6 +733,7 @@ const TRANSLATIONS = {
     calculate_mix: "Calculate Mix",
     dilution_warning_note: "Double check all units (mcg vs mg) before mixing. Verify compatibility of the drug with the chosen diluent.",
     validation_patient_weight: "Patient Weight must be a number greater than 0.",
+    validation_ntg_weight_for_kg_unit: "Patient Weight is required to use nitroglycerin in mcg/kg/min.",
     validation_drug_concentration: "Drug Concentration must be a number greater than 0.",
     validation_custom_drug_name: "Enter a Custom Drug Name.",
     validation_target_dose: "Target Dose must be a number greater than 0.",
@@ -816,6 +828,7 @@ const TRANSLATIONS = {
     workspace_drug: "Drug",
     workspace_concentration: "Concentration",
     workspace_target_dose: "Target Dose",
+    workspace_ntg_unit_hint: "Nitroglycerin default reference is mcg/min. Shared weight is required for mcg/kg/min.",
     workspace_enter_shared_weight: "Enter shared weight and valid card values.",
     workspace_enter_valid_values: "Enter valid card values.",
     workspace_target_at_concentration: "Target {dose} {unit} at {concentration} {concentrationUnit}",
@@ -985,6 +998,66 @@ function isWeightBasedReferenceRange(referenceRange) {
   return !referenceRange || referenceRange.weightBased !== false;
 }
 
+function isNitroglycerinDrug(drug) {
+  return Boolean(drug && drug.id === "nitroglycerin");
+}
+
+function getSelectedNitroglycerinDoseView() {
+  return sanitizeNitroglycerinDoseUnitView(
+    nitroglycerinDoseViewSelect ? nitroglycerinDoseViewSelect.value : "mcg/min"
+  );
+}
+
+function getPreferredNitroglycerinDoseView() {
+  return sanitizeNitroglycerinDoseUnitView(getSingleDrugState().nitroglycerinDoseUnitView);
+}
+
+function getWorkspaceNitroglycerinDoseView(card, weightKg) {
+  const preferredView = sanitizeNitroglycerinDoseUnitView(card && card.nitroglycerinDoseUnitView);
+
+  if (preferredView === "mcg/kg/min" && !isPositiveNumber(weightKg)) {
+    return "mcg/min";
+  }
+
+  return preferredView;
+}
+
+function getDisplayDoseUnit(drug, weightKg, preferredView) {
+  if (!isNitroglycerinDrug(drug)) {
+    return (drug && drug.referenceRange && drug.referenceRange.unit) || "mcg/kg/min";
+  }
+
+  return sanitizeNitroglycerinDoseUnitView(preferredView || getPreferredNitroglycerinDoseView());
+}
+
+function convertDoseValueForDisplay(value, drug, weightKg, displayUnit) {
+  if (!isNitroglycerinDrug(drug) || displayUnit !== "mcg/kg/min" || !isPositiveNumber(weightKg)) {
+    return value;
+  }
+
+  return value / weightKg;
+}
+
+function convertDoseValueToReferenceUnit(value, drug, weightKg, displayUnit) {
+  if (!isNitroglycerinDrug(drug) || displayUnit !== "mcg/kg/min" || !isPositiveNumber(weightKg)) {
+    return value;
+  }
+
+  return value * weightKg;
+}
+
+function convertDoseListForDisplay(values, drug, weightKg, displayUnit) {
+  return values.map(function (value) {
+    return convertDoseValueForDisplay(value, drug, weightKg, displayUnit);
+  });
+}
+
+function convertDoseListToReferenceUnit(values, drug, weightKg, displayUnit) {
+  return values.map(function (value) {
+    return convertDoseValueToReferenceUnit(value, drug, weightKg, displayUnit);
+  });
+}
+
 function getReferenceTimeFactor(referenceRange) {
   return referenceRange && referenceRange.timeUnit === "hr" ? 1 : 60;
 }
@@ -1051,6 +1124,64 @@ function formatDoseRangeWithEquivalent(min, max, unit) {
   }
 
   return `${formatNumber(min, 3)} - ${formatNumber(max, 3)} ${unit}`;
+}
+
+function formatInfusionDoseDisplay(value, unit, drug, weightKg) {
+  const baseText = formatDoseValueWithEquivalent(value, unit);
+
+  if (
+    drug &&
+    drug.id === "nitroglycerin" &&
+    unit === "mcg/kg/min" &&
+    isPositiveNumber(weightKg)
+  ) {
+    return `${baseText} (${formatNumber(value * weightKg, 3)} mcg/min)`;
+  }
+
+  if (
+    drug &&
+    drug.id === "nitroglycerin" &&
+    unit === "mcg/min" &&
+    isPositiveNumber(weightKg)
+  ) {
+    return `${baseText} (${formatNumber(value / weightKg, 3)} mcg/kg/min)`;
+  }
+
+  return baseText;
+}
+
+function formatInfusionRangeDisplay(min, max, unit, drug, weightKg) {
+  const baseText = formatDoseRangeWithEquivalent(min, max, unit);
+
+  if (
+    drug &&
+    drug.id === "nitroglycerin" &&
+    unit === "mcg/kg/min" &&
+    isPositiveNumber(weightKg)
+  ) {
+    return `${baseText} (${formatNumber(min * weightKg, 3)} - ${formatNumber(max * weightKg, 3)} mcg/min)`;
+  }
+
+  if (
+    drug &&
+    drug.id === "nitroglycerin" &&
+    unit === "mcg/min" &&
+    isPositiveNumber(weightKg)
+  ) {
+    return `${baseText} (${formatNumber(min / weightKg, 3)} - ${formatNumber(max / weightKg, 3)} mcg/kg/min)`;
+  }
+
+  return baseText;
+}
+
+function formatEditableDoseValue(value) {
+  return Number(Number(value).toFixed(3)).toString();
+}
+
+function formatEditableDoseList(values) {
+  return values.map(function (value) {
+    return formatEditableDoseValue(value);
+  }).join(", ");
 }
 
 function calculatePediatricAirwayEstimates(ageYears) {
@@ -1672,6 +1803,20 @@ function getDrugUseCaseSummary(drug) {
   return drug.useCaseLabel;
 }
 
+function getDisplaySourceLabel(rawSource) {
+  const source = (rawSource || "").trim();
+
+  if (!source) {
+    return "-";
+  }
+
+  if (source === "Editable local preset") {
+    return currentLanguage === "en" ? "Locally curated reference preset" : "로컬 큐레이션 reference preset";
+  }
+
+  return source;
+}
+
 function renderUseCaseBadge(container, drug) {
   if (!container) {
     return;
@@ -2229,7 +2374,7 @@ const DRUG_PRESETS = [
     rangeSourceType: "label",
     rangeSourceNote: "Label-oriented nitroglycerin infusion range using absolute mcg/min titration.",
     rangeRationale: "Changed to absolute mcg/min because both label and anesthesia references describe OR titration that way rather than mcg/kg/min defaults.",
-    notes: "Absolute-dose infusion aligned to DailyMed and OpenAnesthesia titration guidance; weight input is not used for this drug.",
+    notes: "Absolute-dose infusion aligned to DailyMed and OpenAnesthesia titration guidance; optional mcg/kg/min view is shown for weight-based clinical convenience.",
     dilutionPresets: [
       {
         id: "ntg-10mg-50ml",
@@ -3276,6 +3421,7 @@ function createDefaultSingleDrugState() {
   return {
     selectedDrugId: getDefaultDrugPreset().id,
     activeMode: "dose-to-rate",
+    nitroglycerinDoseUnitView: "mcg/min",
     favoriteDrugIds: [],
     recentDrugIds: [],
     inputs: {
@@ -3324,6 +3470,10 @@ function sanitizeSelectedDrugId(value) {
 function sanitizeActiveMode(value) {
   const allowedModes = ["dose-to-rate", "rate-to-dose", "reference-table"];
   return allowedModes.includes(value) ? value : "dose-to-rate";
+}
+
+function sanitizeNitroglycerinDoseUnitView(value) {
+  return ["mcg/min", "mcg/kg/min"].includes(value) ? value : "mcg/min";
 }
 
 function normalizeDrugSetting(rawSetting, defaultSetting) {
@@ -3455,6 +3605,7 @@ function normalizeSingleDrugState(rawState) {
   return {
     selectedDrugId: selectedDrugId,
     activeMode: sanitizeActiveMode(source.activeMode),
+    nitroglycerinDoseUnitView: sanitizeNitroglycerinDoseUnitView(source.nitroglycerinDoseUnitView),
     favoriteDrugIds: normalizeQuickDrugIds(source.favoriteDrugIds),
     recentDrugIds: normalizeQuickDrugIds(source.recentDrugIds),
     inputs: {
@@ -3530,7 +3681,8 @@ function createDefaultInfusionWorkspaceCardState(drugId) {
     cardId: createClientId("workspace-card"),
     selectedDrugId: preset.id,
     concentration: String(preset.concentration),
-    targetDose: String(defaultTargetDose)
+    targetDose: String(defaultTargetDose),
+    nitroglycerinDoseUnitView: "mcg/min"
   };
 }
 
@@ -3585,7 +3737,8 @@ function normalizeInfusionWorkspaceCardState(rawCard) {
     targetDose: migrateLegacyRemimazolamTargetDose(
       selectedDrugId,
       sanitizeString(source.targetDose, fallback.targetDose)
-    )
+    ),
+    nitroglycerinDoseUnitView: sanitizeNitroglycerinDoseUnitView(source.nitroglycerinDoseUnitView)
   };
 }
 
@@ -4013,22 +4166,46 @@ function getSelectedDrugDilutionPreset() {
 function readSingleDrugSelectionFromView() {
   return {
     selectedDrugId: sanitizeSelectedDrugId(drugSelect.value),
-    activeMode: sanitizeActiveMode(getActiveInfusionMode())
+    activeMode: sanitizeActiveMode(getActiveInfusionMode()),
+    nitroglycerinDoseUnitView: getSelectedNitroglycerinDoseView()
   };
 }
 
-function readSingleDrugInputsFromView() {
+function readSingleDrugInputsFromView(selectedDrugId, nitroglycerinDoseUnitView) {
+  const selectedDrug = getDrugPresetById(selectedDrugId);
+  const weightValue = Number(inputs.weight.value);
+  const rawTargetDose = inputs.targetDose.value;
+  const numericTargetDose = Number(rawTargetDose);
+
   return {
     weight: inputs.weight.value,
-    targetDose: inputs.targetDose.value,
+    targetDose: isPositiveNumber(numericTargetDose)
+      ? formatEditableDoseValue(
+        convertDoseValueToReferenceUnit(
+          numericTargetDose,
+          selectedDrug,
+          weightValue,
+          getDisplayDoseUnit(selectedDrug, weightValue, nitroglycerinDoseUnitView)
+        )
+      )
+      : rawTargetDose,
     pumpRate: inputs.pumpRate.value
   };
 }
 
-function readDrugSettingsFromView(drugId) {
+function readDrugSettingsFromView(drugId, nitroglycerinDoseUnitView) {
+  const selectedDrug = getDrugPresetById(drugId);
+  const weightValue = Number(inputs.weight.value);
+  const parsedReferenceDoseList = parseDoseList(inputs.referenceDoseList.value);
+  const displayDoseUnit = getDisplayDoseUnit(selectedDrug, weightValue, nitroglycerinDoseUnitView);
+
   return {
     concentration: inputs.concentration.value,
-    referenceDoseList: inputs.referenceDoseList.value,
+    referenceDoseList: parsedReferenceDoseList
+      ? formatEditableDoseList(
+        convertDoseListToReferenceUnit(parsedReferenceDoseList, selectedDrug, weightValue, displayDoseUnit)
+      )
+      : inputs.referenceDoseList.value,
     customDrugName: inputs.customDrugName.value,
     customDrugNotes: inputs.customDrugNotes.value
   };
@@ -4037,17 +4214,18 @@ function readDrugSettingsFromView(drugId) {
 function createSingleDrugStateFromView(baseState) {
   const source = normalizeSingleDrugState(baseState);
   const selection = readSingleDrugSelectionFromView();
-  const viewInputs = readSingleDrugInputsFromView();
+  const viewInputs = readSingleDrugInputsFromView(selection.selectedDrugId, selection.nitroglycerinDoseUnitView);
 
   return {
     selectedDrugId: selection.selectedDrugId,
     activeMode: selection.activeMode,
+    nitroglycerinDoseUnitView: selection.nitroglycerinDoseUnitView,
     favoriteDrugIds: source.favoriteDrugIds,
     recentDrugIds: source.recentDrugIds,
     inputs: viewInputs,
     drugSettings: {
       ...source.drugSettings,
-      [selection.selectedDrugId]: readDrugSettingsFromView(selection.selectedDrugId)
+      [selection.selectedDrugId]: readDrugSettingsFromView(selection.selectedDrugId, selection.nitroglycerinDoseUnitView)
     }
   };
 }
@@ -4076,15 +4254,39 @@ function getCurrentInfusionCardState() {
 function applySingleDrugStateToView(singleDrugState) {
   const normalizedState = normalizeSingleDrugState(singleDrugState);
   const currentDrugSettings = normalizedState.drugSettings[normalizedState.selectedDrugId];
+  const selectedDrug = getDrugPresetById(normalizedState.selectedDrugId);
+  const weightValue = Number(normalizedState.inputs.weight);
+  const displayDoseUnit = getDisplayDoseUnit(
+    selectedDrug,
+    weightValue,
+    normalizedState.nitroglycerinDoseUnitView
+  );
+  const parsedReferenceDoseList = parseDoseList(currentDrugSettings.referenceDoseList);
 
   drugSelect.value = normalizedState.selectedDrugId;
   inputs.weight.value = normalizedState.inputs.weight;
-  inputs.targetDose.value = normalizedState.inputs.targetDose;
+  inputs.targetDose.value = isPositiveNumber(Number(normalizedState.inputs.targetDose))
+    ? formatEditableDoseValue(
+      convertDoseValueForDisplay(
+        Number(normalizedState.inputs.targetDose),
+        selectedDrug,
+        weightValue,
+        displayDoseUnit
+      )
+    )
+    : normalizedState.inputs.targetDose;
   inputs.pumpRate.value = normalizedState.inputs.pumpRate;
   inputs.concentration.value = currentDrugSettings.concentration;
-  inputs.referenceDoseList.value = currentDrugSettings.referenceDoseList;
+  inputs.referenceDoseList.value = parsedReferenceDoseList
+    ? formatEditableDoseList(
+      convertDoseListForDisplay(parsedReferenceDoseList, selectedDrug, weightValue, displayDoseUnit)
+    )
+    : currentDrugSettings.referenceDoseList;
   inputs.customDrugName.value = currentDrugSettings.customDrugName;
   inputs.customDrugNotes.value = currentDrugSettings.customDrugNotes;
+  if (nitroglycerinDoseViewSelect) {
+    nitroglycerinDoseViewSelect.value = normalizedState.nitroglycerinDoseUnitView;
+  }
 }
 
 function recordRecentDrug(drugId) {
@@ -4263,10 +4465,6 @@ function activateInfusionView(viewId) {
     panel.classList.toggle("hidden", !isActive);
   });
 
-  if (multiDrugWarning) {
-    multiDrugWarning.classList.toggle("hidden", normalizedViewId !== "workspace");
-  }
-
   updateInfusionWorkspaceState({
     activeView: normalizedViewId
   });
@@ -4313,29 +4511,61 @@ function updateDrugUI() {
   const isCustomDrug = drugSelect.value === "custom";
   const savedDoseList = parseDoseList(currentSettings.referenceDoseList);
   const dilutionPreset = getSelectedDrugDilutionPreset();
+  const weightValue = Number(inputs.weight.value);
+  const displayDoseUnit = getDisplayDoseUnit(
+    selectedDrug,
+    weightValue,
+    getPreferredNitroglycerinDoseView()
+  );
+  const displayDoseList = savedDoseList
+    ? convertDoseListForDisplay(savedDoseList, selectedDrug, weightValue, displayDoseUnit)
+    : null;
 
   customDrugFields.classList.toggle("hidden", !isCustomDrug);
   presetSummary.classList.remove("hidden");
 
   inputs.concentration.value = currentSettings.concentration || String(selectedDrug.concentration);
-  inputs.referenceDoseList.value = currentSettings.referenceDoseList || formatList(selectedDrug.referenceDoses);
+  inputs.referenceDoseList.value = displayDoseList
+    ? formatEditableDoseList(displayDoseList)
+    : (currentSettings.referenceDoseList || formatList(selectedDrug.referenceDoses));
   inputs.customDrugName.value = isCustomDrug ? currentSettings.customDrugName : "";
   inputs.customDrugNotes.value = isCustomDrug ? currentSettings.customDrugNotes : "";
 
   concentrationUnitLabel.textContent = selectedDrug.concentrationUnit || "mcg/mL";
-  doseUnitLabel.textContent = selectedDrug.referenceRange.unit || "mcg/kg/min";
+  doseUnitLabel.textContent = displayDoseUnit;
 
-  if (savedDoseList) {
-    referenceRangeText.textContent = formatDoseRangeWithEquivalent(
-      Math.min.apply(null, savedDoseList),
-      Math.max.apply(null, savedDoseList),
-      selectedDrug.referenceRange.unit
+  if (nitroglycerinDoseViewField && nitroglycerinDoseViewSelect && nitroglycerinDoseViewHelp) {
+    const shouldShowNitroglycerinUnitView = !isCustomDrug && isNitroglycerinDrug(selectedDrug);
+    nitroglycerinDoseViewField.classList.toggle("hidden", !shouldShowNitroglycerinUnitView);
+    nitroglycerinDoseViewSelect.value = displayDoseUnit;
+    nitroglycerinDoseViewHelp.textContent = isPositiveNumber(weightValue)
+      ? t("nitroglycerin_unit_help")
+      : t("nitroglycerin_unit_help_weight_needed");
+  }
+
+  if (displayDoseList) {
+    referenceRangeText.textContent = formatInfusionRangeDisplay(
+      Math.min.apply(null, displayDoseList),
+      Math.max.apply(null, displayDoseList),
+      displayDoseUnit,
+      selectedDrug,
+      weightValue
     );
-  } else if (selectedDrug.referenceRange.min > 0 || selectedDrug.referenceRange.max > 0) {
-    referenceRangeText.textContent = formatDoseRangeWithEquivalent(
+  } else if (isNitroglycerinDrug(selectedDrug) && displayDoseUnit === "mcg/kg/min" && !isPositiveNumber(weightValue)) {
+    referenceRangeText.textContent = formatInfusionRangeDisplay(
       selectedDrug.referenceRange.min,
       selectedDrug.referenceRange.max,
-      selectedDrug.referenceRange.unit
+      selectedDrug.referenceRange.unit,
+      selectedDrug,
+      weightValue
+    );
+  } else if (selectedDrug.referenceRange.min > 0 || selectedDrug.referenceRange.max > 0) {
+    referenceRangeText.textContent = formatInfusionRangeDisplay(
+      convertDoseValueForDisplay(selectedDrug.referenceRange.min, selectedDrug, weightValue, displayDoseUnit),
+      convertDoseValueForDisplay(selectedDrug.referenceRange.max, selectedDrug, weightValue, displayDoseUnit),
+      displayDoseUnit,
+      selectedDrug,
+      weightValue
     );
   } else {
     referenceRangeText.textContent = "Custom reference values";
@@ -4370,7 +4600,7 @@ function updateDrugUI() {
   drugDilutionButton.title = dilutionPreset
     ? "Apply this concentration"
     : "No standard dilution preset available";
-  drugSourceText.textContent = selectedDrug.metadata.source || "-";
+  drugSourceText.textContent = getDisplaySourceLabel(selectedDrug.metadata.source);
   drugLastReviewedText.textContent = selectedDrug.metadata.lastReviewed || "-";
   drugHelp.textContent = isCustomDrug
     ? t("drug_help_custom")
@@ -4403,7 +4633,7 @@ function updatePediatricDrugUI() {
   pediatricAgeNoteText.textContent = ageGuidance ? ageGuidance.note : (currentLanguage === "en" ? "No specific age-group note provided." : "특정 age group note가 없습니다.");
   pediatricConcentrationText.textContent = `${pediatricInputs.concentration.value} ${pediatricProfile.concentration.unit}`;
   pediatricVerificationText.textContent = verificationConfig.summary;
-  pediatricNotesText.textContent = `${pediatricProfile.notes}${doseLimitNote} / ${pediatricProfile.metadata.source}`;
+  pediatricNotesText.textContent = `${pediatricProfile.notes}${doseLimitNote} / ${getDisplaySourceLabel(pediatricProfile.metadata.source)}`;
   pediatricConcentrationUnitLabel.textContent = pediatricProfile.concentration.unit;
   pediatricSaveCustomButton.classList.toggle("hidden", !isCustomDrug);
   pediatricDeleteCustomButton.classList.toggle("hidden", !activeSavedCustomDrugId);
@@ -4426,8 +4656,8 @@ function updatePediatricDrugUI() {
   pediatricDrugHelp.textContent = isCustomDrug
     ? t("pediatric_drug_help_custom")
     : (currentLanguage === "en"
-      ? `${selectedDrug.name} pediatric bolus preset applied. Weight and concentration can be adjusted if needed.`
-      : `${selectedDrug.name} pediatric bolus preset이 적용되었습니다. 체중과 농도는 필요하면 수정할 수 있습니다.`);
+      ? `${selectedDrug.name} default values are shown. Adjust weight and concentration if needed.`
+      : `${selectedDrug.name} 기본값이 표시됩니다. 필요하면 체중과 농도를 조정해 사용하세요.`);
 }
 
 function cloneWorkspaceCards(cards) {
@@ -4525,11 +4755,23 @@ function renderInfusionWorkspace() {
     const useCaseBadge = getUseCaseBadge(preset.useCase);
     const concentration = Number(card.concentration);
     const targetDose = Number(card.targetDose);
+    const displayDoseUnit = getDisplayDoseUnit(
+      preset,
+      sharedWeight,
+      getWorkspaceNitroglycerinDoseView(card, sharedWeight)
+    );
+    const displayTargetDose = convertDoseValueForDisplay(targetDose, preset, sharedWeight, displayDoseUnit);
+    const displayRangeMin = convertDoseValueForDisplay(preset.referenceRange.min, preset, sharedWeight, displayDoseUnit);
+    const displayRangeMax = convertDoseValueForDisplay(preset.referenceRange.max, preset, sharedWeight, displayDoseUnit);
+    const targetDoseInputValue = card.targetDose === ""
+      ? ""
+      : (Number.isFinite(targetDose) ? formatEditableDoseValue(displayTargetDose) : card.targetDose);
     const usesWeight = isWeightBasedReferenceRange(preset.referenceRange);
     const hasReadyCalculation = (usesWeight ? isPositiveNumber(sharedWeight) : true) && isPositiveNumber(concentration) && isPositiveNumber(targetDose);
     const targetRate = hasReadyCalculation ? doseToRate(sharedWeight, concentration, targetDose, preset.referenceRange) : null;
     const isOutOfRange = hasReadyCalculation && !isWithinReferenceRange(targetDose, preset.referenceRange);
     const dilutionPreset = preset.dilutionPresets[0] || null;
+    const showNitroglycerinUnitView = isNitroglycerinDrug(preset);
     const optionMarkup = DRUG_PRESETS.map(function (drugPreset) {
       return `<option value="${drugPreset.id}" ${drugPreset.id === card.selectedDrugId ? "selected" : ""}>${drugPreset.name}</option>`;
     }).join("");
@@ -4539,7 +4781,7 @@ function renderInfusionWorkspace() {
         <div class="workspace-card-header">
           <div>
             <h3 class="workspace-card-title">${index + 1}. ${preset.name}</h3>
-            <p class="workspace-card-meta">${formatNumber(concentration, 1)} ${preset.concentrationUnit} / ${preset.metadata.source} / Last reviewed ${preset.metadata.lastReviewed}</p>
+            <p class="workspace-card-meta">${formatNumber(concentration, 1)} ${preset.concentrationUnit} / ${getDisplaySourceLabel(preset.metadata.source)} / Last reviewed ${preset.metadata.lastReviewed}</p>
             <div class="workspace-card-tag-row">
               <span class="workspace-card-tag is-${drugCategory.key}">${drugCategory.label}</span>
               ${useCaseBadge}
@@ -4595,9 +4837,18 @@ function renderInfusionWorkspace() {
           <label class="field">
             <span class="field-label">${t("workspace_target_dose")}</span>
             <div class="input-row">
-              <input data-workspace-field="targetDose" data-workspace-card-id="${card.cardId}" type="number" inputmode="decimal" step="any" value="${card.targetDose}">
-              <span class="unit">${preset.referenceRange.unit}</span>
+              <input data-workspace-field="targetDose" data-workspace-card-id="${card.cardId}" data-workspace-dose-display-unit="${displayDoseUnit}" type="number" inputmode="decimal" step="any" value="${targetDoseInputValue}">
+              <span class="unit">${displayDoseUnit}</span>
             </div>
+            ${showNitroglycerinUnitView ? `
+              <div class="select-row">
+                <select data-workspace-field="nitroglycerinDoseUnitView" data-workspace-card-id="${card.cardId}">
+                  <option value="mcg/min" ${displayDoseUnit === "mcg/min" ? "selected" : ""}>mcg/min</option>
+                  <option value="mcg/kg/min" ${displayDoseUnit === "mcg/kg/min" ? "selected" : ""}>mcg/kg/min</option>
+                </select>
+              </div>
+              <p class="helper-text">${t("workspace_ntg_unit_hint")}</p>
+            ` : ""}
           </label>
         </div>
 
@@ -4608,15 +4859,15 @@ function renderInfusionWorkspace() {
           <p class="workspace-card-context">
             ${hasReadyCalculation
               ? t("workspace_target_at_concentration", {
-                dose: `<span class="${isOutOfRange ? "is-out-of-range" : ""}">${formatNumber(targetDose, 3)} ${preset.referenceRange.unit}</span>`,
-                unit: preset.referenceRange.unit,
+                dose: `<span class="${isOutOfRange ? "is-out-of-range" : ""}">${formatNumber(displayTargetDose, 3)}</span>`,
+                unit: displayDoseUnit,
                 concentration: formatNumber(concentration, 1),
                 concentrationUnit: preset.concentrationUnit
               })
               : t("workspace_reference_range_note", {
-                min: preset.referenceRange.min,
-                max: preset.referenceRange.max,
-                unit: preset.referenceRange.unit,
+                min: formatNumber(displayRangeMin, 3),
+                max: formatNumber(displayRangeMax, 3),
+                unit: displayDoseUnit,
                 sharedWeightNote: ""
               })}
           </p>
@@ -4625,9 +4876,9 @@ function renderInfusionWorkspace() {
 
         <p class="workspace-card-reference-note">
           ${t("workspace_reference_range_note", {
-            min: preset.referenceRange.min,
-            max: preset.referenceRange.max,
-            unit: preset.referenceRange.unit,
+            min: formatNumber(displayRangeMin, 3),
+            max: formatNumber(displayRangeMax, 3),
+            unit: displayDoseUnit,
             sharedWeightNote: usesWeight ? "" : t("workspace_shared_weight_not_used")
           })}<br>
           ${t("workspace_use_case_note", { useCase: getDrugUseCaseSummary(preset) })}<br>
@@ -4657,18 +4908,35 @@ function renderInfusionWorkspace() {
 // -----------------------------
 
 function readInfusionFormValues() {
+  const weight = Number(inputs.weight.value);
+  const drug = getSelectedDrugDefinition();
+  const displayDoseUnit = getDisplayDoseUnit(drug, weight, getSelectedNitroglycerinDoseView());
+  const parsedReferenceDoseList = parseDoseList(inputs.referenceDoseList.value);
+
   return {
     mode: getActiveInfusionMode(),
-    weight: Number(inputs.weight.value),
+    weight: weight,
     concentration: Number(inputs.concentration.value),
-    targetDose: Number(inputs.targetDose.value),
+    targetDose: convertDoseValueToReferenceUnit(
+      Number(inputs.targetDose.value),
+      drug,
+      weight,
+      displayDoseUnit
+    ),
     pumpRate: Number(inputs.pumpRate.value),
-    referenceDoseList: parseDoseList(inputs.referenceDoseList.value),
-    drug: getSelectedDrugDefinition()
+    referenceDoseList: parsedReferenceDoseList
+      ? convertDoseListToReferenceUnit(parsedReferenceDoseList, drug, weight, displayDoseUnit)
+      : null,
+    displayDoseUnit: displayDoseUnit,
+    drug: drug
   };
 }
 
 function validateInfusionValues(values) {
+  if (isNitroglycerinDrug(values.drug) && values.displayDoseUnit === "mcg/kg/min" && !isPositiveNumber(values.weight)) {
+    return t("validation_ntg_weight_for_kg_unit");
+  }
+
   if (isWeightBasedReferenceRange(values.drug.referenceRange) && !isPositiveNumber(values.weight)) {
     return t("validation_patient_weight");
   }
@@ -4871,11 +5139,11 @@ function clearDantroleneResult() {
   dantroleneResultWarning.textContent = t("dantrolene_result_warning_default");
 }
 
-function renderReferenceRows(rows, doseUnit) {
+function renderReferenceRows(rows, doseUnit, drug, weightKg) {
   referenceTableBody.innerHTML = rows.map(function (row) {
     return `
       <tr class="${row.isOutOfRange ? "is-warning" : ""}">
-        <td>${formatDoseValueWithEquivalent(row.dose, doseUnit)}</td>
+        <td>${formatInfusionDoseDisplay(row.dose, doseUnit, drug, weightKg)}</td>
         <td>${formatNumber(row.rate, 2)} mL/hr</td>
       </tr>
     `;
@@ -4886,10 +5154,11 @@ function showDoseToRateResult(values) {
   const referenceRange = values.drug.referenceRange || null;
   const usesWeight = isWeightBasedReferenceRange(referenceRange);
   const rate = doseToRate(values.weight, values.concentration, values.targetDose, referenceRange);
-  const doseUnit = values.drug.referenceRange.unit || "mcg/kg/min";
+  const doseUnit = values.displayDoseUnit || values.drug.referenceRange.unit || "mcg/kg/min";
   const concentrationUnit = values.drug.concentrationUnit || "mcg/mL";
   const isOutOfRange = !isWithinReferenceRange(values.targetDose, values.drug.referenceRange);
   const referenceIds = getInfusionReferenceIds(values);
+  const displayedTargetDose = convertDoseValueForDisplay(values.targetDose, values.drug, values.weight, doseUnit);
 
   resultLabel.textContent = t("dose_to_rate");
   renderRangeSourceBadge(resultRangeBadge, values.drug);
@@ -4898,7 +5167,7 @@ function showDoseToRateResult(values) {
   applyRangeSourceTheme(resultCard, values.drug);
   primaryResult.textContent = `${formatNumber(rate, 2)} mL/hr`;
   secondaryResultLabel.textContent = t("target_dose");
-  secondaryResult.textContent = formatDoseValueWithEquivalent(values.targetDose, doseUnit);
+  secondaryResult.textContent = formatInfusionDoseDisplay(displayedTargetDose, doseUnit, values.drug, values.weight);
   concentrationResult.textContent = usesWeight
     ? `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / ${formatNumber(values.weight, 1)} kg`
     : `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / ${t("absolute_dose_mode")}`;
@@ -4936,17 +5205,18 @@ function showRateToDoseResult(values) {
   const referenceRange = values.drug.referenceRange || null;
   const usesWeight = isWeightBasedReferenceRange(referenceRange);
   const dose = rateToDose(values.weight, values.concentration, values.pumpRate, referenceRange);
-  const doseUnit = values.drug.referenceRange.unit || "mcg/kg/min";
+  const doseUnit = values.displayDoseUnit || values.drug.referenceRange.unit || "mcg/kg/min";
   const concentrationUnit = values.drug.concentrationUnit || "mcg/mL";
   const isOutOfRange = !isWithinReferenceRange(dose, values.drug.referenceRange);
   const referenceIds = getInfusionReferenceIds(values);
+  const displayedDose = convertDoseValueForDisplay(dose, values.drug, values.weight, doseUnit);
 
   resultLabel.textContent = t("rate_to_dose");
   renderRangeSourceBadge(resultRangeBadge, values.drug);
   renderUseCaseBadge(resultUseCaseBadge, values.drug);
   resultUseCaseText.textContent = getDrugUseCaseSummary(values.drug);
   applyRangeSourceTheme(resultCard, values.drug);
-  primaryResult.textContent = formatDoseValueWithEquivalent(dose, doseUnit);
+  primaryResult.textContent = formatInfusionDoseDisplay(displayedDose, doseUnit, values.drug, values.weight);
   secondaryResultLabel.textContent = t("pump_rate");
   secondaryResult.textContent = `${formatNumber(values.pumpRate, 2)} mL/hr`;
   concentrationResult.textContent = usesWeight
@@ -4970,7 +5240,7 @@ function showRateToDoseResult(values) {
       concentration: formatNumber(values.concentration, 2),
       factor: getReferenceTimeFactor(referenceRange),
       dose: formatNumber(dose, 3),
-      unit: doseUnit
+      unit: (values.drug.referenceRange && values.drug.referenceRange.unit) || doseUnit
     });
   renderReferenceList(infusionReferenceList, referenceIds);
   resultCard.classList.toggle("is-warning", isOutOfRange);
@@ -4994,12 +5264,13 @@ function showReferenceTableResult(values) {
       isOutOfRange: !isWithinReferenceRange(row.dose, values.drug.referenceRange)
     };
   });
-  const doseUnit = values.drug.referenceRange.unit || "mcg/kg/min";
+  const doseUnit = values.displayDoseUnit || values.drug.referenceRange.unit || "mcg/kg/min";
   const concentrationUnit = values.drug.concentrationUnit || "mcg/mL";
   const hasOutOfRangeRow = rows.some(function (row) {
     return row.isOutOfRange;
   });
   const referenceIds = getInfusionReferenceIds(values);
+  const displayedDoseList = convertDoseListForDisplay(doseList, values.drug, values.weight, doseUnit);
 
   resultLabel.textContent = t("reference_dosing_table");
   renderRangeSourceBadge(resultRangeBadge, values.drug);
@@ -5012,10 +5283,12 @@ function showReferenceTableResult(values) {
     ? `${formatNumber(values.weight, 1)} kg / ${formatNumber(values.concentration, 2)} ${concentrationUnit}`
     : `${formatNumber(values.concentration, 2)} ${concentrationUnit} / ${t("absolute_dose_mode")}`;
   concentrationResult.textContent = doseUnit === "mcg/kg/hr"
-    ? `${t("reference_doses")}: ${doseList.map(function (dose) {
+    ? `${t("reference_doses")}: ${displayedDoseList.map(function (dose) {
       return `${formatNumber(dose, 3)} mcg/kg/hr (${formatNumber(dose / 1000, 3)} mg/kg/hr)`;
     }).join(", ")}`
-    : `${t("reference_doses")}: ${doseList.join(", ")}`;
+    : `${t("reference_doses")}: ${displayedDoseList.map(function (dose) {
+      return formatEditableDoseValue(dose);
+    }).join(", ")}`;
   concentrationExplanation.textContent = usesWeight
     ? t("reference_table_explanation_weight")
     : t("reference_table_explanation_absolute");
@@ -5026,7 +5299,12 @@ function showReferenceTableResult(values) {
   referenceTableCaption.textContent = usesWeight
     ? `${values.drug.name} / ${formatNumber(values.weight, 1)} kg / ${formatNumber(values.concentration, 2)} ${concentrationUnit}`
     : `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / ${t("absolute_dose_mode")}`;
-  renderReferenceRows(rows, doseUnit);
+  renderReferenceRows(rows.map(function (row) {
+    return {
+      ...row,
+      dose: convertDoseValueForDisplay(row.dose, values.drug, values.weight, doseUnit)
+    };
+  }), doseUnit, values.drug, values.weight);
   resultCard.classList.toggle("is-warning", hasOutOfRangeRow);
   primaryResult.classList.remove("is-warning");
   secondaryResult.classList.toggle("is-warning", hasOutOfRangeRow);
@@ -5327,6 +5605,7 @@ function handleDrugChange() {
 
 function handleSessionInputChange() {
   commitSingleDrugStateFromView();
+  updateDrugUI();
   clearResult();
 }
 
@@ -5334,6 +5613,65 @@ function handleDrugSettingsChange() {
   commitSingleDrugStateFromView();
   updateDrugUI();
   clearResult();
+}
+
+function handleNitroglycerinDoseViewChange() {
+  const selectedDrug = getSelectedDrugDefinition();
+  const currentWeight = Number(inputs.weight.value);
+  const previousView = getPreferredNitroglycerinDoseView();
+  const nextView = getSelectedNitroglycerinDoseView();
+
+  if (!isNitroglycerinDrug(selectedDrug)) {
+    return;
+  }
+
+  if (previousView === nextView) {
+    return;
+  }
+
+  if (nextView === "mcg/kg/min" && !isPositiveNumber(currentWeight)) {
+    nitroglycerinDoseViewSelect.value = previousView;
+    if (nitroglycerinDoseViewHelp) {
+      nitroglycerinDoseViewHelp.textContent = t("nitroglycerin_unit_help_weight_needed");
+    }
+    errorMessage.textContent = t("validation_ntg_weight_for_kg_unit");
+    return;
+  }
+
+  const currentTargetDose = Number(inputs.targetDose.value);
+  const currentReferenceDoseList = parseDoseList(inputs.referenceDoseList.value);
+
+  if (isPositiveNumber(currentTargetDose)) {
+    const canonicalTargetDose = convertDoseValueToReferenceUnit(
+      currentTargetDose,
+      selectedDrug,
+      currentWeight,
+      previousView
+    );
+    inputs.targetDose.value = formatEditableDoseValue(
+      convertDoseValueForDisplay(canonicalTargetDose, selectedDrug, currentWeight, nextView)
+    );
+  }
+
+  if (currentReferenceDoseList) {
+    const canonicalReferenceDoseList = convertDoseListToReferenceUnit(
+      currentReferenceDoseList,
+      selectedDrug,
+      currentWeight,
+      previousView
+    );
+    inputs.referenceDoseList.value = formatEditableDoseList(
+      convertDoseListForDisplay(canonicalReferenceDoseList, selectedDrug, currentWeight, nextView)
+    );
+  }
+
+  updateSingleDrugState({
+    nitroglycerinDoseUnitView: nextView
+  });
+  commitSingleDrugStateFromView();
+  updateDrugUI();
+  clearResult();
+  errorMessage.textContent = "";
 }
 
 function handleFavoriteDrugToggle() {
@@ -5604,20 +5942,75 @@ function handleWorkspaceAddCard() {
   renderInfusionWorkspace();
 }
 
-function updateWorkspaceCardState(cardId, field, value) {
+function updateWorkspaceCardState(cardId, field, value, options) {
   const workspaceState = getInfusionWorkspaceState();
+  const sharedWeight = Number(workspaceState.sharedWeight);
   const updatedCards = workspaceState.cards.map(function (card) {
     if (card.cardId !== cardId) {
       return card;
     }
 
+    const preset = getDrugPresetById(card.selectedDrugId);
+
     if (field === "selectedDrugId") {
-      const preset = getDrugPresetById(value);
+      const nextPreset = getDrugPresetById(value);
       return normalizeInfusionWorkspaceCardState({
         ...card,
-        selectedDrugId: preset.id,
-        concentration: String(preset.concentration),
-        targetDose: String(preset.referenceDoses[2] || preset.referenceDoses[0] || card.targetDose)
+        selectedDrugId: nextPreset.id,
+        concentration: String(nextPreset.concentration),
+        targetDose: String(nextPreset.referenceDoses[2] || nextPreset.referenceDoses[0] || card.targetDose),
+        nitroglycerinDoseUnitView: isNitroglycerinDrug(nextPreset)
+          ? sanitizeNitroglycerinDoseUnitView(card.nitroglycerinDoseUnitView)
+          : "mcg/min"
+      });
+    }
+
+    if (field === "nitroglycerinDoseUnitView") {
+      if (!isNitroglycerinDrug(preset)) {
+        return card;
+      }
+
+      const nextView = sanitizeNitroglycerinDoseUnitView(value);
+      if (nextView === "mcg/kg/min" && !isPositiveNumber(sharedWeight)) {
+        workspaceHelp.textContent = t("validation_ntg_weight_for_kg_unit");
+        return card;
+      }
+
+      return normalizeInfusionWorkspaceCardState({
+        ...card,
+        nitroglycerinDoseUnitView: nextView
+      });
+    }
+
+    if (field === "targetDose") {
+      if (!isNitroglycerinDrug(preset) || value === "") {
+        return normalizeInfusionWorkspaceCardState({
+          ...card,
+          targetDose: value
+        });
+      }
+
+      const parsedTargetDose = Number(value);
+      if (!Number.isFinite(parsedTargetDose)) {
+        return normalizeInfusionWorkspaceCardState({
+          ...card,
+          targetDose: value
+        });
+      }
+
+      const displayDoseUnit = sanitizeNitroglycerinDoseUnitView(
+        (options && options.displayDoseUnit) || getWorkspaceNitroglycerinDoseView(card, sharedWeight)
+      );
+      const canonicalTargetDose = convertDoseValueToReferenceUnit(
+        parsedTargetDose,
+        preset,
+        sharedWeight,
+        displayDoseUnit
+      );
+
+      return normalizeInfusionWorkspaceCardState({
+        ...card,
+        targetDose: String(canonicalTargetDose)
       });
     }
 
@@ -5723,7 +6116,14 @@ function handleWorkspaceCardInput(event) {
     return;
   }
 
-  updateWorkspaceCardState(input.dataset.workspaceCardId, input.dataset.workspaceField, input.value);
+  updateWorkspaceCardState(
+    input.dataset.workspaceCardId,
+    input.dataset.workspaceField,
+    input.value,
+    {
+      displayDoseUnit: input.dataset.workspaceDoseDisplayUnit
+    }
+  );
 }
 
 function handleWorkspaceCardChange(event) {
@@ -5733,7 +6133,14 @@ function handleWorkspaceCardChange(event) {
     return;
   }
 
-  updateWorkspaceCardState(input.dataset.workspaceCardId, input.dataset.workspaceField, input.value);
+  updateWorkspaceCardState(
+    input.dataset.workspaceCardId,
+    input.dataset.workspaceField,
+    input.value,
+    {
+      displayDoseUnit: input.dataset.workspaceDoseDisplayUnit
+    }
+  );
   renderInfusionWorkspace();
 }
 
@@ -5883,6 +6290,9 @@ favoriteDrugButton.addEventListener("click", handleFavoriteDrugToggle);
 favoriteDrugsContainer.addEventListener("click", handleQuickDrugSelect);
 recentDrugsContainer.addEventListener("click", handleQuickDrugSelect);
 drugDilutionButton.addEventListener("click", handleDilutionApply);
+if (nitroglycerinDoseViewSelect) {
+  nitroglycerinDoseViewSelect.addEventListener("change", handleNitroglycerinDoseViewChange);
+}
 form.addEventListener("submit", handleSubmit);
 resetButton.addEventListener("click", resetInfusionForm);
 pediatricDrugSelect.addEventListener("change", handlePediatricDrugChange);

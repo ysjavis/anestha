@@ -117,9 +117,6 @@
             <p class="calculator-description" data-i18n="infusion_description">
               환자 체중과 약물 농도를 기준으로 dose와 infusion rate를 빠르게 계산합니다.
             </p>
-            <p id="multi-drug-warning" class="reference-note hidden" data-i18n="multi_drug_note">
-              Multi-drug workflow 준비: 현재 화면의 각 계산은 독립적으로 수행됩니다. 약물 상호작용, compatibility, 혼합 안정성, combined clinical effect는 평가하지 않습니다.
-            </p>
           </div>
 
           <div class="mode-selector infusion-submode-selector" role="tablist" aria-label="Infusion multi drug mode" data-i18n-aria-label="infusion_view_aria">
@@ -321,6 +318,21 @@
                 </label>
               </div>
 
+              <div id="nitroglycerin-dose-view-field" class="form-grid hidden">
+                <label class="field field-full">
+                  <span class="field-label" data-i18n="dose_unit_view">Dose Unit View</span>
+                  <div class="select-row">
+                    <select id="nitroglycerin-dose-view" name="nitroglycerin-dose-view">
+                      <option value="mcg/min">mcg/min</option>
+                      <option value="mcg/kg/min">mcg/kg/min</option>
+                    </select>
+                  </div>
+                  <p id="nitroglycerin-dose-view-help" class="helper-text" data-i18n="nitroglycerin_unit_help">
+                    Nitroglycerin keeps the label-style default in mcg/min. Weight-based view is available for clinical convenience.
+                  </p>
+                </label>
+              </div>
+
               <div class="mode-panels">
                 <section
                   id="infusion-mode-dose-to-rate"
@@ -414,7 +426,7 @@
           <div class="reference-panel">
             <p class="preset-summary-label" data-i18n="references">References</p>
             <ul id="infusion-reference-list" class="reference-list"></ul>
-            <p class="helper-text" data-i18n="current_references_verified">Current infusion references have been link-verified in the audit file.</p>
+            <p class="helper-text" data-i18n="current_references_verified">You can open each reference link and review the original source directly.</p>
             <p class="reference-note" data-i18n="infusion_reference_note">
               Label은 허가사항 기반 자료이고, Clinical과 Study-specific은 마취 관행 또는 특정 연구 상황을 요약한 자료입니다. 앱이 제시하는 범위는 절대적 표준 처방이 아니라 참고값이므로, 실제 사용 전 기관 프로토콜과 원문 레퍼런스를 함께 확인해야 합니다.
             </p>
@@ -816,7 +828,7 @@
           <div class="reference-panel">
             <p class="preset-summary-label" data-i18n="references">References</p>
             <ul id="pediatric-dose-reference-list" class="reference-list"></ul>
-            <p class="helper-text" data-i18n="pediatric_dosing_audit_note">Pediatric dosing reference links have been link-verified. Preset wording and source-to-logic review are still being refined.</p>
+            <p class="helper-text" data-i18n="pediatric_dosing_audit_note">Pediatric dosing presets are reference-only. Verify with your institutional protocol and current sources before use.</p>
           </div>
 
           <p id="pediatric-result-warning" class="result-warning" data-i18n="pediatric_result_warning_default">
@@ -843,7 +855,7 @@
           <div class="reference-panel">
             <p class="preset-summary-label" data-i18n="references">References</p>
             <ul id="pediatric-airway-reference-list" class="reference-list"></ul>
-            <p class="helper-text" data-i18n="pediatric_airway_audit_note">Pediatric airway reference links have been link-verified. Formula-to-source alignment should still be re-checked whenever sizing logic changes.</p>
+            <p class="helper-text" data-i18n="pediatric_airway_audit_note">Pediatric airway/ETT values are estimate references only. Always confirm size, depth, leak, and position clinically.</p>
           </div>
 
           <p id="pediatric-airway-result-warning" class="result-warning">
@@ -982,7 +994,7 @@
             <p class="calculator-kicker" data-i18n="support_kicker">Support</p>
             <h2 data-i18n="support_heading">Support Anestha</h2>
             <p class="calculator-description" data-i18n="support_description">
-              앱 업데이트, reference review, bug fix, usability 개선을 위한 support와 feedback를 한곳에서 정리합니다.
+              업데이트 지원과 feedback 채널을 한곳에서 확인할 수 있습니다.
             </p>
           </div>
 
@@ -991,17 +1003,14 @@
               <p class="support-card-kicker" data-i18n="support_donate_kicker">Support</p>
               <h3 id="support-donate-heading" data-i18n="support_donate_heading">Support ongoing updates</h3>
               <p class="support-card-description" data-i18n="support_donate_description">
-                이 앱이 도움이 되었다면 업데이트, reference audit, 유지보수를 위한 support를 보낼 수 있습니다.
+                이 앱이 도움이 되었다면 업데이트와 유지보수를 위한 support를 보낼 수 있습니다.
               </p>
               <div class="feedback-bar-links support-link-group">
                 <a id="support-toss-link" class="feedback-link-chip" href="#" target="_blank" rel="noreferrer noopener" data-i18n="support_toss">Support via Toss</a>
                 <a id="support-kofi-link" class="feedback-link-chip" href="#" target="_blank" rel="noreferrer noopener" data-i18n="support_kofi">Support via Ko-fi</a>
               </div>
               <p class="helper-text" data-i18n="support_donate_note">
-                한국 사용자 중심이면 Toss, 해외 결제나 카드 support까지 열어두려면 Ko-fi를 같이 두는 구성이 현실적입니다.
-              </p>
-              <p id="support-status" class="helper-text feedback-status hidden" data-i18n="support_status_unconfigured">
-                아직 실제 support 링크가 연결되지 않았습니다. `script.js`에서 Toss 또는 Ko-fi 링크를 설정하면 바로 사용할 수 있습니다.
+                Toss 또는 Ko-fi 중 편한 경로로 ongoing updates를 support할 수 있습니다.
               </p>
             </section>
 
@@ -1009,25 +1018,19 @@
               <p class="support-card-kicker" data-i18n="feedback_kicker">Feedback</p>
               <h3 id="support-feedback-heading" data-i18n="feedback_heading">Send Feedback</h3>
               <p class="support-card-description" data-i18n="feedback_support_description">
-                bug, reference issue, usability suggestion은 support 탭에서 함께 받는 쪽이 더 자연스럽습니다. 유지보수와 업데이트 우선순위를 같은 흐름에서 관리할 수 있습니다.
+                bug, reference issue, usability suggestion을 이곳에서 바로 보낼 수 있습니다.
               </p>
               <div class="feedback-bar-links support-link-group">
                 <a id="feedback-general-link" class="feedback-link-chip" href="#" target="_blank" rel="noreferrer noopener" data-i18n="feedback_general">General feedback</a>
                 <a id="feedback-reference-link" class="feedback-link-chip" href="#" target="_blank" rel="noreferrer noopener" data-i18n="feedback_reference">Report reference issue</a>
                 <a id="feedback-bug-link" class="feedback-link-chip" href="#" target="_blank" rel="noreferrer noopener" data-i18n="feedback_bug">Report bug</a>
               </div>
-              <p class="helper-text" data-i18n="feedback_support_note">
-                현재는 세 버튼이 같은 Google Form으로 연결되어 있어도 괜찮습니다. 나중에 general / reference / bug를 별도 form으로 분리할 수 있습니다.
-              </p>
-              <p id="feedback-status" class="helper-text feedback-status hidden" data-i18n="feedback_status_unconfigured">
-                아직 실제 피드백 수신 주소가 연결되지 않았습니다. `script.js`에서 feedback 링크나 이메일을 설정하면 바로 사용할 수 있습니다.
-              </p>
             </section>
           </div>
 
           <div class="support-legal">
             <p class="helper-text" data-i18n="support_legal_note">
-              Before broader sharing, keep basic privacy and disclaimer pages available so users can understand what is stored locally and how the app should be used.
+              앱 사용 범위와 로컬 저장 항목은 Privacy / Disclaimer에서 확인할 수 있습니다.
             </p>
             <div class="feedback-bar-links support-link-group">
               <a class="feedback-link-chip" href="privacy.html" data-i18n="privacy_page_link">Privacy</a>
