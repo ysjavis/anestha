@@ -44,7 +44,6 @@
       </header>
 
       <section class="calculator-switcher" aria-label="계산기 선택" data-i18n-aria-label="calculator_switcher_aria">
-        <p class="switcher-label" data-i18n="available_calculators">Available Calculators</p>
         <div class="calculator-tabs" role="tablist" aria-label="계산기 목록" data-i18n-aria-label="calculator_tablist_aria">
           <button
             type="button"
@@ -120,7 +119,6 @@
           </div>
 
           <div class="mode-selector infusion-submode-selector" role="tablist" aria-label="Infusion multi drug mode" data-i18n-aria-label="infusion_view_aria">
-            <p class="mode-title" data-i18n="infusion_view_title">Infusion View</p>
             <div class="mode-options">
               <button
                 type="button"
@@ -156,7 +154,6 @@
         <section class="calculator-panel">
           <form id="infusion-form" novalidate>
             <div class="mode-selector infusion-submode-selector" role="tablist" aria-label="Infusion Pump mode" data-i18n-aria-label="infusion_mode_aria">
-              <p class="mode-title" data-i18n="calculation_mode">Calculation Mode</p>
               <div class="mode-options">
                 <button
                   type="button"
@@ -177,16 +174,6 @@
                   aria-controls="infusion-mode-rate-to-dose"
                 >
                   <span data-i18n="rate_to_dose">Infusion Rate -> Dose</span>
-                </button>
-                <button
-                  type="button"
-                  class="mode-option-button"
-                  data-infusion-mode-tab="reference-table"
-                  role="tab"
-                  aria-selected="false"
-                  aria-controls="infusion-mode-reference-table"
-                >
-                  <span data-i18n="reference_dosing_table">Reference Dosing Table</span>
                 </button>
               </div>
             </div>
@@ -280,9 +267,14 @@
                   <span class="preset-summary-label" data-i18n="last_reviewed">Last reviewed</span>
                   <span id="drug-last-reviewed-text" class="preset-summary-value">-</span>
                 </div>
-                <p class="reference-note" data-i18n="infusion_reference_note">
-                  Reference range는 계산 편의를 위한 preset입니다. Label, Clinical, Study-specific는 서로 다른 맥락의 자료일 수 있으므로 절대적 표준 처방으로 해석하지 말고, 기관 프로토콜과 원문 레퍼런스를 함께 확인해야 합니다.
-                </p>
+                <details class="context-disclosure">
+                  <summary class="context-disclosure-summary" data-i18n="view_reference_interpretation">Reference interpretation</summary>
+                  <div class="context-disclosure-content">
+                    <p class="reference-note" data-i18n="infusion_reference_note">
+                      Reference range는 계산 편의를 위한 preset입니다. Label, Clinical, Study-specific는 서로 다른 맥락의 자료일 수 있으므로 절대적 표준 처방으로 해석하지 말고, 기관 프로토콜과 원문 레퍼런스를 함께 확인해야 합니다.
+                    </p>
+                  </div>
+                </details>
               </div>
 
               <div id="custom-drug-fields" class="form-grid hidden">
@@ -418,10 +410,15 @@
           <div class="reference-panel">
             <p class="preset-summary-label" data-i18n="references">References</p>
             <ul id="infusion-reference-list" class="reference-list"></ul>
-            <p class="helper-text" data-i18n="current_references_verified">You can open each reference link and review the original source directly.</p>
-            <p class="reference-note" data-i18n="infusion_reference_note">
-              Label은 허가사항 기반 자료이고, Clinical과 Study-specific은 마취 관행 또는 특정 연구 상황을 요약한 자료입니다. 앱이 제시하는 범위는 절대적 표준 처방이 아니라 참고값이므로, 실제 사용 전 기관 프로토콜과 원문 레퍼런스를 함께 확인해야 합니다.
-            </p>
+            <details class="context-disclosure context-disclosure-compact">
+              <summary class="context-disclosure-summary" data-i18n="view_reference_checklist">How to verify references</summary>
+              <div class="context-disclosure-content">
+                <p class="helper-text" data-i18n="current_references_verified">You can open each reference link and review the original source directly.</p>
+                <p class="reference-note" data-i18n="infusion_reference_note">
+                  Label은 허가사항 기반 자료이고, Clinical과 Study-specific은 마취 관행 또는 특정 연구 상황을 요약한 자료입니다. 앱이 제시하는 범위는 절대적 표준 처방이 아니라 참고값이므로, 실제 사용 전 기관 프로토콜과 원문 레퍼런스를 함께 확인해야 합니다.
+                </p>
+              </div>
+            </details>
           </div>
 
           <div id="reference-table-card" class="reference-table-card hidden">
@@ -442,9 +439,14 @@
                 <tbody id="reference-table-body"></tbody>
               </table>
             </div>
-            <p class="reference-note">
-              <span data-i18n="reference_table_info_only">Reference Dosing Table is informational only. Verify with institutional protocols.</span>
-            </p>
+            <details class="context-disclosure context-disclosure-compact">
+              <summary class="context-disclosure-summary" data-i18n="view_reference_table_note">Reference table note</summary>
+              <div class="context-disclosure-content">
+                <p class="reference-note">
+                  <span data-i18n="reference_table_info_only">Reference Dosing Table is informational only. Verify with institutional protocols.</span>
+                </p>
+              </div>
+            </details>
           </div>
 
           <p id="result-warning" class="result-warning">
@@ -467,9 +469,14 @@
             <p class="calculator-description" data-i18n="multi_drug_description">
               한 환자에서 여러 infusion drug를 같은 화면에 쌓아 보는 multi-drug 화면입니다. 각 card는 shared weight를 사용할 수 있지만 계산은 서로 독립적으로 수행됩니다.
             </p>
-            <p class="reference-note" data-i18n="multi_drug_note">
-              Multi Drug cards do not assess drug-drug interactions, compatibility, or combined clinical effects.
-            </p>
+            <details class="context-disclosure context-disclosure-compact">
+              <summary class="context-disclosure-summary" data-i18n="view_multi_drug_caution">Multi Drug caution</summary>
+              <div class="context-disclosure-content">
+                <p class="reference-note" data-i18n="multi_drug_note">
+                  Multi Drug cards do not assess drug-drug interactions, compatibility, or combined clinical effects.
+                </p>
+              </div>
+            </details>
           </div>
 
           <div class="workspace-toolbar">
@@ -686,9 +693,14 @@
                   <span class="preset-summary-label" data-i18n="notes">Notes</span>
                   <span id="pediatric-notes-text" class="preset-summary-value">-</span>
                 </div>
-                <p class="reference-note" data-i18n="pediatric_reference_note">
-                  Pediatric dosing presets are examples only. Verify with institutional protocols and current references.
-                </p>
+                <details class="context-disclosure context-disclosure-compact">
+                  <summary class="context-disclosure-summary" data-i18n="view_pediatric_caution">Pediatric caution</summary>
+                  <div class="context-disclosure-content">
+                    <p class="reference-note" data-i18n="pediatric_reference_note">
+                      Pediatric dosing presets are examples only. Verify with institutional protocols and current references.
+                    </p>
+                  </div>
+                </details>
               </div>
 
               <div class="form-grid">
@@ -721,9 +733,14 @@
                 </label>
               </div>
 
-              <p id="pediatric-age-warning" class="reference-note">
-                Weight-based estimate only. Neonates, infants, and selected drugs may require age-specific adjustment.
-              </p>
+              <details class="context-disclosure context-disclosure-compact">
+                <summary class="context-disclosure-summary" data-i18n="view_age_adjustment_caution">Age adjustment caution</summary>
+                <div class="context-disclosure-content">
+                  <p id="pediatric-age-warning" class="reference-note">
+                    Weight-based estimate only. Neonates, infants, and selected drugs may require age-specific adjustment.
+                  </p>
+                </div>
+              </details>
               </section>
 
               <section id="pediatric-mode-airway" class="form-stack hidden" data-pediatric-mode-panel="airway">
@@ -740,9 +757,14 @@
                     <span class="preset-summary-label" data-i18n="other_airway_tools">Other airway tools</span>
                     <span class="preset-summary-value" data-i18n="airway_tools_reference_guides">Supraglottic, oral airway, nasal airway, laryngoscope, face mask reference guides</span>
                   </div>
-                  <p class="reference-note">
-                    <span data-i18n="airway_equipment_reference_note">Airway equipment guidance is for reference only. Verify fit, anatomy, device availability, and local practice.</span>
-                  </p>
+                  <details class="context-disclosure context-disclosure-compact">
+                    <summary class="context-disclosure-summary" data-i18n="view_airway_caution">Airway caution</summary>
+                    <div class="context-disclosure-content">
+                      <p class="reference-note">
+                        <span data-i18n="airway_equipment_reference_note">Airway equipment guidance is for reference only. Verify fit, anatomy, device availability, and local practice.</span>
+                      </p>
+                    </div>
+                  </details>
                 </div>
 
                 <div class="form-grid">
@@ -787,9 +809,14 @@
                   </label>
                 </div>
 
-                <p id="pediatric-airway-warning" class="reference-note">
-                  <span data-i18n="airway_device_select_note">Select an airway device type to see the matching guide. Confirm anatomy, fit, and clinical position before use.</span>
-                </p>
+                <details class="context-disclosure context-disclosure-compact">
+                  <summary class="context-disclosure-summary" data-i18n="view_airway_device_note">Device selection note</summary>
+                  <div class="context-disclosure-content">
+                    <p id="pediatric-airway-warning" class="reference-note">
+                      <span data-i18n="airway_device_select_note">Select an airway device type to see the matching guide. Confirm anatomy, fit, and clinical position before use.</span>
+                    </p>
+                  </div>
+                </details>
               </section>
             </div>
 
@@ -820,7 +847,12 @@
           <div class="reference-panel">
             <p class="preset-summary-label" data-i18n="references">References</p>
             <ul id="pediatric-dose-reference-list" class="reference-list"></ul>
-            <p class="helper-text" data-i18n="pediatric_dosing_audit_note">Pediatric dosing presets are reference-only. Verify with your institutional protocol and current sources before use.</p>
+            <details class="context-disclosure context-disclosure-compact">
+              <summary class="context-disclosure-summary" data-i18n="view_reference_checklist">How to verify references</summary>
+              <div class="context-disclosure-content">
+                <p class="helper-text" data-i18n="pediatric_dosing_audit_note">Pediatric dosing presets are reference-only. Verify with your institutional protocol and current sources before use.</p>
+              </div>
+            </details>
           </div>
 
           <p id="pediatric-result-warning" class="result-warning" data-i18n="pediatric_result_warning_default">
@@ -847,7 +879,12 @@
           <div class="reference-panel">
             <p class="preset-summary-label" data-i18n="references">References</p>
             <ul id="pediatric-airway-reference-list" class="reference-list"></ul>
-            <p class="helper-text" data-i18n="pediatric_airway_audit_note">Pediatric airway/ETT values are estimate references only. Always confirm size, depth, leak, and position clinically.</p>
+            <details class="context-disclosure context-disclosure-compact">
+              <summary class="context-disclosure-summary" data-i18n="view_reference_checklist">How to verify references</summary>
+              <div class="context-disclosure-content">
+                <p class="helper-text" data-i18n="pediatric_airway_audit_note">Pediatric airway/ETT values are estimate references only. Always confirm size, depth, leak, and position clinically.</p>
+              </div>
+            </details>
           </div>
 
           <p id="pediatric-airway-result-warning" class="result-warning">
@@ -870,9 +907,14 @@
             <p class="calculator-description" data-i18n="dantrolene_description">
               체중과 제형을 기준으로 MH 초기 용량, 누적 최대 용량, 예상 vial 수를 빠르게 확인합니다.
             </p>
-            <p class="reference-note" data-i18n="dantrolene_note">
-              응급 상황에서 빠르게 참고하기 위한 화면입니다. 실제 crisis management workflow, 재투여, cooling, labs, ICU 계획은 별도 MH protocol로 확인해야 합니다.
-            </p>
+            <details class="context-disclosure context-disclosure-compact">
+              <summary class="context-disclosure-summary" data-i18n="view_mh_workflow_note">MH workflow note</summary>
+              <div class="context-disclosure-content">
+                <p class="reference-note" data-i18n="dantrolene_note">
+                  응급 상황에서 빠르게 참고하기 위한 화면입니다. 실제 crisis management workflow, 재투여, cooling, labs, ICU 계획은 별도 MH protocol로 확인해야 합니다.
+                </p>
+              </div>
+            </details>
           </div>
 
           <form id="dantrolene-form" novalidate>

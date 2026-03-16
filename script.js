@@ -272,6 +272,16 @@ const TRANSLATIONS = {
     apply: "Apply",
     source: "Source",
     last_reviewed: "Last reviewed",
+    view_reference_interpretation: "레퍼런스 해석 보기",
+    view_reference_checklist: "레퍼런스 확인 방법",
+    view_reference_table_note: "Reference Table 안내",
+    view_multi_drug_caution: "Multi Drug 주의사항",
+    view_pediatric_caution: "Pediatric 주의사항",
+    view_age_adjustment_caution: "연령 보정 주의사항",
+    view_airway_caution: "Airway 주의사항",
+    view_airway_device_note: "장비 선택 안내",
+    view_mh_workflow_note: "MH workflow 안내",
+    view_workspace_range_basis: "범위 근거 보기",
     infusion_reference_note: "Reference range는 계산 편의를 위한 preset입니다. Label, Clinical, Study-specific는 서로 다른 맥락의 자료일 수 있으므로 절대적 표준 처방으로 해석하지 말고, 기관 프로토콜과 원문 레퍼런스를 함께 확인해야 합니다.",
     custom_drug_name: "Custom Drug Name",
     custom_notes: "추가 메모",
@@ -594,6 +604,16 @@ const TRANSLATIONS = {
     apply: "Apply",
     source: "Source",
     last_reviewed: "Last reviewed",
+    view_reference_interpretation: "Reference interpretation",
+    view_reference_checklist: "How to verify references",
+    view_reference_table_note: "Reference table note",
+    view_multi_drug_caution: "Multi Drug caution",
+    view_pediatric_caution: "Pediatric caution",
+    view_age_adjustment_caution: "Age-adjustment caution",
+    view_airway_caution: "Airway caution",
+    view_airway_device_note: "Device selection note",
+    view_mh_workflow_note: "MH workflow note",
+    view_workspace_range_basis: "View range basis",
     infusion_reference_note: "The displayed reference range is a calculator preset for workflow convenience. Label, Clinical, and Study-specific sources may reflect different contexts, so do not treat them as a single universal dosing standard.",
     custom_drug_name: "Custom Drug Name",
     custom_notes: "Custom Notes",
@@ -1810,7 +1830,7 @@ function getDisplaySourceLabel(rawSource) {
   }
 
   if (source === "Editable local preset") {
-    return currentLanguage === "en" ? "Locally curated reference preset" : "로컬 큐레이션 reference preset";
+    return currentLanguage === "en" ? "Literature-based summary value" : "문헌 기반 요약값";
   }
 
   return source;
@@ -3467,7 +3487,7 @@ function sanitizeSelectedDrugId(value) {
 }
 
 function sanitizeActiveMode(value) {
-  const allowedModes = ["dose-to-rate", "rate-to-dose", "reference-table"];
+  const allowedModes = ["dose-to-rate", "rate-to-dose"];
   return allowedModes.includes(value) ? value : "dose-to-rate";
 }
 
@@ -4879,18 +4899,23 @@ function renderInfusionWorkspace() {
           ${isOutOfRange ? `<p class="workspace-card-warning">${t("workspace_out_of_range")}</p>` : ""}
         </div>
 
-        <p class="workspace-card-reference-note">
-          ${t("workspace_reference_range_note", {
-            min: formatNumber(displayRangeMin, 3),
-            max: formatNumber(displayRangeMax, 3),
-            unit: displayDoseUnit,
-            sharedWeightNote: usesWeight ? "" : t("workspace_shared_weight_not_used")
-          })}<br>
-          ${t("workspace_use_case_note", { useCase: getDrugUseCaseSummary(preset) })}<br>
-          ${t("workspace_range_basis_note", { basis: getRangeSourceSummary(preset) })}<br>
-          ${t("workspace_rationale_note", { rationale: getRangeRationale(preset) })}<br>
-          ${t("workspace_standard_dilution_note", { dilution: formatDilutionPreset(preset.dilutionPresets[0] || null) })}
-        </p>
+        <details class="context-disclosure context-disclosure-compact">
+          <summary class="context-disclosure-summary">${t("view_workspace_range_basis")}</summary>
+          <div class="context-disclosure-content">
+            <p class="workspace-card-reference-note">
+              ${t("workspace_reference_range_note", {
+                min: formatNumber(displayRangeMin, 3),
+                max: formatNumber(displayRangeMax, 3),
+                unit: displayDoseUnit,
+                sharedWeightNote: usesWeight ? "" : t("workspace_shared_weight_not_used")
+              })}<br>
+              ${t("workspace_use_case_note", { useCase: getDrugUseCaseSummary(preset) })}<br>
+              ${t("workspace_range_basis_note", { basis: getRangeSourceSummary(preset) })}<br>
+              ${t("workspace_rationale_note", { rationale: getRangeRationale(preset) })}<br>
+              ${t("workspace_standard_dilution_note", { dilution: formatDilutionPreset(preset.dilutionPresets[0] || null) })}
+            </p>
+          </div>
+        </details>
 
         <div class="quick-drug-actions">
           <button
@@ -4960,10 +4985,6 @@ function validateInfusionValues(values) {
 
   if (values.mode === "rate-to-dose" && !isPositiveNumber(values.pumpRate)) {
     return t("validation_pump_rate");
-  }
-
-  if (values.mode === "reference-table" && !values.referenceDoseList) {
-    return t("validation_reference_dose_list");
   }
 
   return "";
@@ -5581,7 +5602,7 @@ function handleSubmit(event) {
     return;
   }
 
-  showReferenceTableResult(values);
+  showDoseToRateResult(values);
 }
 
 function resetInfusionForm() {
