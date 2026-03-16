@@ -1533,6 +1533,22 @@ const REFERENCE_REGISTRY = {
     usageNote: "Operating-room reference: continuous IV nitroglycerin is commonly started at 5 mcg/min and titrated every 3-5 minutes. Common OR uses include hypertensive urgency and myocardial ischemia.",
     lastReviewed: "2026-03-15"
   },
+  infusion_nicardipine_dailymed: {
+    title: "Nicardipine label dose",
+    source: "DailyMed",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=76fc52c1-d975-4968-82bb-0acf4f67a07e",
+    linkLabel: "Open full label",
+    usageNote: "Label dosing for continuous IV infusion typically starts at 5 mg/hr with stepwise titration (often by 2.5 mg/hr) to target blood pressure, up to 15 mg/hr in the common range.",
+    lastReviewed: "2026-03-16"
+  },
+  infusion_nicardipine_periop_study: {
+    title: "Nicardipine anesthesia emergence study",
+    source: "PubMed",
+    url: "https://pubmed.ncbi.nlm.nih.gov/30625931/",
+    linkLabel: "Open abstract",
+    usageNote: "Study-specific context: during emergence from total intravenous anesthesia, nicardipine infusion around 2 mcg/kg/min helped blunt blood pressure rise. This reflects a selected protocol, not a universal default range.",
+    lastReviewed: "2026-03-16"
+  },
   infusion_dopamine_dailymed: {
     title: "Dopamine label dose",
     source: "DailyMed",
@@ -2411,6 +2427,44 @@ const DRUG_PRESETS = [
     metadata: {
       source: "Editable local preset",
       lastReviewed: "2026-03-14"
+    }
+  },
+  {
+    id: "nicardipine",
+    name: "Nicardipine",
+    concentration: 0.1,
+    concentrationUnit: "mg/mL",
+    referenceDoses: [2.5, 5, 7.5, 10, 12.5, 15],
+    referenceRange: {
+      min: 2.5,
+      max: 15,
+      unit: "mg/hr",
+      timeUnit: "hr",
+      weightBased: false
+    },
+    useCase: "vasopressor-support",
+    useCaseLabel: "Perioperative blood pressure control / vasodilator infusion",
+    rangeSourceType: "label",
+    rangeSourceNote: "Label-oriented nicardipine infusion range expressed as absolute mg/hr titration.",
+    rangeRationale: "Kept in absolute mg/hr because the official infusion titration framework is presented that way; this avoids forcing a misleading weight-based default.",
+    notes: "Reference range follows common label titration (5 mg/hr start, titrate by 2.5 mg/hr, usual upper band around 15 mg/hr). Study-based perioperative protocols may report mcg/kg/min in selected settings.",
+    dilutionPresets: [
+      {
+        id: "nicardipine-25mg-250ml",
+        label: "25 mg / 250 mL",
+        drugAmount: 25,
+        drugAmountUnit: "mg",
+        finalVolume: 250,
+        finalVolumeUnit: "mL",
+        finalConcentration: 0.1,
+        finalConcentrationUnit: "mg/mL",
+        note: "Common infusion concentration"
+      }
+    ],
+    references: ["infusion_nicardipine_dailymed", "infusion_nicardipine_periop_study"],
+    metadata: {
+      source: "Editable local preset",
+      lastReviewed: "2026-03-16"
     }
   },
   {
@@ -4712,7 +4766,7 @@ function getInfusionDrugCategory(drugId) {
     };
   }
 
-  if (["nitroglycerin"].includes(drugId)) {
+  if (["nitroglycerin", "nicardipine"].includes(drugId)) {
     return {
       key: "vasodilator",
       label: "Vasodilator"
