@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fbfd" />
+      <stop offset="100%" stop-color="#e7eff6" />
+    </linearGradient>
+    <linearGradient id="card" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f766e" />
+      <stop offset="100%" stop-color="#0a5c56" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <circle cx="1060" cy="92" r="180" fill="#d7f3ef" opacity="0.55" />
+  <circle cx="148" cy="554" r="220" fill="#dbe7f3" opacity="0.75" />
+  <rect x="90" y="86" width="1020" height="458" rx="42" fill="#ffffff" opacity="0.96" />
+  <rect x="126" y="124" width="180" height="180" rx="44" fill="url(#card)" />
+  <path
+    d="M216 164L261 282H239L229 256H203L193 282H171L216 164ZM221 238L216 223L211 238H221Z"
+    fill="#f8fbfd"
+  />
+  <text x="346" y="224" font-size="96" font-family="Segoe UI, Arial, sans-serif" font-weight="800" fill="#142033">Anestha</text>
+  <text x="348" y="294" font-size="30" font-family="Segoe UI, Arial, sans-serif" font-weight="600" fill="#0f766e" letter-spacing="4">ANESTHESIA CALCULATORS</text>
+  <text x="128" y="396" font-size="40" font-family="Segoe UI, Arial, sans-serif" fill="#5f6c80">
+    Infusion, dilution, pediatric, and MH quick-reference tools
+  </text>
+  <text x="128" y="454" font-size="40" font-family="Segoe UI, Arial, sans-serif" fill="#5f6c80">
+    designed for fast review in anesthesia workflows.
+  </text>
+  <text x="128" y="528" font-size="28" font-family="Segoe UI, Arial, sans-serif" fill="#7a8798">
+    Reference-oriented tool. Independent verification remains necessary.
+  </text>
+</svg>

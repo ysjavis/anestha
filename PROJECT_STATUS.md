@@ -14,24 +14,24 @@ Current main files:
 - [index.html](/Users/mymacbookprom2/Desktop/ Coding projects/anestha/index.html)
 - [style.css](/Users/mymacbookprom2/Desktop/ Coding projects/anestha/style.css)
 - [script.js](/Users/mymacbookprom2/Desktop/ Coding projects/anestha/script.js)
+- [CHANGELOG.md](/Users/mymacbookprom2/Desktop/ Coding projects/anestha/CHANGELOG.md)
+- [VERSIONING_AND_RELEASE.md](/Users/mymacbookprom2/Desktop/ Coding projects/anestha/VERSIONING_AND_RELEASE.md)
 
 ## Current App Structure
 
 Top-level calculator tabs:
 - `Infusion`
+- `Dilution`
 - `Pediatric`
 - `MH / Dantrolene`
-- `Dilution`
-- `Opioid`
+- `Support`
 
 Implemented calculators:
 - `Infusion`
+- `Dilution`
 - `Pediatric`
 - `MH / Dantrolene`
-
-Placeholder / not yet implemented:
-- `Dilution`
-- `Opioid`
+- `Support`
 
 ## Infusion Status
 
@@ -53,6 +53,7 @@ Supported features:
 - favorites / recent drugs
 - result references
 - localStorage restore
+- `KO / EN` language toggle (medical terms remain primarily English in `KO` mode)
 
 Current infusion presets include:
 - norepinephrine
@@ -64,14 +65,16 @@ Current infusion presets include:
 - dobutamine
 - milrinone
 - isoproterenol
+- remimazolam (GA induction)
+- remimazolam (GA maintenance)
 
 Infusion references:
 - connected through `REFERENCE_REGISTRY`
 - mostly precise `DailyMed` label links
 
-### Workspace
+### Multi Drug
 
-Implemented inside `Infusion > Workspace`:
+Implemented inside `Infusion > Multi Drug`:
 - shared patient weight
 - multiple infusion cards
 - `+ Add drug`
@@ -81,13 +84,14 @@ Implemented inside `Infusion > Workspace`:
 - template save / load / delete
 - localStorage restore
 
-Workspace behavior:
+Multi Drug behavior:
 - cards are independent calculations
 - no drug-drug interaction logic
 - no compatibility / combined effect logic
-- shared weight applies to all workspace cards
+- shared weight applies to all multi-drug cards when the drug uses weight-based dosing
+- some drugs now use absolute-dose mode (`mcg/min`, `unit/min`) and do not require shared weight
 
-Current workspace card UI:
+Current multi-drug card UI:
 - drug name shown clearly in header
 - category chip shown
 - subtle accent border by drug group
@@ -95,9 +99,11 @@ Current workspace card UI:
 - target dose editable
 - `Apply standard dilution`
 - reference range shown
+- range-type badge shown (`Label` / `Clinical`)
+- source note and rationale shown in card reference note
 
 Current limits:
-- maximum 6 workspace cards
+- maximum 6 multi-drug cards
 - maximum 10 saved templates
 
 Template behavior:
@@ -186,6 +192,18 @@ Current MH quick guide sections:
 - `Repeat bolus`
 - `Maintenance`
 
+## Support Status
+
+Implemented as separate calculator tab:
+- feedback access
+- support/donation structure
+- donation area hidden until real support links are configured
+
+Current support behavior:
+- `Feedback` is available through Google Form
+- `Support` links can later point to `Toss` and/or `Ko-fi`
+- donation UI remains hidden until a real support URL is added
+
 ## Architecture Notes
 
 `script.js` is already organized into clearer layers:
@@ -205,6 +223,11 @@ There is already groundwork for future expansion:
 - `singleDrug` can later become one infusion card in a larger `Case View`
 - drug/reference structures are moving toward reusable catalog patterns
 - `REFERENCE_REGISTRY` is in place for updateable medical sources
+- infusion presets now carry explicit range-source metadata (`Label` vs `Clinical`)
+- infusion reference audit is tracked in [INFUSION_REFERENCE_AUDIT.md](/Users/mymacbookprom2/Desktop/ Coding projects/anestha/INFUSION_REFERENCE_AUDIT.md)
+- pediatric reference links are verified, and source-to-logic review notes are tracked in [PEDIATRIC_REFERENCE_AUDIT.md](/Users/mymacbookprom2/Desktop/ Coding projects/anestha/PEDIATRIC_REFERENCE_AUDIT.md)
+- release/version workflow is documented in [VERSIONING_AND_RELEASE.md](/Users/mymacbookprom2/Desktop/ Coding projects/anestha/VERSIONING_AND_RELEASE.md)
+- colleague-facing changes can be tracked in [CHANGELOG.md](/Users/mymacbookprom2/Desktop/ Coding projects/anestha/CHANGELOG.md)
 
 ## Product Direction
 
@@ -212,7 +235,7 @@ There is already groundwork for future expansion:
 
 Current product principle:
 - this app does **not** currently assess drug interactions or recommend drug combinations
-- workspace templates are routine setup helpers only
+- multi-drug templates are routine setup helpers only
 
 **Release & QA Checklist:**
 - [ ] Review all reference values before release
@@ -222,13 +245,16 @@ Current product principle:
 ### Focus Area 1: Infusion (Infusion Pump Calculator)
 *   **Enhancements:**
     - [x] Indicate rate limits visually (e.g., turn text/background red if target rate exceeds reference range).
-    - [ ] Create distinct Case Workspaces (Case 1, Case 2...) via horizontal tabs or similar UI layout.
+    - [ ] Create distinct Multi Drug case workspaces (Case 1, Case 2...) via horizontal tabs or similar UI layout.
 *   **Implemented Features (Review list):**
     - [x] Drug presets included: NE, Epi, Phenylephrine, Vasopressin, NTG, Dopamine, Dobutamine, Milrinone, Isoproterenol.
+    - [x] Remimazolam split into GA induction and GA maintenance presets, with procedural sedation kept as a separately labeled reference context.
     - [x] Standard dilution presets displayed.
     - [x] Favorites and recent drugs list.
     - [x] Multiple drugs on one page (vertical stack with Add Drug button).
     - [x] Linked drug cards with dosing and references.
+    - [x] Range source badges and rationale notes shown for infusion presets.
+    - [x] Audit file added to track calculator range basis by drug.
 
 ### Focus Area 2: Pediatric (Pediatric Anesthesia)
 *   **Dosing Enhancements:**
@@ -302,7 +328,7 @@ If this project folder is moved and a new chat must be started:
 
 Provide this summary plus the new project path, and mention:
 - the project is plain HTML/CSS/JavaScript
-- `Infusion > Single Drug / Workspace` is already implemented
+- `Infusion > Single Drug / Multi Drug` is already implemented
 - templates are localStorage-based
 - `Pediatric` and `MH / Dantrolene` are already active
 
@@ -310,5 +336,10 @@ Provide this summary plus the new project path, and mention:
 
 During recent work:
 - `node --check script.js` has been used for syntax validation
+- infusion reference ranges were split into `Label`, `Clinical`, and `Study-specific` contexts
+- `Infusion > Workspace` user-facing naming was updated to `Infusion > Multi Drug`
+- infusion reference links were manually rechecked and marked `Verified` in the audit file
+- pediatric dosing reference links were manually rechecked and official glycopyrrolate sourcing was restored
+- pediatric airway references were rechecked and unstable face-mask links were replaced with more stable manufacturer URLs
 
 Runtime browser testing has still been limited and should be done manually before release.

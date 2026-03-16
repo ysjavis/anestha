@@ -15,6 +15,9 @@ const concentrationExplanation = document.getElementById("concentration-explanat
 const rateExplanation = document.getElementById("rate-explanation");
 const infusionReferenceList = document.getElementById("infusion-reference-list");
 const resultWarning = document.getElementById("result-warning");
+const resultRangeBadge = document.getElementById("result-range-badge");
+const resultUseCaseText = document.getElementById("result-use-case-text");
+const resultUseCaseBadge = document.getElementById("result-use-case-badge");
 const multiDrugWarning = document.getElementById("multi-drug-warning");
 const drugSelect = document.getElementById("drug-select");
 const drugHelp = document.getElementById("drug-help");
@@ -23,6 +26,13 @@ const favoriteDrugsContainer = document.getElementById("favorite-drugs");
 const recentDrugsContainer = document.getElementById("recent-drugs");
 const presetSummary = document.getElementById("preset-summary");
 const referenceRangeText = document.getElementById("reference-range-text");
+const referenceRangeBadge = document.getElementById("reference-range-badge");
+const referenceUseCaseText = document.getElementById("reference-use-case-text");
+const referenceUseCaseBadge = document.getElementById("reference-use-case-badge");
+const referenceRangeSourceText = document.getElementById("reference-range-source-text");
+const referenceRangeRationaleText = document.getElementById("reference-range-rationale-text");
+const alternateUseCaseRow = document.getElementById("alternate-use-case-row");
+const alternateUseCaseText = document.getElementById("alternate-use-case-text");
 const drugNotesText = document.getElementById("drug-notes-text");
 const drugDilutionText = document.getElementById("drug-dilution-text");
 const drugDilutionButton = document.getElementById("drug-dilution-button");
@@ -168,6 +178,805 @@ const dantroleneInputs = {
   initialDose: document.getElementById("dantrolene-initial-dose")
 };
 
+const languageSelect = document.getElementById("language-select");
+const feedbackGeneralLink = document.getElementById("feedback-general-link");
+const feedbackReferenceLink = document.getElementById("feedback-reference-link");
+const feedbackBugLink = document.getElementById("feedback-bug-link");
+const feedbackStatus = document.getElementById("feedback-status");
+const supportDonateCard = document.getElementById("support-donate-card");
+const supportTossLink = document.getElementById("support-toss-link");
+const supportKofiLink = document.getElementById("support-kofi-link");
+const supportStatus = document.getElementById("support-status");
+
+const LANGUAGE_STORAGE_KEY = "anestha.language";
+const FEEDBACK_CONFIG = {
+  generalUrl: "https://docs.google.com/forms/d/e/1FAIpQLSekcnkvm28ePkxhL0tGtDDtIas3uVhr4mwiGdcKnwTn_W2qvw/viewform?usp=publish-editor",
+  referenceUrl: "https://docs.google.com/forms/d/e/1FAIpQLSekcnkvm28ePkxhL0tGtDDtIas3uVhr4mwiGdcKnwTn_W2qvw/viewform?usp=publish-editor",
+  bugUrl: "https://docs.google.com/forms/d/e/1FAIpQLSekcnkvm28ePkxhL0tGtDDtIas3uVhr4mwiGdcKnwTn_W2qvw/viewform?usp=publish-editor",
+  email: ""
+};
+const SUPPORT_CONFIG = {
+  tossUrl: "",
+  kofiUrl: ""
+};
+
+const TRANSLATIONS = {
+  ko: {
+    warning_banner_aria: "중요 경고",
+    warning_banner_text: "이 도구는 학습용/참고용이며 실제 임상 판단에 사용하면 안 됩니다. 반드시 별도의 검증이 필요합니다.",
+    hero_eyebrow: "Anesthesia Calculators",
+    hero_text: "마취과에서 자주 쓰는 계산 도구를 한곳에서 빠르게 확인할 수 있도록 만든 웹앱입니다.",
+    feedback_eyebrow: "Feedback",
+    feedback_heading: "의견 보내기",
+    feedback_description: "버그, 레퍼런스 오류, 사용성 개선 의견을 따로 받을 수 있도록 창구를 준비해두었습니다.",
+    feedback_general: "일반 의견 보내기",
+    feedback_reference: "레퍼런스 오류 제보",
+    feedback_bug: "버그 제보",
+    feedback_kicker: "Feedback",
+    feedback_support_description: "bug, reference issue, usability suggestion은 support 탭에서 함께 받는 쪽이 더 자연스럽습니다. 유지보수와 업데이트 우선순위를 같은 흐름에서 관리할 수 있습니다.",
+    feedback_support_note: "현재는 세 버튼이 같은 Google Form으로 연결되어 있어도 괜찮습니다. 나중에 general / reference / bug를 별도 form으로 분리할 수 있습니다.",
+    feedback_status_unconfigured: "아직 실제 피드백 수신 주소가 연결되지 않았습니다. `script.js`에서 feedback 링크나 이메일을 설정하면 바로 사용할 수 있습니다.",
+    feedback_status_configured: "피드백 Google Form이 연결되었습니다. 현재는 일반 의견, 레퍼런스 오류, 버그 제보가 같은 폼으로 수집됩니다.",
+    calculator_switcher_aria: "계산기 선택",
+    calculator_tablist_aria: "계산기 목록",
+    available_calculators: "사용 가능한 계산기",
+    tab_infusion: "Infusion Pump",
+    tab_dilution: "Dilution",
+    tab_pediatric: "Pediatric Anesthesia",
+    tab_dantrolene: "MH / Dantrolene",
+    tab_support: "Support",
+    support_kicker: "Support",
+    support_heading: "Support Anestha",
+    support_description: "앱 업데이트, reference review, bug fix, usability 개선을 위한 support와 feedback를 한곳에서 정리합니다.",
+    support_donate_kicker: "Support",
+    support_donate_heading: "지속적인 업데이트 지원",
+    support_donate_description: "이 앱이 도움이 되었다면 업데이트, reference audit, 유지보수를 위한 support를 보낼 수 있습니다.",
+    support_toss: "Toss로 지원하기",
+    support_kofi: "Ko-fi로 지원하기",
+    support_donate_note: "한국 사용자 중심이면 Toss, 해외 결제나 카드 support까지 열어두려면 Ko-fi를 같이 두는 구성이 현실적입니다.",
+    support_status_unconfigured: "아직 실제 support 링크가 연결되지 않았습니다. `script.js`에서 Toss 또는 Ko-fi 링크를 설정하면 바로 사용할 수 있습니다.",
+    support_status_configured: "Support 링크가 연결되었습니다. Toss 또는 Ko-fi 중 원하는 채널로 support를 받을 수 있습니다.",
+    support_legal_note: "더 넓게 공유하기 전에는 사용자가 로컬 저장 항목과 앱 사용 범위를 이해할 수 있도록 기본 Privacy / Disclaimer 페이지를 함께 두는 편이 좋습니다.",
+    privacy_page_link: "Privacy",
+    disclaimer_page_link: "Disclaimer",
+    footer_reference_note: "Anestha는 reference-oriented tool입니다. independent verification과 institutional protocol 확인이 계속 필요합니다.",
+    infusion_heading: "Infusion Pump Dose Calculator",
+    infusion_description: "환자 체중과 약물 농도를 기준으로 dose와 infusion rate를 빠르게 계산합니다.",
+    infusion_view_aria: "Infusion 화면 선택",
+    infusion_view_title: "Infusion 보기",
+    single_drug: "Single Drug",
+    multi_drug: "Multi Drug",
+    infusion_mode_aria: "Infusion 계산 모드",
+    calculation_mode: "계산 방식",
+    dose_to_rate: "Dose to Rate",
+    rate_to_dose: "Rate to Dose",
+    reference_dosing_table: "Reference Dosing Table",
+    drug_preset: "약물 프리셋",
+    add_to_favorites: "즐겨찾기에 추가",
+    remove_favorite: "즐겨찾기에서 제거",
+    favorites: "즐겨찾기",
+    recent: "최근 사용",
+    no_drugs_yet: "아직 약물이 없습니다",
+    drug_help_default: "Drug preset을 선택하면 기본 농도와 Reference Dosing Table 값이 자동으로 입력됩니다.",
+    drug_help_custom: "Custom drug를 선택했습니다. 이름, 농도, Reference Dosing Table 값을 자유롭게 입력하세요.",
+    drug_help_selected: "{drug} preset이 적용되었습니다. 농도와 Reference Dosing Table 값은 필요하면 수정할 수 있습니다.",
+    reference_range: "참고 범위",
+    use_case: "사용 맥락",
+    range_basis: "범위 근거",
+    rationale: "선정 이유",
+    other_use_case: "다른 사용 맥락",
+    notes: "메모",
+    standard_dilution: "표준 희석",
+    apply: "Apply",
+    source: "Source",
+    last_reviewed: "Last reviewed",
+    infusion_reference_note: "Reference range는 계산 편의를 위한 preset입니다. Label, Clinical, Study-specific는 서로 다른 맥락의 자료일 수 있으므로 절대적 표준 처방으로 해석하지 말고, 기관 프로토콜과 원문 레퍼런스를 함께 확인해야 합니다.",
+    custom_drug_name: "Custom Drug Name",
+    custom_notes: "추가 메모",
+    patient_weight: "Patient Weight",
+    drug_concentration: "Drug Concentration",
+    target_dose: "Target Dose",
+    pump_rate: "Pump Rate",
+    reference_dose_list: "참고 Dose 목록",
+    reference_dose_list_help: "쉼표로 구분해 dose 값을 입력하세요. 이 값들은 참고용이며 병원별 관행에 따라 달라질 수 있습니다.",
+    calculate: "계산",
+    reset: "초기화",
+    references: "레퍼런스",
+    workflow_preview: "사용 흐름 미리보기",
+    multi_drug_heading: "Multi Drug Infusion",
+    multi_drug_description: "한 환자에서 여러 infusion drug를 한 화면에서 함께 볼 수 있는 화면입니다. 각 card는 shared weight를 사용할 수 있지만 계산은 서로 독립적으로 이뤄집니다.",
+    multi_drug_note: "Multi Drug 카드는 drug-drug interaction, compatibility, combined clinical effect를 평가하지 않습니다.",
+    shared_patient_weight: "공통 Patient Weight",
+    template_name: "Template 이름",
+    template_note_optional: "메모 / 사용 맥락 (선택)",
+    saved_templates: "저장된 Template",
+    no_saved_templates: "저장된 Template 없음",
+    load_template: "Template 불러오기",
+    save_current_setup: "현재 구성 저장",
+    delete_template: "Template 삭제",
+    workspace_help: "Shared weight를 입력하면 각 Multi Drug card의 target dose와 Reference Dosing Table이 같은 환자 기준으로 계산됩니다.",
+    add_drug: "+ 약물 추가",
+    pediatric_heading: "Pediatric Calculator",
+    pediatric_description: "소아 약물 용량과 airway / ETT reference를 한곳에서 빠르게 확인합니다.",
+    pediatric_mode_aria: "Pediatric 모드",
+    pediatric_mode: "Pediatric 보기",
+    dosing: "용량 계산",
+    airway_ett: "Airway / ETT",
+    pediatric_drug_help_default: "Pediatric preset drug를 선택하면 권장 bolus dose range와 예시 농도가 표시됩니다.",
+    pediatric_drug_help_custom: "Custom pediatric drug를 선택했습니다. 이름, dose range, unit, concentration을 직접 입력하세요.",
+    show_unverified_presets: "Show unverified presets",
+    hide_unverified_presets: "Hide unverified presets",
+    pediatric_reference_note: "Pediatric dosing preset은 참고 예시입니다. 기관 프로토콜과 최신 레퍼런스로 다시 확인하세요.",
+    age_group: "Age Group",
+    pediatric_dosing_result: "Pediatric Dosing 결과",
+    calculated_dose_range: "계산된 dose 범위",
+    calculation_details: "계산 과정",
+    pediatric_dosing_audit_note: "Pediatric dosing reference 링크는 확인을 마쳤습니다. preset 문구와 source-to-logic 대조는 계속 다듬는 중입니다.",
+    pediatric_airway_result: "Pediatric Airway / ETT 결과",
+    estimated_oral_depth: "예상 oral depth (lip 기준)",
+    pediatric_airway_audit_note: "Pediatric airway reference 링크는 확인을 마쳤습니다. sizing logic가 바뀌면 formula와 source의 대응 관계를 다시 점검해야 합니다.",
+    emergency_tool: "응급 상황 도구",
+    dantrolene_heading: "Dantrolene / MH Quick Reference",
+    dantrolene_description: "체중과 제형을 기준으로 MH 초기 용량, 누적 최대 용량, 예상 vial 수를 빠르게 확인합니다.",
+    dantrolene_note: "응급 상황에서 빠르게 참고하기 위한 화면입니다. 실제 crisis management workflow, 재투여, cooling, labs, ICU 계획은 별도 MH protocol로 확인해야 합니다.",
+    default_initial_dose: "기본 initial dose",
+    cumulative_max: "누적 최대 용량",
+    workflow_note: "준비 메모",
+    dantrolene_workflow_note: "Formulation과 reconstitution 방식에 따라 필요한 vial 수와 준비 속도가 달라집니다.",
+    formulation: "Formulation",
+    initial_dose_target: "Initial dose target",
+    dose_target: "Dose target",
+    maximum_cumulative_dose: "누적 최대 용량",
+    initial_vials_needed: "초기 준비 vial 수",
+    max_vials_at_10mgkg: "10 mg/kg 기준 최대 vial 수",
+    preparation: "준비 정보",
+    mh_quick_guide: "MH Quick Guide",
+    dilution_heading: "Drug Dilution Calculator",
+    dilution_description: "원액(Stock) 약물로 원하는 농도를 만들거나, 믹스한 약물의 최종 농도를 역산합니다.",
+    dilution_mode_aria: "Dilution 모드 선택",
+    target_conc_to_mix: "목표 농도 기준 희석",
+    mix_vol_to_final_conc: "혼합량 기준 최종 농도",
+    placeholder_custom_drug_name: "예: Nicardipine",
+    placeholder_custom_notes: "예: 병원 프로토콜에 따라 확인",
+    placeholder_weight: "예: 70",
+    placeholder_concentration: "예: 100",
+    placeholder_target_dose: "예: 0.1",
+    placeholder_pump_rate: "예: 4.5",
+    placeholder_reference_dose_list: "예: 0.02, 0.05, 0.1, 0.2, 0.3",
+    placeholder_template_name: "예: Open Heart Surgery",
+    placeholder_template_note: "예: Routine TIVA 셋업",
+    placeholder_pediatric_custom_drug_name: "예: Glycopyrrolate",
+    placeholder_pediatric_weight: "예: 12",
+    placeholder_pediatric_concentration: "예: 50",
+    placeholder_initial_dose: "예: 2.5",
+    result_label_calc: "계산 결과",
+    supporting_information: "참고 정보",
+    current_references_verified: "현재 infusion reference 링크는 audit 파일 기준으로 검증되었습니다.",
+    reference_table_info_only: "Reference Dosing Table은 참고용입니다. 기관 프로토콜과 함께 확인하세요.",
+    result_warning_default: "계산 결과는 참고용입니다. 실제 사용 전 반드시 별도로 검증해야 합니다.",
+    infusion_result_reference_only: "Reference dose 값은 참고용입니다. Label, Clinical, Study-specific source는 하나의 절대 기준이 아니므로 원문과 기관 프로토콜을 함께 확인하세요.",
+    infusion_result_out_of_range: "Preset reference range를 벗어났습니다. Clinical / Study-based range는 공통 관행을 반영한 값일 수 있으므로 원문과 기관 프로토콜을 다시 확인하세요.",
+    infusion_dose_calculation: "농도 입력: {concentration} {unit}를 사용했습니다.",
+    infusion_rate_formula_weight: "주입 속도 계산: ({dose} x {weight} x {factor}) / {concentration} = {rate} mL/hr",
+    infusion_rate_formula_absolute: "주입 속도 계산: ({dose} x {factor}) / {concentration} = {rate} mL/hr",
+    infusion_dose_formula_weight: "용량 계산: ({rate} x {concentration}) / ({weight} x {factor}) = {dose} {unit}",
+    infusion_dose_formula_absolute: "용량 계산: ({rate} x {concentration}) / {factor} = {dose} {unit}",
+    reference_table_explanation_weight: "Reference Dosing Table은 선택한 농도와 체중 기준으로 각 dose에 대응하는 mL/hr를 보여줍니다.",
+    reference_table_explanation_absolute: "Reference Dosing Table은 선택한 농도 기준으로 absolute dose에 대응하는 mL/hr를 보여줍니다.",
+    pediatric_result_warning_default: "Pediatric dosing 예시는 참고용입니다. 실제 사용 전 반드시 검증하세요.",
+    pediatric_airway_warning_default: "Airway estimate는 reference formula일 뿐입니다. tube fit, leak, depth, position은 임상적으로 확인해야 합니다.",
+    dantrolene_result_warning_default: "기관 MH protocol, redosing plan, emergency workflow를 확인하세요.",
+    dilution_result_mix: "희석 안내",
+    dilution_result_draw_volume: "뽑아야 할 약물 부피",
+    dilution_result_add_diluent: "추가할 Diluent (NS/D5W)",
+    dilution_result_summary: "요약",
+    dilution_result_final_concentration: "최종 농도",
+    dilution_result_target_conc: "목표 농도",
+    dilution_result_calculated: "계산 결과",
+    dose: "Dose",
+    infusion_rate: "주입 속도",
+    concentration: "농도",
+    concentration_unit: "농도 단위",
+    verification: "검토 상태",
+    recommended_range: "권장 범위",
+    age_specific_note: "연령별 메모",
+    reference_guides: "참고 가이드",
+    equipment_selection_support: "장비 선택 참고",
+    ett_age_based_size_depth: "Age 기준 size와 oral depth 추정",
+    other_airway_tools: "기타 airway 도구",
+    airway_tools_reference_guides: "Supraglottic, oral airway, nasal airway, laryngoscope, face mask reference guides",
+    airway_equipment_reference_note: "Airway equipment guidance는 reference only입니다. fit, anatomy, device availability, local practice를 함께 확인하세요.",
+    age: "Age",
+    weight_optional: "Weight (optional)",
+    device_category: "Device Category",
+    device_model: "Device Model",
+    airway_device_select_note: "Airway device type를 선택하면 해당 guide가 표시됩니다. anatomy, fit, clinical position은 실제로 확인해야 합니다.",
+    min_dose_per_kg: "kg당 최소 Dose",
+    max_dose_per_kg: "kg당 최대 Dose",
+    dose_unit: "Dose 단위",
+    optional_max_total_dose: "Optional Max Total Dose",
+    save_custom_drug: "Save custom drug",
+    delete_saved_drug: "Delete saved drug",
+    save_custom_drug_help: "Save custom drug를 누르면 현재 입력값이 로컬에 저장됩니다.",
+    target_concentration: "목표 농도",
+    final_volume_total: "최종 총량",
+    drug_stock_concentration: "원액 약물 농도",
+    total_drug_added: "총 약물량",
+    calculate_mix: "희석 계산",
+    dilution_warning_note: "Mix 전 unit(mcg vs mg)을 다시 확인하고, 선택한 diluent와의 compatibility를 확인하세요.",
+    validation_patient_weight: "Patient Weight는 0보다 큰 숫자여야 합니다.",
+    validation_drug_concentration: "Drug Concentration은 0보다 큰 숫자여야 합니다.",
+    validation_custom_drug_name: "Custom Drug Name을 입력해 주세요.",
+    validation_target_dose: "Target Dose는 0보다 큰 숫자여야 합니다.",
+    validation_pump_rate: "Pump Rate는 0보다 큰 숫자여야 합니다.",
+    validation_reference_dose_list: "Reference Dose List에 0보다 큰 숫자를 쉼표로 구분해 입력해 주세요.",
+    validation_ett_age: "ETT guide는 Age가 0보다 커야 합니다.",
+    validation_supraglottic_weight: "Supraglottic guide는 Weight가 0보다 커야 합니다.",
+    validation_airway_age_or_weight: "Oral Airway, Nasal Airway, Laryngoscope, Face Mask guide는 Age 또는 Weight가 필요합니다.",
+    validation_custom_name_required: "Custom Drug Name이 필요합니다.",
+    validation_custom_range_positive: "Custom dose range는 0보다 큰 숫자여야 합니다.",
+    validation_custom_max_gte_min: "Max Dose per kg는 Min Dose per kg 이상이어야 합니다.",
+    validation_unit_base_match: "Dose Unit과 Concentration Unit은 volume 계산을 위해 같은 base unit을 사용해야 합니다.",
+    validation_initial_dose_target: "Initial dose target은 0보다 큰 숫자여야 합니다.",
+    result_setup: "설정",
+    absolute_dose_mode: "absolute-dose mode",
+    reference_doses: "참고 dose",
+    formula_same_weight: "표의 모든 행은 동일한 공식으로 계산됩니다: (dose x weight x {factor}) / concentration.",
+    formula_same_absolute: "표의 모든 행은 동일한 공식으로 계산됩니다: (dose x {factor}) / concentration.",
+    pediatric_weight_based_bolus: "Pediatric Weight-Based Bolus",
+    recommended_dose_range_label: "권장 dose 범위",
+    pediatric_dose_formula_adjusted: "Dose calculation: {weight} kg x {min}-{max} {unitPerKg} = {rawMin}-{rawMax} {amountUnit}. {limitMessage}",
+    pediatric_dose_formula_plain: "Dose calculation: {weight} kg x {min}-{max} {unitPerKg} = {rawMin}-{rawMax} {amountUnit}",
+    pediatric_optional_volume_formula: "Optional volume calculation: {minDose}-{maxDose} {amountUnit} / {concentration} {concentrationUnit} = {minVolume}-{maxVolume} mL",
+    pediatric_verify_reference_only: "Pediatric dosing preset은 참고용입니다. 기관 프로토콜과 최신 레퍼런스로 다시 확인하세요.",
+    pediatric_warning_suffix: "기관 프로토콜과 최신 레퍼런스로 다시 확인하세요.",
+    age_not_entered: "Age 미입력",
+    pediatric_ett_result: "Pediatric ETT 결과",
+    pediatric_supraglottic_result: "Pediatric Supraglottic 결과",
+    pediatric_oral_airway_result: "Pediatric Oral Airway 결과",
+    pediatric_nasal_airway_result: "Pediatric Nasal Airway 결과",
+    pediatric_face_mask_result: "Pediatric Face Mask 결과",
+    pediatric_laryngoscope_result: "Pediatric Laryngoscope 결과",
+    reference_weight_range: "참고 weight 범위",
+    sizing_method: "Sizing 방법",
+    preferred_measurement: "우선 참고할 측정법",
+    alternative_guide: "보조 가이드",
+    reference_band: "참고 구간",
+    device_category_ett: "Device category: ETT",
+    oral_depth_from_lip: "Estimated oral depth (from lip)",
+    cm_from_lip: "{depth} cm from lip",
+    enter_weight_size_range: "Weight를 입력하면 size range가 표시됩니다.",
+    oral_airway_measure_method: "입꼬리에서 mandible angle까지 외부 길이를 먼저 확인하세요.",
+    nasal_airway_measure_method: "Nostril to tragus에서 약 10 mm를 뺀 길이를 우선 참고하세요.",
+    enter_age_or_weight_face_mask: "Age 또는 Weight를 입력하면 size band가 표시됩니다.",
+    enter_age_or_weight_blade: "Age 또는 Weight를 입력하면 blade guide가 표시됩니다.",
+    airway_age_context: "Age {ageText}{weightText}",
+    device_reference_band: "Reference band: {label}",
+    enter_supraglottic_reference: "Weight를 입력하면 {deviceLabel} size reference가 표시됩니다.",
+    infant_depth_band: "Infant depth band: {depth} ({label})",
+    use_external_measurement_first: "외부 길이 측정을 먼저 하고, infant age/weight는 대략적인 guide로만 보세요.",
+    enter_face_mask_guide: "Age 또는 Weight를 입력하면 face mask guide가 표시됩니다.",
+    enter_laryngoscope_guide: "Age 또는 Weight를 입력하면 laryngoscope guide가 표시됩니다.",
+    suction_reference_size_only: "{deviceLabel} size는 age formula보다 manufacturer weight guide를 우선 참고합니다.",
+    oral_airway_quick_guide: "Oral airway quick guide: size {size} ({length})는 {label} 범위의 시작 reference입니다.",
+    oral_airway_reference_only: "Oral airway size는 quick reference only로 보세요.",
+    nasal_airway_external_measurement: "Nasopharyngeal airway sizing은 age formula보다 외부 길이 측정을 우선해야 합니다.",
+    face_mask_quick_guide: "Face mask quick guide: {label} 범위에서는 보통 size {size}를 먼저 고려합니다. Manufacturer numbering은 다를 수 있습니다.",
+    face_mask_reference_only: "Face mask sizing은 broad reference only입니다.",
+    laryngoscope_quick_guide: "Laryngoscope quick guide: {label} 범위에서는 {blade}를 첫 reference로 봅니다.",
+    laryngoscope_reference_only: "Laryngoscope blade guide는 quick reference only입니다.",
+    ett_depth_under_two: "Depth estimate: 2세 미만 infant/toddler는 lip 기준 10-12 cm progression reference를 사용합니다.",
+    ett_depth_age_formula: "Depth estimate: oral = age/2 + 12 -> {depth} cm from the lip.",
+    ett_depth_crosscheck: "Tube size x 3 기준 cuffed oral depth cross-check는 {depth} cm입니다. Oral ETT에서는 lip depth로 해석하고, tooth depth 표기는 local convention을 따르며 임상적으로 확인하세요.",
+    supraglottic_depth_note: "{deviceLabel} 결과는 supraglottic airway size reference only입니다. depth-style ETT formula는 적용되지 않습니다.",
+    oral_airway_depth_note: "Oral airway는 starting estimate로만 사용하고, mouth corner to angle of mandible 외부 길이와 임상 patency를 다시 확인하세요.",
+    nasal_airway_depth_note: "Nostril-to-tragus 같은 외부 길이를 우선 사용하고, 실제 patency와 위치를 임상적으로 확인하세요.",
+    nasal_airway_infant_study: "2세 미만에서는 연결된 study가 약 {depth} insertion depth band를 제시합니다. infancy를 벗어나면 age-only estimate보다 외부 길이와 임상 확인을 더 우선하세요.",
+    face_mask_depth_note: "눈을 누르지 않으면서 nose와 mouth를 seal하는 가장 작은 mask를 선택하세요. Brand별 numbering과 cushion shape는 다를 수 있습니다.",
+    laryngoscope_depth_note: "Blade type과 size는 anatomy, pathology, operator preference에 따라 달라집니다. infant에서는 straight blade를, 더 큰 소아에서는 curved blade를 더 자주 사용합니다.",
+    airway_warning_ett_infant: "Age-based ETT formula는 neonate와 young infant에서 덜 정확할 수 있습니다. infant-specific reference와 임상 확인이 필요합니다.",
+    airway_warning_ett: "ETT formula는 reference estimate only입니다. tube fit, leak, depth, position은 임상적으로 확인하세요.",
+    airway_warning_supraglottic: "{deviceLabel} sizing은 manufacturer weight guide 기반입니다. product-specific instruction과 clinical fit을 확인하세요.",
+    airway_warning_oral: "Oral airway size guide는 대략적인 reference입니다. 외부 길이와 airway patency를 다시 확인하세요.",
+    airway_warning_nasal: "Nasal airway guide는 대략적인 reference이며 외부 길이 측정, lubrication, gentle insertion, clinical confirmation을 대체할 수 없습니다.",
+    airway_warning_face_mask: "Face mask guide는 대략적인 reference입니다. seal, dead space, eye clearance, brand-specific numbering을 확인하세요.",
+    airway_warning_laryngoscope: "Laryngoscope blade guide는 대략적인 reference입니다. mouth opening, anatomy, operator preference를 함께 확인하세요.",
+    dantrolene_vial_explanation: "{formulation} 기준으로 initial dose에는 약 {initialVials} vial, cumulative 10 mg/kg 준비에는 약 {maxVials} vial이 필요합니다.",
+    dantrolene_initial_guide: "Initial: 지금 {dose} mg/kg IV를 투여합니다. 많은 MH reference는 initial treatment dose로 2.5 mg/kg를 제시합니다.",
+    dantrolene_repeat_guide: "Repeat bolus: hypermetabolic sign가 지속되거나 재발하면 repeat bolus를 이어갑니다. 흔한 emergency reference는 cumulative 10 mg/kg까지 증량을 권하고, 일부 formulation은 recurrence 후 1 mg/kg repeat bolus도 제시합니다.",
+    dantrolene_maintenance_guide: "Maintenance: initial control 뒤에는 많은 MH reference가 최소 24시간 동안 4-6시간마다 1 mg/kg IV 또는 이에 준하는 infusion strategy를 권합니다.",
+    dantrolene_emergency_reference_only: "Emergency quick reference only. 기관 MH protocol, redosing plan, cooling, post-crisis monitoring을 계속 따르세요.",
+    workspace_select_template: "Template 선택",
+    workspace_limit_title: "Multi Drug card는 최대 6개까지 추가할 수 있습니다",
+    workspace_add_card_title: "drug card 추가",
+    workspace_current_shared_weight: "현재 shared weight는 {weight} kg입니다. 각 card는 같은 환자 체중을 사용하지만 계산은 서로 독립적입니다.",
+    workspace_loaded_template: "불러온 template: {name}.",
+    workspace_loaded_template_note: " (메모: {note})",
+    workspace_limit_help: "Multi Drug card는 최대 6개까지 추가할 수 있습니다.",
+    move_up: "위로",
+    move_down: "아래로",
+    remove: "삭제",
+    workspace_drug: "Drug",
+    workspace_concentration: "Concentration",
+    workspace_target_dose: "Target Dose",
+    workspace_enter_shared_weight: "shared weight와 유효한 card 값을 입력하세요.",
+    workspace_enter_valid_values: "유효한 card 값을 입력하세요.",
+    workspace_target_at_concentration: "Target {dose} {unit} at {concentration} {concentrationUnit}",
+    workspace_out_of_range: "Reference range를 벗어났습니다. 기관 프로토콜을 다시 확인하세요.",
+    workspace_reference_range_note: "Reference range: {min} - {max} {unit}.{sharedWeightNote}",
+    workspace_shared_weight_not_used: " 이 drug에는 shared weight를 사용하지 않습니다.",
+    workspace_use_case_note: "사용 맥락: {useCase}",
+    workspace_range_basis_note: "범위 근거: {basis}",
+    workspace_rationale_note: "선정 이유: {rationale}",
+    workspace_standard_dilution_note: "표준 희석: {dilution}.",
+    workspace_apply_standard_dilution_title: "표준 dilution concentration 적용",
+    workspace_no_standard_dilution_title: "표준 dilution preset이 없습니다",
+    workspace_apply_standard_dilution: "Apply standard dilution",
+    dilution_error_target_concentration: "Target concentration은 양수여야 합니다.",
+    dilution_error_final_volume: "Final volume은 양수여야 합니다.",
+    dilution_error_stock_concentration: "Stock concentration은 양수여야 합니다.",
+    dilution_error_dilution_impossible: "Target concentration이 stock concentration보다 높아 희석할 수 없습니다.",
+    dilution_error_drug_amount: "Drug amount는 양수여야 합니다."
+  },
+  en: {
+    warning_banner_aria: "Important warning",
+    warning_banner_text: "This tool is for learning and reference only and must not be used as a sole basis for clinical judgment. Independent verification is required.",
+    hero_eyebrow: "Anesthesia Calculators",
+    hero_text: "A web app for quickly accessing commonly used anesthesia calculators in one place.",
+    feedback_eyebrow: "Feedback",
+    feedback_heading: "Send Feedback",
+    feedback_description: "Separate channels are prepared for bugs, reference issues, and usability suggestions.",
+    feedback_general: "General feedback",
+    feedback_reference: "Report reference issue",
+    feedback_bug: "Report bug",
+    feedback_kicker: "Feedback",
+    feedback_support_description: "It is more natural to collect bug reports, reference issues, and usability suggestions inside the Support tab, where maintenance and update priorities can be managed together.",
+    feedback_support_note: "It is fine for all three buttons to use the same Google Form for now. You can split them into separate general / reference / bug forms later.",
+    feedback_status_unconfigured: "No live feedback destination is connected yet. Set feedback links or an email in `script.js` to enable these buttons.",
+    feedback_status_configured: "The feedback Google Form is connected. General feedback, reference issues, and bug reports currently go to the same form.",
+    calculator_switcher_aria: "Calculator selector",
+    calculator_tablist_aria: "Calculator tabs",
+    available_calculators: "Available Calculators",
+    tab_infusion: "Infusion Pump",
+    tab_dilution: "Dilution",
+    tab_pediatric: "Pediatric Anesthesia",
+    tab_dantrolene: "MH / Dantrolene",
+    tab_support: "Support",
+    support_kicker: "Support",
+    support_heading: "Support Anestha",
+    support_description: "Keep support and feedback in one place for updates, reference review, bug fixes, and usability improvements.",
+    support_donate_kicker: "Support",
+    support_donate_heading: "Support ongoing updates",
+    support_donate_description: "If this app has been helpful, you can support ongoing updates, reference audits, and maintenance.",
+    support_toss: "Support via Toss",
+    support_kofi: "Support via Ko-fi",
+    support_donate_note: "For Korean users, Toss is usually the easiest path. Keeping Ko-fi alongside it helps if you also want card or international support.",
+    support_status_unconfigured: "No live support link is connected yet. Set a Toss or Ko-fi URL in `script.js` to enable these buttons.",
+    support_status_configured: "Support links are connected. Users can now support the app through Toss or Ko-fi.",
+    support_legal_note: "Before broader sharing, it helps to keep basic Privacy and Disclaimer pages available so users understand what is stored locally and how the app should be used.",
+    privacy_page_link: "Privacy",
+    disclaimer_page_link: "Disclaimer",
+    footer_reference_note: "Anestha is a reference-oriented tool. Independent verification and institutional protocols remain necessary.",
+    infusion_heading: "Infusion Pump Dose Calculator",
+    infusion_description: "Quickly calculate dose and infusion rate based on patient weight and drug concentration.",
+    infusion_view_aria: "Infusion view selection",
+    infusion_view_title: "Infusion View",
+    single_drug: "Single Drug",
+    multi_drug: "Multi Drug",
+    infusion_mode_aria: "Infusion calculation mode",
+    calculation_mode: "Calculation Mode",
+    dose_to_rate: "Dose to Rate",
+    rate_to_dose: "Rate to Dose",
+    reference_dosing_table: "Reference Dosing Table",
+    drug_preset: "Drug Preset",
+    add_to_favorites: "Add to favorites",
+    remove_favorite: "Remove favorite",
+    favorites: "Favorites",
+    recent: "Recent",
+    no_drugs_yet: "No drugs yet",
+    drug_help_default: "When you select a preset drug, the default concentration and Reference Dosing Table values are filled in automatically.",
+    drug_help_custom: "Custom drug selected. Enter the name, concentration, and Reference Dosing Table values directly.",
+    drug_help_selected: "{drug} preset applied. You can adjust the concentration and Reference Dosing Table values if needed.",
+    reference_range: "Reference range",
+    use_case: "Use case",
+    range_basis: "Range basis",
+    rationale: "Rationale",
+    other_use_case: "Other use case",
+    notes: "Notes",
+    standard_dilution: "Standard dilution",
+    apply: "Apply",
+    source: "Source",
+    last_reviewed: "Last reviewed",
+    infusion_reference_note: "The displayed reference range is a calculator preset for workflow convenience. Label, Clinical, and Study-specific sources may reflect different contexts, so do not treat them as a single universal dosing standard.",
+    custom_drug_name: "Custom Drug Name",
+    custom_notes: "Custom Notes",
+    patient_weight: "Patient Weight",
+    drug_concentration: "Drug Concentration",
+    target_dose: "Target Dose",
+    pump_rate: "Pump Rate",
+    reference_dose_list: "Reference Dose List",
+    reference_dose_list_help: "Enter comma-separated dose values. These are informational references and may differ by institutional practice.",
+    calculate: "Calculate",
+    reset: "Reset",
+    references: "References",
+    workflow_preview: "Workflow Preview",
+    multi_drug_heading: "Multi Drug Infusion",
+    multi_drug_description: "View multiple infusion drugs for one patient on a single screen. Each card can share the patient weight, but calculations remain independent.",
+    multi_drug_note: "Multi Drug cards do not assess drug-drug interactions, compatibility, or combined clinical effects.",
+    shared_patient_weight: "Shared Patient Weight",
+    template_name: "Template Name",
+    template_note_optional: "Note / Use Case (optional)",
+    saved_templates: "Saved Templates",
+    no_saved_templates: "No saved templates",
+    load_template: "Load template",
+    save_current_setup: "Save current setup",
+    delete_template: "Delete template",
+    workspace_help: "When shared weight is entered, each multi-drug card uses the same patient weight for target dose and Reference Dosing Table calculations.",
+    add_drug: "+ Add drug",
+    pediatric_heading: "Pediatric Calculator",
+    pediatric_description: "Quickly review pediatric drug dosing and airway / ETT references in one place.",
+    pediatric_mode_aria: "Pediatric mode",
+    pediatric_mode: "Pediatric Mode",
+    dosing: "Dosing",
+    airway_ett: "Airway / ETT",
+    pediatric_drug_help_default: "Select a pediatric preset drug to display the recommended bolus dose range and example concentration.",
+    pediatric_drug_help_custom: "Custom pediatric drug selected. Enter the name, dose range, unit, and concentration directly.",
+    show_unverified_presets: "Show unverified presets",
+    hide_unverified_presets: "Hide unverified presets",
+    pediatric_reference_note: "Pediatric dosing presets are examples only. Verify with institutional protocols and current references.",
+    age_group: "Age Group",
+    pediatric_dosing_result: "Pediatric Dosing Result",
+    calculated_dose_range: "Calculated dose range",
+    calculation_details: "Calculation Details",
+    pediatric_dosing_audit_note: "Pediatric dosing reference links have been link-verified. Preset wording and source-to-logic review are still being refined.",
+    pediatric_airway_result: "Pediatric Airway / ETT Result",
+    estimated_oral_depth: "Estimated oral depth (from lip)",
+    pediatric_airway_audit_note: "Pediatric airway reference links have been link-verified. Formula-to-source alignment should still be re-checked whenever sizing logic changes.",
+    emergency_tool: "Emergency Tool",
+    dantrolene_heading: "Dantrolene / MH Quick Reference",
+    dantrolene_description: "Quickly review MH initial dose, cumulative maximum dose, and estimated vial count based on patient weight and formulation.",
+    dantrolene_note: "Emergency quick reference only. Confirm your actual crisis workflow, redosing, cooling, labs, and ICU plan against your MH protocol.",
+    default_initial_dose: "Default initial dose",
+    cumulative_max: "Cumulative max",
+    workflow_note: "Workflow note",
+    dantrolene_workflow_note: "Formulation and reconstitution change the vial count and preparation speed.",
+    formulation: "Formulation",
+    initial_dose_target: "Initial dose target",
+    dose_target: "Dose Target",
+    maximum_cumulative_dose: "Maximum cumulative dose",
+    initial_vials_needed: "Initial vials needed",
+    max_vials_at_10mgkg: "Max vials at 10 mg/kg",
+    preparation: "Preparation",
+    mh_quick_guide: "MH Quick Guide",
+    dilution_heading: "Drug Dilution Calculator",
+    dilution_description: "Create a target concentration from a stock drug or back-calculate the final concentration of a prepared mixture.",
+    dilution_mode_aria: "Dilution mode selection",
+    target_conc_to_mix: "Dilute to Target Concentration",
+    mix_vol_to_final_conc: "Calculate Final Concentration",
+    placeholder_custom_drug_name: "e.g. Nicardipine",
+    placeholder_custom_notes: "e.g. Check against institutional protocol",
+    placeholder_weight: "e.g. 70",
+    placeholder_concentration: "e.g. 100",
+    placeholder_target_dose: "e.g. 0.1",
+    placeholder_pump_rate: "e.g. 4.5",
+    placeholder_reference_dose_list: "e.g. 0.02, 0.05, 0.1, 0.2, 0.3",
+    placeholder_template_name: "e.g. Open Heart Surgery",
+    placeholder_template_note: "e.g. Routine TIVA setup",
+    placeholder_pediatric_custom_drug_name: "e.g. Glycopyrrolate",
+    placeholder_pediatric_weight: "e.g. 12",
+    placeholder_pediatric_concentration: "e.g. 50",
+    placeholder_initial_dose: "e.g. 2.5",
+    result_label_calc: "Calculation Result",
+    supporting_information: "Supporting information",
+    current_references_verified: "Current infusion references have been link-verified in the audit file.",
+    reference_table_info_only: "Reference Dosing Table is informational only. Verify with institutional protocols.",
+    result_warning_default: "Calculation results are for reference only. Independently verify before clinical use.",
+    infusion_result_reference_only: "Reference dose values are informational only. Label, Clinical, and Study-specific sources may reflect different contexts, so verify the original source and institutional protocol.",
+    infusion_result_out_of_range: "Outside the preset reference range. Clinical and study-based ranges may reflect common practice rather than a universal standard, so verify the original source and institutional protocol.",
+    infusion_dose_calculation: "Concentration used: {concentration} {unit}.",
+    infusion_rate_formula_weight: "Rate calculation: ({dose} x {weight} x {factor}) / {concentration} = {rate} mL/hr",
+    infusion_rate_formula_absolute: "Rate calculation: ({dose} x {factor}) / {concentration} = {rate} mL/hr",
+    infusion_dose_formula_weight: "Dose calculation: ({rate} x {concentration}) / ({weight} x {factor}) = {dose} {unit}",
+    infusion_dose_formula_absolute: "Dose calculation: ({rate} x {concentration}) / {factor} = {dose} {unit}",
+    reference_table_explanation_weight: "The Reference Dosing Table shows the mL/hr corresponding to each dose using the selected concentration and patient weight.",
+    reference_table_explanation_absolute: "The Reference Dosing Table shows the mL/hr corresponding to each absolute dose using the selected concentration.",
+    pediatric_result_warning_default: "Pediatric dosing examples are for reference only. Verify before clinical use.",
+    pediatric_airway_warning_default: "Airway estimates are reference formulas only. Confirm tube fit, leak, depth, and position clinically.",
+    dantrolene_result_warning_default: "Verify your institutional MH protocol, redosing plan, and emergency workflow.",
+    dilution_result_mix: "Mixing Instructions",
+    dilution_result_draw_volume: "Draw Drug Volume",
+    dilution_result_add_diluent: "Add Diluent (NS/D5W)",
+    dilution_result_summary: "Summary",
+    dilution_result_final_concentration: "Final Concentration",
+    dilution_result_target_conc: "Target Conc.",
+    dilution_result_calculated: "Calculated Result",
+    dose: "Dose",
+    infusion_rate: "Infusion Rate",
+    concentration: "Concentration",
+    concentration_unit: "Concentration Unit",
+    verification: "Verification",
+    recommended_range: "Recommended range",
+    age_specific_note: "Age-specific note",
+    reference_guides: "Reference guides",
+    equipment_selection_support: "Equipment selection support",
+    ett_age_based_size_depth: "Age-based size and oral depth estimate",
+    other_airway_tools: "Other airway tools",
+    airway_tools_reference_guides: "Supraglottic, oral airway, nasal airway, laryngoscope, face mask reference guides",
+    airway_equipment_reference_note: "Airway equipment guidance is for reference only. Verify fit, anatomy, device availability, and local practice.",
+    age: "Age",
+    weight_optional: "Weight (optional)",
+    device_category: "Device Category",
+    device_model: "Device Model",
+    airway_device_select_note: "Select an airway device type to see the matching guide. Confirm anatomy, fit, and clinical position before use.",
+    min_dose_per_kg: "Min Dose per kg",
+    max_dose_per_kg: "Max Dose per kg",
+    dose_unit: "Dose Unit",
+    optional_max_total_dose: "Optional Max Total Dose",
+    save_custom_drug: "Save custom drug",
+    delete_saved_drug: "Delete saved drug",
+    save_custom_drug_help: "Click Save custom drug to store the current values locally.",
+    target_concentration: "Target Concentration",
+    final_volume_total: "Final Volume (Total)",
+    drug_stock_concentration: "Drug Stock Concentration",
+    total_drug_added: "Total Drug Added",
+    calculate_mix: "Calculate Mix",
+    dilution_warning_note: "Double check all units (mcg vs mg) before mixing. Verify compatibility of the drug with the chosen diluent.",
+    validation_patient_weight: "Patient Weight must be a number greater than 0.",
+    validation_drug_concentration: "Drug Concentration must be a number greater than 0.",
+    validation_custom_drug_name: "Enter a Custom Drug Name.",
+    validation_target_dose: "Target Dose must be a number greater than 0.",
+    validation_pump_rate: "Pump Rate must be a number greater than 0.",
+    validation_reference_dose_list: "Enter comma-separated numbers greater than 0 in the Reference Dose List.",
+    validation_ett_age: "ETT guide requires Age greater than 0.",
+    validation_supraglottic_weight: "Supraglottic guide requires Weight greater than 0.",
+    validation_airway_age_or_weight: "Oral Airway, Nasal Airway, Laryngoscope, and Face Mask guides require Age or Weight.",
+    validation_custom_name_required: "Custom Drug Name is required.",
+    validation_custom_range_positive: "Custom dose range must contain numbers greater than 0.",
+    validation_custom_max_gte_min: "Max Dose per kg must be greater than or equal to Min Dose per kg.",
+    validation_unit_base_match: "Dose Unit and Concentration Unit should use the same base unit for volume calculation.",
+    validation_initial_dose_target: "Initial dose target must be a number greater than 0.",
+    result_setup: "Setup",
+    absolute_dose_mode: "absolute-dose mode",
+    reference_doses: "Reference doses",
+    formula_same_weight: "Each row uses the same formula: (dose x weight x {factor}) / concentration.",
+    formula_same_absolute: "Each row uses the same formula: (dose x {factor}) / concentration.",
+    pediatric_weight_based_bolus: "Pediatric Weight-Based Bolus",
+    recommended_dose_range_label: "Recommended dose range",
+    pediatric_dose_formula_adjusted: "Dose calculation: {weight} kg x {min}-{max} {unitPerKg} = {rawMin}-{rawMax} {amountUnit}. {limitMessage}",
+    pediatric_dose_formula_plain: "Dose calculation: {weight} kg x {min}-{max} {unitPerKg} = {rawMin}-{rawMax} {amountUnit}",
+    pediatric_optional_volume_formula: "Optional volume calculation: {minDose}-{maxDose} {amountUnit} / {concentration} {concentrationUnit} = {minVolume}-{maxVolume} mL",
+    pediatric_verify_reference_only: "Pediatric dosing presets are reference examples only. Verify with institutional protocols and current references.",
+    pediatric_warning_suffix: "Verify with institutional protocols and current references.",
+    age_not_entered: "Age not entered",
+    pediatric_ett_result: "Pediatric ETT Result",
+    pediatric_supraglottic_result: "Pediatric Supraglottic Result",
+    pediatric_oral_airway_result: "Pediatric Oral Airway Result",
+    pediatric_nasal_airway_result: "Pediatric Nasal Airway Result",
+    pediatric_face_mask_result: "Pediatric Face Mask Result",
+    pediatric_laryngoscope_result: "Pediatric Laryngoscope Result",
+    reference_weight_range: "Reference weight range",
+    sizing_method: "Sizing method",
+    preferred_measurement: "Preferred measurement",
+    alternative_guide: "Alternative guide",
+    reference_band: "Reference band",
+    device_category_ett: "Device category: ETT",
+    oral_depth_from_lip: "Estimated oral depth (from lip)",
+    cm_from_lip: "{depth} cm from lip",
+    enter_weight_size_range: "Enter weight to show size range.",
+    oral_airway_measure_method: "Measure from the mouth corner to the angle of the mandible first.",
+    nasal_airway_measure_method: "Use nostril-to-tragus minus about 10 mm as the primary guide.",
+    enter_age_or_weight_face_mask: "Enter age or weight to show the size band.",
+    enter_age_or_weight_blade: "Enter age or weight to show the blade guide.",
+    airway_age_context: "Age {ageText}{weightText}",
+    device_reference_band: "Reference band: {label}",
+    enter_supraglottic_reference: "Enter weight to show the {deviceLabel} size reference.",
+    infant_depth_band: "Infant depth band: {depth} ({label})",
+    use_external_measurement_first: "Use external measurement first; infant age/weight only provides a rough guide.",
+    enter_face_mask_guide: "Enter age or weight to show the face mask guide.",
+    enter_laryngoscope_guide: "Enter age or weight to show the laryngoscope guide.",
+    suction_reference_size_only: "{deviceLabel} sizing follows manufacturer weight guidance rather than an age-based formula.",
+    oral_airway_quick_guide: "Oral airway quick guide: size {size} ({length}) is a starting reference for the {label} range.",
+    oral_airway_reference_only: "Oral airway size is shown as a quick reference only.",
+    nasal_airway_external_measurement: "Nasopharyngeal airway sizing should start with external measurement rather than age-based formula alone.",
+    face_mask_quick_guide: "Face mask quick guide: size {size} is commonly used first in the {label} range. Manufacturer numbering may differ.",
+    face_mask_reference_only: "Face mask sizing is shown as a broad reference only.",
+    laryngoscope_quick_guide: "Laryngoscope quick guide: {blade} is the first-choice reference for the {label} range.",
+    laryngoscope_reference_only: "Laryngoscope blade guidance is shown as a quick reference only.",
+    ett_depth_under_two: "Depth estimate: for children under 2 years, this calculator uses the 10-12 cm progression reference from the lip.",
+    ett_depth_age_formula: "Depth estimate: oral = age/2 + 12 -> {depth} cm from the lip.",
+    ett_depth_crosscheck: "Tube size x 3 provides an additional cuffed oral depth cross-check of {depth} cm. For oral ETT, interpret this as lip depth and confirm clinically.",
+    supraglottic_depth_note: "{deviceLabel} is a supraglottic airway size reference only. Depth-style ETT formulas do not apply.",
+    oral_airway_depth_note: "Use the oral airway as a starting estimate only, then confirm external fit and clinical patency.",
+    nasal_airway_depth_note: "Use nostril-to-tragus style external measurement as the primary guide, then confirm patency and position clinically.",
+    nasal_airway_infant_study: "For children younger than 2 years, the attached study reported an approximate insertion depth band of {depth}. Outside infancy, rely more on external measurement and clinical confirmation.",
+    face_mask_depth_note: "Choose the smallest mask that seals the nose and mouth without resting on the eyes. Brand-specific numbering and cushion shape vary.",
+    laryngoscope_depth_note: "Blade type and size vary with anatomy, pathology, and operator preference. Straight blades are often preferred in younger infants, while curved blades become more common with larger children.",
+    airway_warning_ett_infant: "Age-based ETT formulas are less reliable in neonates and young infants. Use infant-specific references and confirm clinically.",
+    airway_warning_ett: "ETT formulas are reference estimates only. Confirm tube fit, leak, depth, and position clinically.",
+    airway_warning_supraglottic: "{deviceLabel} sizing is based on manufacturer weight guidance. Verify product-specific instructions and clinical fit.",
+    airway_warning_oral: "Oral airway size guidance is approximate. Confirm fit externally and reassess airway patency clinically.",
+    airway_warning_nasal: "Nasal airway guidance is approximate and should not replace external measurement, lubrication, gentle insertion, and clinical confirmation.",
+    airway_warning_face_mask: "Face mask guidance is approximate. Check seal, dead space, eye clearance, and brand-specific numbering before use.",
+    airway_warning_laryngoscope: "Laryngoscope blade guidance is approximate. Confirm mouth opening, anatomy, and operator preference before selection.",
+    dantrolene_vial_explanation: "Using {formulation}, the initial dose requires about {initialVials} vial(s), and preparing for a cumulative 10 mg/kg requires about {maxVials} vial(s).",
+    dantrolene_initial_guide: "Initial: give {dose} mg/kg IV now. Many MH references start with 2.5 mg/kg as the initial treatment dose.",
+    dantrolene_repeat_guide: "Repeat bolus: if hypermetabolic signs persist or recur, continue repeat boluses. A common emergency reference is to escalate toward a cumulative 10 mg/kg, while some formulations also describe a 1 mg/kg repeat bolus after recurrence.",
+    dantrolene_maintenance_guide: "Maintenance: after initial control, many MH references advise 1 mg/kg IV every 4-6 hours, or an equivalent infusion strategy, for at least 24 hours.",
+    dantrolene_emergency_reference_only: "Emergency quick reference only. Continue with your institutional MH protocol, redosing plan, cooling, and post-crisis monitoring.",
+    workspace_select_template: "Select template",
+    workspace_limit_title: "Maximum 6 Multi Drug cards",
+    workspace_add_card_title: "Add another drug card",
+    workspace_current_shared_weight: "Current shared weight: {weight} kg. Each card is calculated independently using the same patient weight.",
+    workspace_loaded_template: "Loaded template: {name}.",
+    workspace_loaded_template_note: " (Note: {note})",
+    workspace_limit_help: "A maximum of 6 Multi Drug cards can be added.",
+    move_up: "Move up",
+    move_down: "Move down",
+    remove: "Remove",
+    workspace_drug: "Drug",
+    workspace_concentration: "Concentration",
+    workspace_target_dose: "Target Dose",
+    workspace_enter_shared_weight: "Enter shared weight and valid card values.",
+    workspace_enter_valid_values: "Enter valid card values.",
+    workspace_target_at_concentration: "Target {dose} {unit} at {concentration} {concentrationUnit}",
+    workspace_out_of_range: "Outside reference range - verify institutional protocol.",
+    workspace_reference_range_note: "Reference range: {min} - {max} {unit}.{sharedWeightNote}",
+    workspace_shared_weight_not_used: " Shared weight is not used for this drug.",
+    workspace_use_case_note: "Use case: {useCase}",
+    workspace_range_basis_note: "Range basis: {basis}",
+    workspace_rationale_note: "Rationale: {rationale}",
+    workspace_standard_dilution_note: "Standard dilution: {dilution}.",
+    workspace_apply_standard_dilution_title: "Apply standard dilution concentration",
+    workspace_no_standard_dilution_title: "No standard dilution preset available",
+    workspace_apply_standard_dilution: "Apply standard dilution",
+    dilution_error_target_concentration: "Target concentration must be a positive number.",
+    dilution_error_final_volume: "Final volume must be a positive number.",
+    dilution_error_stock_concentration: "Stock concentration must be a positive number.",
+    dilution_error_dilution_impossible: "Target concentration is higher than the stock concentration. Dilution is not possible.",
+    dilution_error_drug_amount: "Drug amount must be a positive number."
+  }
+};
+
+let currentLanguage = "ko";
+
+function t(key, replacements) {
+  const dictionary = TRANSLATIONS[currentLanguage] || TRANSLATIONS.ko;
+  const fallbackDictionary = TRANSLATIONS.ko;
+  let template = dictionary[key] || fallbackDictionary[key] || key;
+
+  if (!replacements) {
+    return template;
+  }
+
+  Object.keys(replacements).forEach(function (token) {
+    template = template.replace(new RegExp(`\\{${token}\\}`, "g"), replacements[token]);
+  });
+
+  return template;
+}
+
+function loadLanguagePreference() {
+  const savedLanguage = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+  if (savedLanguage === "ko" || savedLanguage === "en") {
+    return savedLanguage;
+  }
+
+  return "en";
+}
+
+function saveLanguagePreference(language) {
+  window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+}
+
+function applyStaticTranslations() {
+  document.documentElement.lang = currentLanguage === "en" ? "en" : "ko";
+
+  document.querySelectorAll("[data-i18n]").forEach(function (element) {
+    element.textContent = t(element.dataset.i18n);
+  });
+
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(function (element) {
+    element.setAttribute("placeholder", t(element.dataset.i18nPlaceholder));
+  });
+
+  document.querySelectorAll("[data-i18n-aria-label]").forEach(function (element) {
+    element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+  });
+
+  if (languageSelect) {
+    languageSelect.value = currentLanguage;
+  }
+}
+
+function buildFeedbackMailto(subject, body) {
+  if (!FEEDBACK_CONFIG.email) {
+    return "";
+  }
+
+  const query = new URLSearchParams({
+    subject: subject,
+    body: body
+  });
+
+  return `mailto:${FEEDBACK_CONFIG.email}?${query.toString()}`;
+}
+
+function resolveFeedbackHref(type) {
+  if (type === "general") {
+    return FEEDBACK_CONFIG.generalUrl || buildFeedbackMailto(
+      "Anestha feedback",
+      "Category: General feedback\nCalculator:\nDrug/Feature:\nWhat happened?\nWhat would you like to improve?\n"
+    );
+  }
+
+  if (type === "reference") {
+    return FEEDBACK_CONFIG.referenceUrl || buildFeedbackMailto(
+      "Anestha reference issue",
+      "Category: Reference issue\nCalculator:\nDrug/Feature:\nCurrent displayed content:\nWhat seems incorrect?\nReference/source:\n"
+    );
+  }
+
+  return FEEDBACK_CONFIG.bugUrl || buildFeedbackMailto(
+    "Anestha bug report",
+    "Category: Bug report\nCalculator:\nDevice/Browser:\nWhat happened?\nExpected behavior:\nSteps to reproduce:\n"
+  );
+}
+
+function applyActionLink(element, href) {
+  if (!element) {
+    return;
+  }
+
+  if (href) {
+    element.href = href;
+    element.classList.remove("is-disabled");
+    element.setAttribute("aria-disabled", "false");
+    return;
+  }
+
+  element.href = "#";
+  element.classList.add("is-disabled");
+  element.setAttribute("aria-disabled", "true");
+}
+
+function updateFeedbackLinks() {
+  const generalHref = resolveFeedbackHref("general");
+  const referenceHref = resolveFeedbackHref("reference");
+  const bugHref = resolveFeedbackHref("bug");
+  const hasLiveChannel = Boolean(generalHref || referenceHref || bugHref);
+
+  applyActionLink(feedbackGeneralLink, generalHref);
+  applyActionLink(feedbackReferenceLink, referenceHref);
+  applyActionLink(feedbackBugLink, bugHref);
+
+  if (feedbackStatus) {
+    feedbackStatus.textContent = hasLiveChannel
+      ? t("feedback_status_configured")
+      : t("feedback_status_unconfigured");
+    feedbackStatus.classList.toggle("hidden", hasLiveChannel);
+  }
+}
+
+function updateSupportLinks() {
+  const tossHref = SUPPORT_CONFIG.tossUrl || "";
+  const kofiHref = SUPPORT_CONFIG.kofiUrl || "";
+  const hasLiveChannel = Boolean(tossHref || kofiHref);
+
+  if (supportDonateCard) {
+    supportDonateCard.classList.toggle("hidden", !hasLiveChannel);
+  }
+
+  applyActionLink(supportTossLink, tossHref);
+  applyActionLink(supportKofiLink, kofiHref);
+
+  if (supportStatus) {
+    supportStatus.textContent = hasLiveChannel
+      ? t("support_status_configured")
+      : t("support_status_unconfigured");
+    supportStatus.classList.toggle("hidden", hasLiveChannel);
+  }
+}
+
 // -----------------------------
 // Calculation engine
 // -----------------------------
@@ -226,6 +1035,22 @@ function calculateDantroleneDose(weightKg, dosePerKg) {
 
 function roundToNearestHalf(value) {
   return Math.round(value * 2) / 2;
+}
+
+function formatDoseValueWithEquivalent(value, unit) {
+  if (unit === "mcg/kg/hr") {
+    return `${formatNumber(value, 3)} ${unit} (${formatNumber(value / 1000, 3)} mg/kg/hr)`;
+  }
+
+  return `${formatNumber(value, 3)} ${unit}`;
+}
+
+function formatDoseRangeWithEquivalent(min, max, unit) {
+  if (unit === "mcg/kg/hr") {
+    return `${formatNumber(min, 3)} - ${formatNumber(max, 3)} ${unit} (${formatNumber(min / 1000, 3)} - ${formatNumber(max / 1000, 3)} mg/kg/hr)`;
+  }
+
+  return `${formatNumber(min, 3)} - ${formatNumber(max, 3)} ${unit}`;
 }
 
 function calculatePediatricAirwayEstimates(ageYears) {
@@ -407,13 +1232,13 @@ const REFERENCE_REGISTRY = {
   pediatric_face_mask_ambu: {
     title: "Anatomical face masks product information",
     source: "Ambu",
-    url: "https://www.ambu.com/anaesthesia-and-patient-monitoring/face-masks/product/ambu-anaesthetic-face-masks",
+    url: "https://www.ambu.com/airway-management-and-anaesthesia/face-masks/product/ambu-king-mask",
     lastReviewed: "2026-03-15"
   },
   pediatric_face_mask_intersurgical: {
     title: "EcoMask anaesthetic face masks",
     source: "Intersurgical",
-    url: "https://www.intersurgical.com/products/anaesthesia/ecolite-mask-range",
+    url: "https://www.intersurgical.com/info/anaesthetic-facemasks",
     lastReviewed: "2026-03-15"
   },
   pediatric_fentanyl_dailymed: {
@@ -443,7 +1268,7 @@ const REFERENCE_REGISTRY = {
   pediatric_glycopyrrolate_dailymed: {
     title: "Glycopyrrolate injection prescribing information",
     source: "DailyMed",
-    url: "https://fda.report/DailyMed/250eeef7-b1a9-45e7-a927-7807232e10be",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=960d2dd0-008d-4ec1-ba2e-9388b28b23e2",
     lastReviewed: "2026-03-15"
   },
   pediatric_atropine_dailymed: {
@@ -529,7 +1354,7 @@ const REFERENCE_REGISTRY = {
   infusion_vasopressin_dailymed: {
     title: "Vasopressin label dose",
     source: "DailyMed",
-    url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=ad3ac280-49da-4816-9097-14517d0c0f85",
+    url: "https://dailymed.nlm.nih.gov/dailymed/getFile.cfm?setid=b1147beb-743e-4c62-8927-91192447f8b8&type=pdf",
     linkLabel: "Open full label",
     usageNote: "Shock: 0.01 – 0.04 units/min. Not weight-based. Typically added to norepinephrine.",
     lastReviewed: "2026-03-15"
@@ -537,7 +1362,7 @@ const REFERENCE_REGISTRY = {
   infusion_vasopressin_openanesthesia: {
     title: "Vasopressin anesthesia clinical dosing",
     source: "OpenAnesthesia",
-    url: "https://www.openanesthesia.org/keywords/vasopressin/",
+    url: "https://www.openanesthesia.org/keywords/aba_arginine_vasopressin/",
     linkLabel: "Open article",
     usageNote: "Perioperative refractory hypotension reference: low-dose infusion or boluses of 0.01-0.04 U/min or 0.5-1 U bolus can be used during general anesthesia.",
     lastReviewed: "2026-03-15"
@@ -635,7 +1460,7 @@ const REFERENCE_REGISTRY = {
   infusion_remifentanil_dailymed: {
     title: "Remifentanil label dose",
     source: "DailyMed",
-    url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=d2374b84-81c9-44f9-a4a9-1071281b2531",
+    url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8b4c8696-e23e-4c51-a4d2-babab5bd945a",
     linkLabel: "Open full label",
     usageNote: "Maintenance infusion for general anesthesia commonly ranges from about 0.05-2 mcg/kg/min depending on the anesthetic technique.",
     lastReviewed: "2026-03-15"
@@ -683,9 +1508,9 @@ const REFERENCE_REGISTRY = {
   infusion_dexmedetomidine_dailymed: {
     title: "Dexmedetomidine label dose",
     source: "DailyMed",
-    url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=8fb7886c-7762-4b72-989b-0fe8e963b4b8",
+    url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=4fe788bc-4ad1-4b32-83d3-dcbfcd8429aa",
     linkLabel: "Open full label",
-    usageNote: "Perioperative maintenance infusions are commonly 0.2-0.7 mcg/kg/hr, while some ICU labeling permits higher rates in selected settings.",
+    usageNote: "Official dosing guidance includes maintenance infusions around 0.2-1 mcg/kg/hr in monitored sedation contexts, while ICU or selected settings may extend higher depending on the product label.",
     lastReviewed: "2026-03-15"
   },
   infusion_dexmedetomidine_openanesthesia: {
@@ -694,6 +1519,30 @@ const REFERENCE_REGISTRY = {
     url: "https://www.openanesthesia.org/keywords/dexmedetomidine/",
     linkLabel: "Open article",
     usageNote: "General anesthesia adjunct reference: dexmedetomidine shows linear pharmacokinetics in the 0.2-0.7 mcg/kg/h range and can reduce sevoflurane, propofol, and opioid requirements.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_remimazolam_dailymed: {
+    title: "Remimazolam procedural sedation label",
+    source: "FDA",
+    url: "https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/212295s003lbl.pdf",
+    linkLabel: "Open full label",
+    usageNote: "BYFAVO label: initial 5 mg IV over 1 minute for procedural sedation, then supplemental 2.5 mg doses over 15 seconds no sooner than 2 minutes apart. This is a bolus/top-up regimen, not a continuous infusion default.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_remimazolam_openanesthesia: {
+    title: "Remimazolam anesthesia clinical dosing",
+    source: "OpenAnesthesia",
+    url: "https://www.openanesthesia.org/keywords/remimazolam/",
+    linkLabel: "Open article",
+    usageNote: "Anesthesia reference: induction infusion has been described around 6-12 mg/kg/hr until loss of consciousness, with maintenance around 1-2 mg/kg/hr depending on anesthetic context.",
+    lastReviewed: "2026-03-15"
+  },
+  infusion_remimazolam_study: {
+    title: "Remimazolam general anesthesia trial",
+    source: "PubMed",
+    url: "https://pubmed.ncbi.nlm.nih.gov/32417976/",
+    linkLabel: "Open abstract",
+    usageNote: "Phase IIb/III trial context: induction infusion arms of 6 or 12 mg/kg/hr were evaluated, followed by maintenance infusion around 1 mg/kg/hr with adjustment as needed.",
     lastReviewed: "2026-03-15"
   }
 };
@@ -768,6 +1617,93 @@ function getReferenceTypeBadge(type) {
   }
 
   return "";
+}
+
+function getUseCaseBadge(useCase) {
+  if (useCase === "ga-induction") {
+    return '<span class="reference-badge is-use-case-induction">GA induction</span>';
+  }
+
+  if (useCase === "ga-maintenance") {
+    return '<span class="reference-badge is-use-case-maintenance">GA maintenance</span>';
+  }
+
+  if (useCase === "procedural-sedation") {
+    return '<span class="reference-badge is-use-case-sedation">Procedural sedation</span>';
+  }
+
+  if (useCase === "vasopressor-support") {
+    return '<span class="reference-badge is-use-case-support">Hemodynamic support</span>';
+  }
+
+  return "";
+}
+
+function getRangeSourceType(drug) {
+  return drug && drug.rangeSourceType ? drug.rangeSourceType : "";
+}
+
+function renderRangeSourceBadge(container, drug) {
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = getReferenceTypeBadge(getRangeSourceType(drug));
+}
+
+function applyRangeSourceTheme(element, drug) {
+  if (!element) {
+    return;
+  }
+
+  element.classList.remove("has-range-label", "has-range-clinical", "has-range-study");
+
+  const type = getRangeSourceType(drug);
+  if (type) {
+    element.classList.add(`has-range-${type}`);
+  }
+}
+
+function getDrugUseCaseSummary(drug) {
+  if (!drug || !drug.useCaseLabel) {
+    return "Not specified";
+  }
+
+  return drug.useCaseLabel;
+}
+
+function renderUseCaseBadge(container, drug) {
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = getUseCaseBadge(drug && drug.useCase ? drug.useCase : "");
+}
+
+function getRangeSourceSummary(drug) {
+  if (!drug || !drug.rangeSourceType) {
+    return "Not specified";
+  }
+
+  if (drug.rangeSourceType === "label") {
+    return drug.rangeSourceNote || "Derived from product labeling and intended label-based dosing context.";
+  }
+
+  if (drug.rangeSourceType === "clinical") {
+    return drug.rangeSourceNote || "Derived from clinical or perioperative practice references rather than a single package insert range.";
+  }
+
+  if (drug.rangeSourceType === "study") {
+    return drug.rangeSourceNote || "Derived from a specific study context and not intended as a universal range.";
+  }
+
+  return drug.rangeSourceNote || "Not specified";
+}
+
+function getRangeRationale(drug) {
+  return drug && drug.rangeRationale
+    ? drug.rangeRationale
+    : "Verify against the original source, local protocol, and patient-specific context before use.";
 }
 
 function renderReferenceList(container, referenceIds) {
@@ -890,30 +1826,36 @@ function getFaceMaskRecommendation(weightKg, ageYears) {
 
 function getPediatricAirwayWarningText(deviceCategory) {
   if (deviceCategory === "ett") {
-    return "Age-based ETT formulas are less reliable in neonates and young infants. Use infant-specific references and clinical confirmation.";
+    return t("airway_warning_ett_infant");
   }
 
   if (deviceCategory === "supraglottic") {
-    return "Supraglottic size guidance is weight-based. Confirm device availability, seal, and manufacturer instructions.";
+    return currentLanguage === "en"
+      ? "Supraglottic size guidance is weight-based. Confirm device availability, seal, and manufacturer instructions."
+      : "Supraglottic size guide는 weight-based입니다. device availability, seal, manufacturer instruction을 함께 확인하세요.";
   }
 
   if (deviceCategory === "oral-airway") {
-    return "Oral airway size is only a starting guide. External measurement and clinical fit are more important than age alone.";
+    return t("airway_warning_oral");
   }
 
   if (deviceCategory === "nasal-airway") {
-    return "Nasal airway length is best estimated by external measurement. Age and weight are weak proxies, especially outside infancy.";
+    return currentLanguage === "en"
+      ? "Nasal airway length is best estimated by external measurement. Age and weight are weak proxies, especially outside infancy."
+      : "Nasal airway length는 외부 길이 측정이 가장 중요합니다. 특히 infancy를 벗어나면 age와 weight는 약한 proxy에 가깝습니다.";
   }
 
   if (deviceCategory === "laryngoscope") {
-    return "Blade choice depends on anatomy, pathology, and operator preference. Use this as a quick reference only.";
+    return t("airway_warning_laryngoscope");
   }
 
   if (deviceCategory === "face-mask") {
-    return "Face mask numbering varies by manufacturer. Use this as a broad starting guide and confirm actual facial fit clinically.";
+    return currentLanguage === "en"
+      ? "Face mask numbering varies by manufacturer. Use this as a broad starting guide and confirm actual facial fit clinically."
+      : "Face mask numbering은 manufacturer마다 다릅니다. broad starting guide로만 보고 실제 facial fit을 임상적으로 확인하세요.";
   }
 
-  return "Select an airway device type to see the matching guide. Confirm anatomy, fit, and clinical position before use.";
+  return t("airway_device_select_note");
 }
 
 function getPediatricDoseReferenceIds(values) {
@@ -1126,13 +2068,18 @@ const DRUG_PRESETS = [
     name: "Norepinephrine",
     concentration: 100,
     concentrationUnit: "mcg/mL",
-    referenceDoses: [0.02, 0.05, 0.1, 0.15],
+    referenceDoses: [0.01, 0.02, 0.05, 0.1, 0.2, 0.3],
     referenceRange: {
-      min: 0.02,
-      max: 0.15,
+      min: 0.01,
+      max: 0.3,
       unit: "mcg/kg/min"
     },
-    notes: "Perioperative weight-based reference aligned to OpenAnesthesia adult dosing; product label uses absolute mcg/min dosing.",
+    useCase: "vasopressor-support",
+    useCaseLabel: "General anesthesia / perioperative vasopressor support",
+    rangeSourceType: "clinical",
+    rangeSourceNote: "Institutional / perioperative practice range shown as a weight-based clinical preset; DailyMed label dosing remains linked separately as an absolute mcg/min reference.",
+    rangeRationale: "Expanded to reflect common OR and institutional norepinephrine practice while keeping the product label visible as a separate reference context.",
+    notes: "Clinical perioperative and institutional practice preset. Weight-based display is used for infusion planning, while the linked DailyMed label still presents absolute mcg/min dosing.",
     dilutionPresets: [
       {
         id: "ne-4mg-50ml",
@@ -1167,7 +2114,12 @@ const DRUG_PRESETS = [
       max: 2,
       unit: "mcg/kg/min"
     },
-    notes: "Reference range aligned to DailyMed adult continuous infusion labeling.",
+    useCase: "vasopressor-support",
+    useCaseLabel: "General anesthesia / perioperative hemodynamic support",
+    rangeSourceType: "label",
+    rangeSourceNote: "Broad label-oriented continuous infusion range based on product prescribing information; perioperative low-dose inotrope practice may use a narrower lower band depending on context.",
+    rangeRationale: "Kept broad so the default does not falsely imply that moderate or higher vasopressor/inotrope doses are out of reference, while lower-dose anesthesia use remains visible through the linked clinical context.",
+    notes: "Default preset mirrors the broad DailyMed adult infusion range. In OR practice, some users may center lower when epinephrine is being used mainly for low-dose beta support rather than full vasopressor escalation.",
     dilutionPresets: [
       {
         id: "epi-5mg-50ml",
@@ -1198,7 +2150,12 @@ const DRUG_PRESETS = [
       max: 1.4,
       unit: "mcg/kg/min"
     },
-    notes: "Reference range aligned to DailyMed anesthesia-induced hypotension infusion dosing.",
+    useCase: "vasopressor-support",
+    useCaseLabel: "Anesthesia-associated hypotension support",
+    rangeSourceType: "label",
+    rangeSourceNote: "Label-based OR hypotension infusion range. A broader vasodilatory-shock label range exists separately, but the default here stays focused on anesthesia-associated hypotension support.",
+    rangeRationale: "Kept at the narrower perioperative hypotension band so the default does not automatically imply vasodilatory-shock or ICU-style titration ceilings during routine OR use.",
+    notes: "Default preset mirrors the DailyMed anesthesia-associated hypotension infusion range; broader vasodilatory-shock labeling should be interpreted separately if that context is relevant.",
     dilutionPresets: [
       {
         id: "phe-10mg-100ml",
@@ -1230,6 +2187,11 @@ const DRUG_PRESETS = [
       unit: "unit/min",
       weightBased: false
     },
+    useCase: "vasopressor-support",
+    useCaseLabel: "Refractory perioperative hypotension support",
+    rangeSourceType: "clinical",
+    rangeSourceNote: "Clinical perioperative low-dose vasopressin range from anesthesia references.",
+    rangeRationale: "Switched to absolute units/min because perioperative vasopressin is usually prescribed that way; weight-based display was misleading.",
     notes: "Absolute-dose infusion aligned to perioperative low-dose vasopressin use; weight input is not used for this drug.",
     dilutionPresets: [
       {
@@ -1262,6 +2224,11 @@ const DRUG_PRESETS = [
       unit: "mcg/min",
       weightBased: false
     },
+    useCase: "vasopressor-support",
+    useCaseLabel: "Perioperative vasodilator titration",
+    rangeSourceType: "label",
+    rangeSourceNote: "Label-oriented nitroglycerin infusion range using absolute mcg/min titration.",
+    rangeRationale: "Changed to absolute mcg/min because both label and anesthesia references describe OR titration that way rather than mcg/kg/min defaults.",
     notes: "Absolute-dose infusion aligned to DailyMed and OpenAnesthesia titration guidance; weight input is not used for this drug.",
     dilutionPresets: [
       {
@@ -1293,6 +2260,11 @@ const DRUG_PRESETS = [
       max: 50,
       unit: "mcg/kg/min"
     },
+    useCase: "vasopressor-support",
+    useCaseLabel: "Hemodynamic support / inopressor use",
+    rangeSourceType: "label",
+    rangeSourceNote: "Label-based adult dopamine infusion range spanning lower to higher hemodynamic effect bands.",
+    rangeRationale: "Expanded to the labeled upper range so the calculator does not falsely imply that doses above 20 mcg/kg/min are automatically out of reference.",
     notes: "Reference range aligned to DailyMed adult infusion labeling; physiologic effects vary by dose band.",
     dilutionPresets: [
       {
@@ -1324,6 +2296,11 @@ const DRUG_PRESETS = [
       max: 20,
       unit: "mcg/kg/min"
     },
+    useCase: "ga-maintenance",
+    useCaseLabel: "Perioperative inotrope support",
+    rangeSourceType: "label",
+    rangeSourceNote: "Label-based adult dobutamine infusion range.",
+    rangeRationale: "Extended to 20 mcg/kg/min to match labeling and common inotrope titration practice.",
     notes: "Reference range aligned to common DailyMed adult infusion dosing; rare higher doses should be protocol-specific.",
     dilutionPresets: [
       {
@@ -1355,6 +2332,11 @@ const DRUG_PRESETS = [
       max: 0.75,
       unit: "mcg/kg/min"
     },
+    useCase: "ga-maintenance",
+    useCaseLabel: "Cardiac anesthesia maintenance support",
+    rangeSourceType: "clinical",
+    rangeSourceNote: "Clinical cardiac anesthesia maintenance range aligned with OpenAnesthesia and label maintenance dosing.",
+    rangeRationale: "The displayed range focuses on maintenance infusion and excludes loading-dose logic so the table stays interpretable during pump setup.",
     notes: "Maintenance infusion range aligned to DailyMed and OpenAnesthesia; loading dose should be considered separately.",
     dilutionPresets: [
       {
@@ -1387,6 +2369,11 @@ const DRUG_PRESETS = [
       unit: "mcg/min",
       weightBased: false
     },
+    useCase: "ga-maintenance",
+    useCaseLabel: "Electrophysiology / perioperative chronotrope support",
+    rangeSourceType: "label",
+    rangeSourceNote: "Label-based isoproterenol infusion range using absolute mcg/min dosing.",
+    rangeRationale: "Converted to absolute mcg/min because the labeled effective range is commonly expressed that way and better matches electrophysiology practice.",
     notes: "Absolute-dose infusion aligned to DailyMed adult infusion dosing; weight input is not used for this drug.",
     dilutionPresets: [
       {
@@ -1418,7 +2405,12 @@ const DRUG_PRESETS = [
       max: 2,
       unit: "mcg/kg/min"
     },
-    notes: "Maintenance infusion range aligned to remifentanil labeling for general anesthesia.",
+    useCase: "ga-maintenance",
+    useCaseLabel: "General anesthesia maintenance analgesia",
+    rangeSourceType: "label",
+    rangeSourceNote: "Label-based remifentanil maintenance infusion range for general anesthesia; lower-centered anesthetic supplementation often sits within the same band rather than needing a separate default.",
+    rangeRationale: "Kept broad because remifentanil use in the OR commonly spans lighter supplementation through deeper TIVA-style opioid maintenance, and the label range already maps that reasonably well.",
+    notes: "Default preset mirrors remifentanil labeling for general anesthesia. In practice, many cases cluster in the lower-middle part of this band even when the full labeled range remains appropriate.",
     dilutionPresets: [
       {
         id: "remi-2mg-40ml",
@@ -1449,7 +2441,12 @@ const DRUG_PRESETS = [
       max: 200,
       unit: "mcg/kg/min"
     },
-    notes: "Maintenance infusion range aligned to DailyMed adult general-anesthesia labeling; elderly or cardiac patients may require lower rates.",
+    useCase: "ga-maintenance",
+    useCaseLabel: "General anesthesia maintenance (TIVA)",
+    rangeSourceType: "label",
+    rangeSourceNote: "Label-based maintenance infusion range for general anesthesia in healthier adults; lower maintenance rates may be appropriate in older, frailer, or more hemodynamically limited patients.",
+    rangeRationale: "Kept centered on the classic healthy-adult TIVA maintenance band so the default stays simple, while the notes make clear that some common OR populations will run lower.",
+    notes: "Default preset mirrors the familiar healthy-adult TIVA maintenance band. Elderly, cardiac, or otherwise vulnerable patients may require lower maintenance rates than this default center.",
     dilutionPresets: [
       {
         id: "propofol-10mg-ml",
@@ -1480,6 +2477,11 @@ const DRUG_PRESETS = [
       max: 300,
       unit: "mcg/kg/min"
     },
+    useCase: "ga-maintenance",
+    useCaseLabel: "Perioperative rate / pressure control",
+    rangeSourceType: "label",
+    rangeSourceNote: "Label-based esmolol infusion range used perioperatively for rate and pressure control.",
+    rangeRationale: "Maintains the broad labeled titration band because esmolol response varies widely with indication and bolus use.",
     notes: "Reference range aligned to DailyMed perioperative infusion dosing; most patients respond within 50-200 mcg/kg/min.",
     dilutionPresets: [
       {
@@ -1505,15 +2507,20 @@ const DRUG_PRESETS = [
     name: "Dexmedetomidine",
     concentration: 4,
     concentrationUnit: "mcg/mL",
-    referenceDoses: [0.2, 0.3, 0.4, 0.5, 0.7],
+    referenceDoses: [0.2, 0.3, 0.4, 0.5, 0.7, 1.0],
     referenceRange: {
       min: 0.2,
-      max: 0.7,
+      max: 1,
       unit: "mcg/kg/hr",
       timeUnit: "hr",
       weightBased: true
     },
-    notes: "Perioperative maintenance range aligned to OpenAnesthesia and common anesthesia use; ICU label dosing may extend higher.",
+    useCase: "ga-maintenance",
+    useCaseLabel: "General anesthesia adjunct / maintenance sedation",
+    rangeSourceType: "label",
+    rangeSourceNote: "Label-informed perioperative sedation and anesthesia-adjunct maintenance range, broadened beyond the narrower OpenAnesthesia-only band.",
+    rangeRationale: "Expanded to 0.2-1 mcg/kg/hr so the default better reflects official dosing guidance and common perioperative practice, without automatically adopting broader ICU-only ceilings.",
+    notes: "Default preset now reflects a label-informed perioperative range. OpenAnesthesia remains linked for the more conservative 0.2-0.7 mcg/kg/hr anesthesia-adjunct context.",
     dilutionPresets: [
       {
         id: "dex-200mcg-50ml",
@@ -1528,6 +2535,92 @@ const DRUG_PRESETS = [
       }
     ],
     references: ["infusion_dexmedetomidine_dailymed", "infusion_dexmedetomidine_openanesthesia"],
+    metadata: {
+      source: "Editable local preset",
+      lastReviewed: "2026-03-15"
+    }
+  },
+  {
+    id: "remimazolam-induction",
+    name: "Remimazolam (GA induction)",
+    concentration: 2500,
+    concentrationUnit: "mcg/mL",
+    referenceDoses: [6000, 9000, 12000],
+    referenceRange: {
+      min: 6000,
+      max: 12000,
+      unit: "mcg/kg/hr",
+      timeUnit: "hr",
+      weightBased: true
+    },
+    useCase: "ga-induction",
+    useCaseLabel: "General anesthesia induction infusion",
+    rangeSourceType: "clinical",
+    rangeSourceNote: "Clinical induction range based on general-anesthesia trial and OpenAnesthesia summary.",
+    rangeRationale: "Converted to hourly units because the attached anesthesia references describe induction infusion as 6-12 mg/kg/hr rather than a default minute-based pump expression.",
+    alternateUseCase: "Procedural sedation label uses bolus/top-up dosing: initial 5 mg IV over 1 minute, then 2.5 mg supplements over 15 seconds no sooner than 2 minutes apart.",
+    notes: "Use as an induction infusion reference only. Displayed as 6000-12000 mcg/kg/hr to mirror the commonly cited 6-12 mg/kg/hr anesthesia references.",
+    dilutionPresets: [
+      {
+        id: "remimazolam-20mg-8ml",
+        label: "20 mg / 8 mL",
+        drugAmount: 20,
+        drugAmountUnit: "mg",
+        finalVolume: 8,
+        finalVolumeUnit: "mL",
+        finalConcentration: 2500,
+        finalConcentrationUnit: "mcg/mL",
+        note: "Reconstituted BYFAVO vial concentration"
+      }
+    ],
+    references: [
+      "infusion_remimazolam_dailymed",
+      "infusion_remimazolam_openanesthesia",
+      "infusion_remimazolam_study"
+    ],
+    metadata: {
+      source: "Editable local preset",
+      lastReviewed: "2026-03-15"
+    }
+  },
+  {
+    id: "remimazolam-maintenance",
+    name: "Remimazolam (GA maintenance)",
+    concentration: 2500,
+    concentrationUnit: "mcg/mL",
+    referenceDoses: [1000, 1200, 1500, 1800, 2000],
+    referenceRange: {
+      min: 1000,
+      max: 2000,
+      unit: "mcg/kg/hr",
+      timeUnit: "hr",
+      weightBased: true
+    },
+    useCase: "ga-maintenance",
+    useCaseLabel: "General anesthesia maintenance infusion",
+    rangeSourceType: "clinical",
+    rangeSourceNote: "Clinical maintenance range based on OpenAnesthesia and general-anesthesia study dosing.",
+    rangeRationale: "Converted to hourly units because the attached anesthesia references describe maintenance infusion around 1-2 mg/kg/hr rather than a label-style minute-based default.",
+    alternateUseCase: "Procedural sedation label is separate and bolus-based rather than infusion-based: initial 5 mg IV over 1 minute, then 2.5 mg top-up doses as needed.",
+    notes: "Maintenance infusion use for general anesthesia is practice-based and should be checked against institutional protocol. Displayed as 1000-2000 mcg/kg/hr to mirror the commonly cited 1-2 mg/kg/hr anesthesia references.",
+    dilutionPresets: [
+      {
+        id: "remimazolam-20mg-8ml",
+        label: "20 mg / 8 mL",
+        drugAmount: 20,
+        drugAmountUnit: "mg",
+        finalVolume: 8,
+        finalVolumeUnit: "mL",
+        finalConcentration: 2500,
+        finalConcentrationUnit: "mcg/mL",
+        note: "Reconstituted BYFAVO vial concentration"
+      }
+    ],
+    references: [
+      "infusion_remimazolam_dailymed",
+      "infusion_remimazolam_openanesthesia",
+      "infusion_remimazolam_study"
+    ],
     metadata: {
       source: "Editable local preset",
       lastReviewed: "2026-03-15"
@@ -1887,10 +2980,10 @@ const PEDIATRIC_DRUG_PRESETS = [
           }
         },
         references: ["pediatric_propofol_dailymed"],
-        verificationStatus: "supported",
+        verificationStatus: "off-label",
         metadata: {
           source: "Editable local preset",
-          lastReviewed: "2026-03-14"
+          lastReviewed: "2026-03-15"
         }
       }
     }
@@ -2244,26 +3337,132 @@ function normalizeDrugSetting(rawSetting, defaultSetting) {
   };
 }
 
+function shouldMigrateLegacyRemimazolamValues(drugId) {
+  return drugId === "remimazolam-induction" || drugId === "remimazolam-maintenance";
+}
+
+function getCanonicalDrugPreset(drugId) {
+  return DRUG_PRESETS.find(function (preset) {
+    return preset.id === drugId;
+  }) || null;
+}
+
+function isCloseToCanonicalDoseList(parsedList, canonicalDoseList) {
+  if (!Array.isArray(parsedList) || !Array.isArray(canonicalDoseList) || parsedList.length !== canonicalDoseList.length) {
+    return false;
+  }
+
+  return parsedList.every(function (dose, index) {
+    return Math.abs(dose - canonicalDoseList[index]) <= 5;
+  });
+}
+
+function migrateLegacyRemimazolamReferenceDoseList(drugId, referenceDoseList, fallbackList) {
+  if (!shouldMigrateLegacyRemimazolamValues(drugId)) {
+    return referenceDoseList;
+  }
+
+  const parsedList = parseDoseList(referenceDoseList);
+  const preset = getCanonicalDrugPreset(drugId);
+  const canonicalDoseList = preset ? preset.referenceDoses : [];
+
+  if (!parsedList || !parsedList.length) {
+    return fallbackList;
+  }
+
+  if (isCloseToCanonicalDoseList(parsedList, canonicalDoseList)) {
+    return fallbackList;
+  }
+
+  const maxDose = Math.max.apply(null, parsedList);
+
+  if (maxDose >= 500) {
+    return referenceDoseList;
+  }
+
+  return fallbackList;
+}
+
+function migrateLegacyRemimazolamTargetDose(drugId, targetDose) {
+  if (!shouldMigrateLegacyRemimazolamValues(drugId)) {
+    return targetDose;
+  }
+
+  const numericDose = Number(targetDose);
+  const preset = getCanonicalDrugPreset(drugId);
+  const canonicalDoseList = preset ? preset.referenceDoses : [];
+
+  if (!isPositiveNumber(numericDose)) {
+    return targetDose;
+  }
+
+  if (!canonicalDoseList.length) {
+    return targetDose;
+  }
+
+  if (canonicalDoseList.some(function (dose) {
+    return Math.abs(dose - numericDose) <= 5;
+  })) {
+    const nearestCanonicalExistingDose = canonicalDoseList.reduce(function (closest, currentDose) {
+      if (Math.abs(currentDose - numericDose) < Math.abs(closest - numericDose)) {
+        return currentDose;
+      }
+
+      return closest;
+    }, canonicalDoseList[0]);
+
+    return String(nearestCanonicalExistingDose);
+  }
+
+  if (numericDose >= 500) {
+    return targetDose;
+  }
+
+  const migratedDose = numericDose * 60;
+  const nearestCanonicalDose = canonicalDoseList.reduce(function (closest, currentDose) {
+    if (Math.abs(currentDose - migratedDose) < Math.abs(closest - migratedDose)) {
+      return currentDose;
+    }
+
+    return closest;
+  }, canonicalDoseList[0]);
+
+  return String(nearestCanonicalDose);
+}
+
 function normalizeSingleDrugState(rawState) {
   const fallback = createDefaultSingleDrugState();
   const source = rawState && typeof rawState === "object" ? rawState : {};
   const rawInputs = source.inputs && typeof source.inputs === "object" ? source.inputs : {};
   const rawDrugSettings = source.drugSettings && typeof source.drugSettings === "object" ? source.drugSettings : {};
+  const selectedDrugId = sanitizeSelectedDrugId(source.selectedDrugId);
 
   const normalizedDrugSettings = {};
 
   Object.keys(fallback.drugSettings).forEach(function (drugId) {
-    normalizedDrugSettings[drugId] = normalizeDrugSetting(rawDrugSettings[drugId], fallback.drugSettings[drugId]);
+    const normalizedSetting = normalizeDrugSetting(rawDrugSettings[drugId], fallback.drugSettings[drugId]);
+
+    normalizedDrugSettings[drugId] = {
+      ...normalizedSetting,
+      referenceDoseList: migrateLegacyRemimazolamReferenceDoseList(
+        drugId,
+        normalizedSetting.referenceDoseList,
+        fallback.drugSettings[drugId].referenceDoseList
+      )
+    };
   });
 
   return {
-    selectedDrugId: sanitizeSelectedDrugId(source.selectedDrugId),
+    selectedDrugId: selectedDrugId,
     activeMode: sanitizeActiveMode(source.activeMode),
     favoriteDrugIds: normalizeQuickDrugIds(source.favoriteDrugIds),
     recentDrugIds: normalizeQuickDrugIds(source.recentDrugIds),
     inputs: {
       weight: sanitizeString(rawInputs.weight, fallback.inputs.weight),
-      targetDose: sanitizeString(rawInputs.targetDose, fallback.inputs.targetDose),
+      targetDose: migrateLegacyRemimazolamTargetDose(
+        selectedDrugId,
+        sanitizeString(rawInputs.targetDose, fallback.inputs.targetDose)
+      ),
       pumpRate: sanitizeString(rawInputs.pumpRate, fallback.inputs.pumpRate)
     },
     drugSettings: normalizedDrugSettings
@@ -2377,12 +3576,16 @@ function normalizePersistedState(rawState) {
 function normalizeInfusionWorkspaceCardState(rawCard) {
   const fallback = createDefaultInfusionWorkspaceCardState();
   const source = rawCard && typeof rawCard === "object" ? rawCard : {};
+  const selectedDrugId = sanitizeSelectedDrugId(source.selectedDrugId);
 
   return {
     cardId: sanitizeString(source.cardId, fallback.cardId),
-    selectedDrugId: sanitizeSelectedDrugId(source.selectedDrugId),
+    selectedDrugId: selectedDrugId,
     concentration: sanitizeString(source.concentration, fallback.concentration),
-    targetDose: sanitizeString(source.targetDose, fallback.targetDose)
+    targetDose: migrateLegacyRemimazolamTargetDose(
+      selectedDrugId,
+      sanitizeString(source.targetDose, fallback.targetDose)
+    )
   };
 }
 
@@ -2932,14 +4135,14 @@ function renderQuickDrugButtons(container, drugIds) {
   }
 
   if (!drugIds.length) {
-    container.innerHTML = '<span class="helper-text">No drugs yet</span>';
+    container.innerHTML = `<span class="helper-text">${t("no_drugs_yet")}</span>`;
     return;
   }
 
   container.innerHTML = drugIds.map(function (drugId) {
     const preset = getDrugPresetById(drugId);
     if (container === recentDrugsContainer) {
-      return `<span class="quick-drug-chip"><button type="button" class="chip-button" data-quick-drug-id="${drugId}">${preset.name}</button><button type="button" class="quick-drug-remove" data-remove-quick-drug-id="${drugId}" aria-label="Remove ${preset.name} from recent">x</button></span>`;
+      return `<span class="quick-drug-chip"><button type="button" class="chip-button" data-quick-drug-id="${drugId}">${preset.name}</button><button type="button" class="quick-drug-remove" data-remove-quick-drug-id="${drugId}" aria-label="${t("remove_favorite")} ${preset.name}">x</button></span>`;
     }
 
     return `<button type="button" class="chip-button" data-quick-drug-id="${drugId}">${preset.name}</button>`;
@@ -2950,7 +4153,7 @@ function updateQuickDrugUI() {
   const selectedDrugId = drugSelect.value;
   const isFavorite = getFavoriteDrugIds().includes(selectedDrugId);
 
-  favoriteDrugButton.textContent = isFavorite ? "Remove favorite" : "Add to favorites";
+  favoriteDrugButton.textContent = isFavorite ? t("remove_favorite") : t("add_to_favorites");
   favoriteDrugButton.classList.toggle("is-active", isFavorite);
   favoriteDrugButton.disabled = selectedDrugId === "custom";
   renderQuickDrugButtons(favoriteDrugsContainer, getFavoriteDrugIds());
@@ -2984,8 +4187,8 @@ function applyPediatricDoseStateToView(pediatricDoseState) {
 
   renderPediatricDrugSelectOptions();
   pediatricToggleUnverifiedButton.textContent = normalizedState.showUnverifiedPresets
-    ? "Hide unverified presets"
-    : "Show unverified presets";
+    ? t("hide_unverified_presets")
+    : t("show_unverified_presets");
   pediatricDrugSelect.value = getPediatricSelectValueFromState(normalizedState);
   pediatricInputs.weight.value = normalizedState.inputs.weight;
   pediatricInputs.ageGroup.value = normalizedState.inputs.ageGroup;
@@ -3123,12 +4326,39 @@ function updateDrugUI() {
   doseUnitLabel.textContent = selectedDrug.referenceRange.unit || "mcg/kg/min";
 
   if (savedDoseList) {
-    referenceRangeText.textContent = `${Math.min.apply(null, savedDoseList)} - ${Math.max.apply(null, savedDoseList)} ${selectedDrug.referenceRange.unit}`;
+    referenceRangeText.textContent = formatDoseRangeWithEquivalent(
+      Math.min.apply(null, savedDoseList),
+      Math.max.apply(null, savedDoseList),
+      selectedDrug.referenceRange.unit
+    );
   } else if (selectedDrug.referenceRange.min > 0 || selectedDrug.referenceRange.max > 0) {
-    referenceRangeText.textContent = `${selectedDrug.referenceRange.min} - ${selectedDrug.referenceRange.max} ${selectedDrug.referenceRange.unit}`;
+    referenceRangeText.textContent = formatDoseRangeWithEquivalent(
+      selectedDrug.referenceRange.min,
+      selectedDrug.referenceRange.max,
+      selectedDrug.referenceRange.unit
+    );
   } else {
     referenceRangeText.textContent = "Custom reference values";
   }
+  renderRangeSourceBadge(referenceRangeBadge, selectedDrug);
+  renderUseCaseBadge(referenceUseCaseBadge, selectedDrug);
+  referenceUseCaseText.textContent = isCustomDrug
+    ? "Custom use case."
+    : getDrugUseCaseSummary(selectedDrug);
+  referenceRangeSourceText.textContent = isCustomDrug
+    ? "User-defined range."
+    : getRangeSourceSummary(selectedDrug);
+  referenceRangeRationaleText.textContent = isCustomDrug
+    ? "Custom values should be checked against your own source before clinical use."
+    : getRangeRationale(selectedDrug);
+  if (alternateUseCaseRow && alternateUseCaseText) {
+    const alternateUseText = !isCustomDrug && selectedDrug.alternateUseCase
+      ? selectedDrug.alternateUseCase
+      : "";
+    alternateUseCaseRow.classList.toggle("hidden", !alternateUseText);
+    alternateUseCaseText.textContent = alternateUseText || "-";
+  }
+  applyRangeSourceTheme(presetSummary, selectedDrug);
 
   drugNotesText.textContent = isCustomDrug
     ? inputs.customDrugNotes.value.trim() || "User-defined custom drug."
@@ -3143,8 +4373,8 @@ function updateDrugUI() {
   drugSourceText.textContent = selectedDrug.metadata.source || "-";
   drugLastReviewedText.textContent = selectedDrug.metadata.lastReviewed || "-";
   drugHelp.textContent = isCustomDrug
-    ? "Custom drug를 선택했습니다. 이름, 농도, Reference Dosing Table 값을 자유롭게 입력하세요."
-    : `${selectedDrug.name} preset이 적용되었습니다. 농도와 Reference Dosing Table 값은 필요하면 수정할 수 있습니다.`;
+    ? t("drug_help_custom")
+    : t("drug_help_selected", { drug: selectedDrug.name });
   updateQuickDrugUI();
 }
 
@@ -3170,24 +4400,34 @@ function updatePediatricDrugUI() {
   pediatricCustomFields.classList.toggle("hidden", !isCustomDrug);
   pediatricInputs.concentration.value = currentDrugSettings.concentration || String(pediatricProfile.concentration.value);
   pediatricRangeText.textContent = `${pediatricProfile.recommendedRange.min} - ${pediatricProfile.recommendedRange.max} ${pediatricProfile.dosePerKgUnit}`;
-  pediatricAgeNoteText.textContent = ageGuidance ? ageGuidance.note : "No specific age-group note provided.";
+  pediatricAgeNoteText.textContent = ageGuidance ? ageGuidance.note : (currentLanguage === "en" ? "No specific age-group note provided." : "특정 age group note가 없습니다.");
   pediatricConcentrationText.textContent = `${pediatricInputs.concentration.value} ${pediatricProfile.concentration.unit}`;
   pediatricVerificationText.textContent = verificationConfig.summary;
   pediatricNotesText.textContent = `${pediatricProfile.notes}${doseLimitNote} / ${pediatricProfile.metadata.source}`;
   pediatricConcentrationUnitLabel.textContent = pediatricProfile.concentration.unit;
   pediatricSaveCustomButton.classList.toggle("hidden", !isCustomDrug);
   pediatricDeleteCustomButton.classList.toggle("hidden", !activeSavedCustomDrugId);
-  pediatricSaveCustomButton.textContent = activeSavedCustomDrugId ? "Update saved drug" : "Save custom drug";
+  pediatricSaveCustomButton.textContent = activeSavedCustomDrugId
+    ? (currentLanguage === "en" ? "Update saved drug" : "저장된 custom drug 업데이트")
+    : t("save_custom_drug");
   pediatricCustomSaveHelp.classList.toggle("hidden", !isCustomDrug);
   pediatricCustomSaveHelp.textContent = activeSavedCustomDrugId
-    ? "현재 저장된 custom drug를 편집 중입니다. 이름을 바꿔도 같은 저장 항목이 업데이트됩니다."
-    : "Save custom drug를 누르면 현재 입력값이 로컬에 저장됩니다.";
+    ? (currentLanguage === "en"
+      ? "You are editing a saved custom drug. Renaming it still updates the same saved item."
+      : "현재 저장된 custom drug를 편집 중입니다. 이름을 바꿔도 같은 저장 항목이 업데이트됩니다.")
+    : (currentLanguage === "en"
+      ? "Click Save custom drug to store the current values locally."
+      : "Save custom drug를 누르면 현재 입력값이 로컬에 저장됩니다.");
   pediatricAgeWarning.textContent = ageGuidance && ageGuidance.warning
     ? ageGuidance.warning
-    : "Weight-based estimate only. Neonates, infants, and selected drugs may require age-specific adjustment.";
+    : (currentLanguage === "en"
+      ? "Weight-based estimate only. Neonates, infants, and selected drugs may require age-specific adjustment."
+      : "Weight-based estimate only입니다. Neonate, infant, 일부 약물은 age-specific adjustment가 필요할 수 있습니다.");
   pediatricDrugHelp.textContent = isCustomDrug
-    ? "Custom pediatric drug를 선택했습니다. 이름, dose range, unit, concentration을 직접 입력하세요."
-    : `${selectedDrug.name} pediatric bolus preset이 적용되었습니다. 체중과 농도는 필요하면 수정할 수 있습니다.`;
+    ? t("pediatric_drug_help_custom")
+    : (currentLanguage === "en"
+      ? `${selectedDrug.name} pediatric bolus preset applied. Weight and concentration can be adjusted if needed.`
+      : `${selectedDrug.name} pediatric bolus preset이 적용되었습니다. 체중과 농도는 필요하면 수정할 수 있습니다.`);
 }
 
 function cloneWorkspaceCards(cards) {
@@ -3237,19 +4477,21 @@ function renderInfusionWorkspace() {
   workspaceTemplateNameInput.value = "";
   workspaceTemplateNoteInput.value = "";
   workspaceTemplateSelect.innerHTML = templates.length
-    ? `<option value="">Select template</option>${templates.map(function (template) {
+    ? `<option value="">${t("workspace_select_template")}</option>${templates.map(function (template) {
       return `<option value="${template.id}" ${template.id === workspaceState.selectedTemplateId ? "selected" : ""}>${template.name}</option>`;
     }).join("")}`
-    : `<option value="">No saved templates</option>`;
+    : `<option value="">${t("no_saved_templates")}</option>`;
   workspaceLoadTemplateButton.disabled = !templates.length || !workspaceState.selectedTemplateId;
   workspaceDeleteTemplateButton.disabled = !templates.length || !workspaceState.selectedTemplateId;
   workspaceAddCardButton.disabled = hasReachedWorkspaceCardLimit;
   workspaceAddCardButton.title = hasReachedWorkspaceCardLimit
-    ? "Maximum 6 drug cards"
-    : "Add another drug card";
+    ? t("workspace_limit_title")
+    : t("workspace_add_card_title");
   workspaceHelp.textContent = isPositiveNumber(sharedWeight)
-    ? `Current shared weight: ${formatNumber(sharedWeight, 1)} kg. Each card is calculated independently using the same patient weight.`
-    : "Shared weight를 입력하면 각 infusion card의 target dose를 같은 환자 기준으로 계산할 수 있습니다.";
+    ? t("workspace_current_shared_weight", {
+      weight: formatNumber(sharedWeight, 1)
+    })
+    : t("workspace_help");
 
   if (workspaceState.selectedTemplateId) {
     const selectedTemplate = templates.find(function (template) {
@@ -3260,21 +4502,27 @@ function renderInfusionWorkspace() {
       workspaceTemplateNameInput.value = selectedTemplate.name;
       workspaceTemplateNoteInput.value = selectedTemplate.note;
       
-      let helpText = `Loaded template: ${selectedTemplate.name}.`;
+      let helpText = t("workspace_loaded_template", {
+        name: selectedTemplate.name
+      });
       if (selectedTemplate.note) {
-        helpText += ` (Note: ${selectedTemplate.note})`;
+        helpText += t("workspace_loaded_template_note", {
+          note: selectedTemplate.note
+        });
       }
       workspaceHelp.textContent = `${workspaceHelp.textContent} ${helpText}`;
     }
   }
 
   if (hasReachedWorkspaceCardLimit) {
-    workspaceHelp.textContent = `${workspaceHelp.textContent} Workspace card는 최대 6개까지 추가할 수 있습니다.`;
+    workspaceHelp.textContent = `${workspaceHelp.textContent} ${t("workspace_limit_help")}`;
   }
 
   workspaceCardList.innerHTML = workspaceState.cards.map(function (card, index) {
     const preset = getDrugPresetById(card.selectedDrugId);
     const drugCategory = getInfusionDrugCategory(card.selectedDrugId);
+    const rangeBadge = getReferenceTypeBadge(getRangeSourceType(preset));
+    const useCaseBadge = getUseCaseBadge(preset.useCase);
     const concentration = Number(card.concentration);
     const targetDose = Number(card.targetDose);
     const usesWeight = isWeightBasedReferenceRange(preset.referenceRange);
@@ -3294,6 +4542,8 @@ function renderInfusionWorkspace() {
             <p class="workspace-card-meta">${formatNumber(concentration, 1)} ${preset.concentrationUnit} / ${preset.metadata.source} / Last reviewed ${preset.metadata.lastReviewed}</p>
             <div class="workspace-card-tag-row">
               <span class="workspace-card-tag is-${drugCategory.key}">${drugCategory.label}</span>
+              ${useCaseBadge}
+              ${rangeBadge}
             </div>
           </div>
           <div class="quick-drug-list">
@@ -3303,7 +4553,7 @@ function renderInfusionWorkspace() {
               data-move-workspace-card-up="${card.cardId}"
               ${index === 0 ? "disabled" : ""}
             >
-              Move up
+              ${t("move_up")}
             </button>
             <button
               type="button"
@@ -3311,7 +4561,7 @@ function renderInfusionWorkspace() {
               data-move-workspace-card-down="${card.cardId}"
               ${index === workspaceState.cards.length - 1 ? "disabled" : ""}
             >
-              Move down
+              ${t("move_down")}
             </button>
             <button
               type="button"
@@ -3319,14 +4569,14 @@ function renderInfusionWorkspace() {
               data-remove-workspace-card-id="${card.cardId}"
               ${workspaceState.cards.length === 1 ? "disabled" : ""}
             >
-              Remove
+              ${t("remove")}
             </button>
           </div>
         </div>
 
         <div class="form-grid">
           <label class="field">
-            <span class="field-label">Drug</span>
+            <span class="field-label">${t("workspace_drug")}</span>
             <div class="select-row">
               <select data-workspace-field="selectedDrugId" data-workspace-card-id="${card.cardId}">
                 ${optionMarkup}
@@ -3335,7 +4585,7 @@ function renderInfusionWorkspace() {
           </label>
 
           <label class="field">
-            <span class="field-label">Concentration</span>
+            <span class="field-label">${t("workspace_concentration")}</span>
             <div class="input-row">
               <input data-workspace-field="concentration" data-workspace-card-id="${card.cardId}" type="number" inputmode="decimal" step="any" value="${card.concentration}">
               <span class="unit">${preset.concentrationUnit}</span>
@@ -3343,7 +4593,7 @@ function renderInfusionWorkspace() {
           </label>
 
           <label class="field">
-            <span class="field-label">Target Dose</span>
+            <span class="field-label">${t("workspace_target_dose")}</span>
             <div class="input-row">
               <input data-workspace-field="targetDose" data-workspace-card-id="${card.cardId}" type="number" inputmode="decimal" step="any" value="${card.targetDose}">
               <span class="unit">${preset.referenceRange.unit}</span>
@@ -3353,18 +4603,37 @@ function renderInfusionWorkspace() {
 
         <div class="workspace-card-result ${isOutOfRange ? "is-warning" : ""}">
           <p class="workspace-card-rate ${isOutOfRange ? "is-warning is-out-of-range" : ""}">
-            ${hasReadyCalculation ? `${formatNumber(targetRate, 2)} mL/hr` : (usesWeight ? "Enter shared weight and valid card values" : "Enter valid card values")}
+            ${hasReadyCalculation ? `${formatNumber(targetRate, 2)} mL/hr` : (usesWeight ? t("workspace_enter_shared_weight") : t("workspace_enter_valid_values"))}
           </p>
           <p class="workspace-card-context">
             ${hasReadyCalculation
-              ? `Target <span class="${isOutOfRange ? "is-out-of-range" : ""}">${formatNumber(targetDose, 3)} ${preset.referenceRange.unit}</span> at ${formatNumber(concentration, 1)} ${preset.concentrationUnit}`
-              : `Reference range ${preset.referenceRange.min} - ${preset.referenceRange.max} ${preset.referenceRange.unit}`}
+              ? t("workspace_target_at_concentration", {
+                dose: `<span class="${isOutOfRange ? "is-out-of-range" : ""}">${formatNumber(targetDose, 3)} ${preset.referenceRange.unit}</span>`,
+                unit: preset.referenceRange.unit,
+                concentration: formatNumber(concentration, 1),
+                concentrationUnit: preset.concentrationUnit
+              })
+              : t("workspace_reference_range_note", {
+                min: preset.referenceRange.min,
+                max: preset.referenceRange.max,
+                unit: preset.referenceRange.unit,
+                sharedWeightNote: ""
+              })}
           </p>
-          ${isOutOfRange ? `<p class="workspace-card-warning">Outside reference range - verify institutional protocol.</p>` : ""}
+          ${isOutOfRange ? `<p class="workspace-card-warning">${t("workspace_out_of_range")}</p>` : ""}
         </div>
 
         <p class="workspace-card-reference-note">
-          Reference range: ${preset.referenceRange.min} - ${preset.referenceRange.max} ${preset.referenceRange.unit}.${usesWeight ? "" : " Shared weight is not used for this drug."} Standard dilution: ${formatDilutionPreset(preset.dilutionPresets[0] || null)}.
+          ${t("workspace_reference_range_note", {
+            min: preset.referenceRange.min,
+            max: preset.referenceRange.max,
+            unit: preset.referenceRange.unit,
+            sharedWeightNote: usesWeight ? "" : t("workspace_shared_weight_not_used")
+          })}<br>
+          ${t("workspace_use_case_note", { useCase: getDrugUseCaseSummary(preset) })}<br>
+          ${t("workspace_range_basis_note", { basis: getRangeSourceSummary(preset) })}<br>
+          ${t("workspace_rationale_note", { rationale: getRangeRationale(preset) })}<br>
+          ${t("workspace_standard_dilution_note", { dilution: formatDilutionPreset(preset.dilutionPresets[0] || null) })}
         </p>
 
         <div class="quick-drug-actions">
@@ -3373,9 +4642,9 @@ function renderInfusionWorkspace() {
             class="chip-button chip-button-secondary"
             data-apply-workspace-dilution="${card.cardId}"
             ${dilutionPreset ? "" : "disabled"}
-            title="${dilutionPreset ? "Apply standard dilution concentration" : "No standard dilution preset available"}"
+            title="${dilutionPreset ? t("workspace_apply_standard_dilution_title") : t("workspace_no_standard_dilution_title")}"
           >
-            Apply standard dilution
+            ${t("workspace_apply_standard_dilution")}
           </button>
         </div>
       </article>
@@ -3401,27 +4670,27 @@ function readInfusionFormValues() {
 
 function validateInfusionValues(values) {
   if (isWeightBasedReferenceRange(values.drug.referenceRange) && !isPositiveNumber(values.weight)) {
-    return "Patient Weight must be a number greater than 0.";
+    return t("validation_patient_weight");
   }
 
   if (!isPositiveNumber(values.concentration)) {
-    return "Drug Concentration must be a number greater than 0.";
+    return t("validation_drug_concentration");
   }
 
   if (drugSelect.value === "custom" && inputs.customDrugName.value.trim() === "") {
-    return "Custom Drug Name을 입력해 주세요.";
+    return t("validation_custom_drug_name");
   }
 
   if (values.mode === "dose-to-rate" && !isPositiveNumber(values.targetDose)) {
-    return "Target Dose must be a number greater than 0.";
+    return t("validation_target_dose");
   }
 
   if (values.mode === "rate-to-dose" && !isPositiveNumber(values.pumpRate)) {
-    return "Pump Rate must be a number greater than 0.";
+    return t("validation_pump_rate");
   }
 
   if (values.mode === "reference-table" && !values.referenceDoseList) {
-    return "Reference Dose List에 0보다 큰 숫자를 쉼표로 구분해 입력해 주세요.";
+    return t("validation_reference_dose_list");
   }
 
   return "";
@@ -3459,45 +4728,45 @@ function readPediatricFormValues() {
 function validatePediatricValues(values) {
   if (values.mode === "airway") {
     if (values.deviceCategory === "ett" && !isPositiveNumber(values.ageYears)) {
-      return "ETT guide requires Age greater than 0.";
+      return t("validation_ett_age");
     }
 
     if (values.deviceCategory === "supraglottic" && !isPositiveNumber(values.weight)) {
-      return "Supraglottic guide requires Weight greater than 0.";
+      return t("validation_supraglottic_weight");
     }
 
     if (["oral-airway", "nasal-airway", "laryngoscope", "face-mask"].includes(values.deviceCategory)
       && !isPositiveNumber(values.ageYears)
       && !isPositiveNumber(values.weight)) {
-      return "Oral Airway, Nasal Airway, Laryngoscope, and Face Mask guides require Age or Weight.";
+      return t("validation_airway_age_or_weight");
     }
 
     return "";
   }
 
   if (!isPositiveNumber(values.weight)) {
-    return "Patient Weight must be a number greater than 0.";
+    return t("validation_patient_weight");
   }
 
   if (!isPositiveNumber(values.concentration)) {
-    return "Drug Concentration must be a number greater than 0.";
+    return t("validation_drug_concentration");
   }
 
   if (isCustomPediatricSelection(pediatricDrugSelect.value)) {
     if (pediatricInputs.customDrugName.value.trim() === "") {
-      return "Custom Drug Name is required.";
+      return t("validation_custom_name_required");
     }
 
     if (!isPositiveNumber(Number(pediatricInputs.minDosePerKg.value)) || !isPositiveNumber(Number(pediatricInputs.maxDosePerKg.value))) {
-      return "Custom dose range must contain numbers greater than 0.";
+      return t("validation_custom_range_positive");
     }
 
     if (Number(pediatricInputs.maxDosePerKg.value) < Number(pediatricInputs.minDosePerKg.value)) {
-      return "Max Dose per kg must be greater than or equal to Min Dose per kg.";
+      return t("validation_custom_max_gte_min");
     }
 
     if (getUnitBase(pediatricInputs.concentrationUnit.value) !== getUnitBase(pediatricInputs.doseUnit.value)) {
-      return "Dose Unit and Concentration Unit should use the same base unit for volume calculation.";
+      return t("validation_unit_base_match");
     }
   }
 
@@ -3518,11 +4787,11 @@ function readDantroleneFormValues() {
 
 function validateDantroleneValues(values) {
   if (!isPositiveNumber(values.weight)) {
-    return "Patient Weight must be a number greater than 0.";
+    return t("validation_patient_weight");
   }
 
   if (!isPositiveNumber(values.initialDoseMgKg)) {
-    return "Initial dose target must be a number greater than 0.";
+    return t("validation_initial_dose_target");
   }
 
   return "";
@@ -3536,10 +4805,10 @@ function clearResult() {
   resultCard.classList.add("hidden");
   resultCard.classList.remove("is-warning");
   referenceTableCard.classList.add("hidden");
-  resultLabel.textContent = "Calculation Result";
+  resultLabel.textContent = t("result_label_calc");
   primaryResult.textContent = "0.00 mL/hr";
   primaryResult.classList.remove("is-warning");
-  secondaryResultLabel.textContent = "Supporting information";
+  secondaryResultLabel.textContent = t("supporting_information");
   secondaryResult.textContent = "-";
   secondaryResult.classList.remove("is-warning");
   concentrationResult.textContent = "";
@@ -3548,31 +4817,41 @@ function clearResult() {
   infusionReferenceList.innerHTML = "";
   referenceTableCaption.textContent = "-";
   referenceTableBody.innerHTML = "";
-  resultWarning.textContent = "계산 결과는 참고용입니다. 실제 사용 전 반드시 별도로 검증해야 합니다.";
+  resultWarning.textContent = t("result_warning_default");
+  if (resultRangeBadge) {
+    resultRangeBadge.innerHTML = "";
+  }
+  if (resultUseCaseBadge) {
+    resultUseCaseBadge.innerHTML = "";
+  }
+  if (resultUseCaseText) {
+    resultUseCaseText.textContent = "-";
+  }
+  applyRangeSourceTheme(resultCard, null);
 }
 
 function clearPediatricResult() {
   pediatricResultCard.classList.add("hidden");
-  pediatricResultLabel.textContent = "Pediatric Dosing Result";
+  pediatricResultLabel.textContent = t("pediatric_dosing_result");
   pediatricPrimaryResult.textContent = "0.00 - 0.00";
-  pediatricSecondaryResultLabel.textContent = "Calculated dose range";
+  pediatricSecondaryResultLabel.textContent = t("calculated_dose_range");
   pediatricSecondaryResult.textContent = "-";
   pediatricConcentrationResult.textContent = "";
   pediatricDoseExplanation.textContent = "";
   pediatricVolumeExplanation.textContent = "";
   pediatricVerificationText.textContent = "-";
   pediatricDoseReferenceList.innerHTML = "";
-  pediatricResultWarning.textContent = "Pediatric dosing examples are for reference only. Verify before clinical use.";
+  pediatricResultWarning.textContent = t("pediatric_result_warning_default");
   pediatricAirwayResultCard.classList.add("hidden");
   pediatricAirwayPrimaryResult.textContent = "-";
-  pediatricAirwaySecondaryLabel.textContent = "Estimated oral depth (from lip)";
+  pediatricAirwaySecondaryLabel.textContent = t("estimated_oral_depth");
   pediatricAirwaySecondaryResult.textContent = "-";
   pediatricAirwayContext.textContent = "";
   pediatricAirwayDeviceResult.textContent = "";
   pediatricAirwaySizeExplanation.textContent = "";
   pediatricAirwayDepthExplanation.textContent = "";
   pediatricAirwayReferenceList.innerHTML = "";
-  pediatricAirwayResultWarning.textContent = "Airway estimates are reference formulas only. Confirm tube fit, leak, depth, and position clinically.";
+  pediatricAirwayResultWarning.textContent = t("pediatric_airway_warning_default");
   pediatricAirwayWarning.textContent = getPediatricAirwayWarningText(pediatricInputs.airwayDeviceCategory.value);
 }
 
@@ -3589,14 +4868,14 @@ function clearDantroleneResult() {
   dantroleneRepeatGuide.textContent = "";
   dantroleneMaintenanceGuide.textContent = "";
   dantroleneReferenceList.innerHTML = "";
-  dantroleneResultWarning.textContent = "Verify institutional MH protocol, redosing plan, and emergency workflow.";
+  dantroleneResultWarning.textContent = t("dantrolene_result_warning_default");
 }
 
 function renderReferenceRows(rows, doseUnit) {
   referenceTableBody.innerHTML = rows.map(function (row) {
     return `
       <tr class="${row.isOutOfRange ? "is-warning" : ""}">
-        <td>${formatNumber(row.dose, 3)} ${doseUnit}</td>
+        <td>${formatDoseValueWithEquivalent(row.dose, doseUnit)}</td>
         <td>${formatNumber(row.rate, 2)} mL/hr</td>
       </tr>
     `;
@@ -3612,17 +4891,35 @@ function showDoseToRateResult(values) {
   const isOutOfRange = !isWithinReferenceRange(values.targetDose, values.drug.referenceRange);
   const referenceIds = getInfusionReferenceIds(values);
 
-  resultLabel.textContent = "Dose -> Infusion Rate";
+  resultLabel.textContent = t("dose_to_rate");
+  renderRangeSourceBadge(resultRangeBadge, values.drug);
+  renderUseCaseBadge(resultUseCaseBadge, values.drug);
+  resultUseCaseText.textContent = getDrugUseCaseSummary(values.drug);
+  applyRangeSourceTheme(resultCard, values.drug);
   primaryResult.textContent = `${formatNumber(rate, 2)} mL/hr`;
-  secondaryResultLabel.textContent = "Target dose";
-  secondaryResult.textContent = `${formatNumber(values.targetDose, 3)} ${doseUnit}`;
+  secondaryResultLabel.textContent = t("target_dose");
+  secondaryResult.textContent = formatDoseValueWithEquivalent(values.targetDose, doseUnit);
   concentrationResult.textContent = usesWeight
     ? `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / ${formatNumber(values.weight, 1)} kg`
-    : `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / absolute-dose mode`;
-  concentrationExplanation.textContent = `농도 입력: ${formatNumber(values.concentration, 2)} ${concentrationUnit}를 사용했습니다.`;
+    : `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / ${t("absolute_dose_mode")}`;
+  concentrationExplanation.textContent = t("infusion_dose_calculation", {
+    concentration: formatNumber(values.concentration, 2),
+    unit: concentrationUnit
+  });
   rateExplanation.textContent = usesWeight
-    ? `주입 속도 계산: (${formatNumber(values.targetDose, 3)} x ${formatNumber(values.weight, 1)} x ${getReferenceTimeFactor(referenceRange)}) / ${formatNumber(values.concentration, 2)} = ${formatNumber(rate, 2)} mL/hr`
-    : `주입 속도 계산: (${formatNumber(values.targetDose, 3)} x ${getReferenceTimeFactor(referenceRange)}) / ${formatNumber(values.concentration, 2)} = ${formatNumber(rate, 2)} mL/hr`;
+    ? t("infusion_rate_formula_weight", {
+      dose: formatNumber(values.targetDose, 3),
+      weight: formatNumber(values.weight, 1),
+      factor: getReferenceTimeFactor(referenceRange),
+      concentration: formatNumber(values.concentration, 2),
+      rate: formatNumber(rate, 2)
+    })
+    : t("infusion_rate_formula_absolute", {
+      dose: formatNumber(values.targetDose, 3),
+      factor: getReferenceTimeFactor(referenceRange),
+      concentration: formatNumber(values.concentration, 2),
+      rate: formatNumber(rate, 2)
+    });
   renderReferenceList(infusionReferenceList, referenceIds);
   resultCard.classList.toggle("is-warning", isOutOfRange);
   primaryResult.classList.toggle("is-warning", isOutOfRange);
@@ -3630,8 +4927,8 @@ function showDoseToRateResult(values) {
   secondaryResult.classList.toggle("is-warning", isOutOfRange);
   secondaryResult.classList.toggle("is-out-of-range", isOutOfRange);
   resultWarning.textContent = isOutOfRange
-    ? "Outside preset reference range. Clinical and study-based ranges may reflect common practice rather than universal standards, so verify the original source and your institutional protocol before use."
-    : "Reference dose values are informational only. Label, clinical, and study-based sources do not represent a single universal standard, so verify the original source and institutional protocol before use.";
+    ? t("infusion_result_out_of_range")
+    : t("infusion_result_reference_only");
   resultCard.classList.remove("hidden");
 }
 
@@ -3644,17 +4941,37 @@ function showRateToDoseResult(values) {
   const isOutOfRange = !isWithinReferenceRange(dose, values.drug.referenceRange);
   const referenceIds = getInfusionReferenceIds(values);
 
-  resultLabel.textContent = "Infusion Rate -> Dose";
-  primaryResult.textContent = `${formatNumber(dose, 3)} ${doseUnit}`;
-  secondaryResultLabel.textContent = "Pump rate";
+  resultLabel.textContent = t("rate_to_dose");
+  renderRangeSourceBadge(resultRangeBadge, values.drug);
+  renderUseCaseBadge(resultUseCaseBadge, values.drug);
+  resultUseCaseText.textContent = getDrugUseCaseSummary(values.drug);
+  applyRangeSourceTheme(resultCard, values.drug);
+  primaryResult.textContent = formatDoseValueWithEquivalent(dose, doseUnit);
+  secondaryResultLabel.textContent = t("pump_rate");
   secondaryResult.textContent = `${formatNumber(values.pumpRate, 2)} mL/hr`;
   concentrationResult.textContent = usesWeight
     ? `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / ${formatNumber(values.weight, 1)} kg`
-    : `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / absolute-dose mode`;
-  concentrationExplanation.textContent = `농도 입력: ${formatNumber(values.concentration, 2)} ${concentrationUnit}를 사용했습니다.`;
+    : `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / ${t("absolute_dose_mode")}`;
+  concentrationExplanation.textContent = t("infusion_dose_calculation", {
+    concentration: formatNumber(values.concentration, 2),
+    unit: concentrationUnit
+  });
   rateExplanation.textContent = usesWeight
-    ? `용량 계산: (${formatNumber(values.pumpRate, 2)} x ${formatNumber(values.concentration, 2)}) / (${formatNumber(values.weight, 1)} x ${getReferenceTimeFactor(referenceRange)}) = ${formatNumber(dose, 3)} ${doseUnit}`
-    : `용량 계산: (${formatNumber(values.pumpRate, 2)} x ${formatNumber(values.concentration, 2)}) / ${getReferenceTimeFactor(referenceRange)} = ${formatNumber(dose, 3)} ${doseUnit}`;
+    ? t("infusion_dose_formula_weight", {
+      rate: formatNumber(values.pumpRate, 2),
+      concentration: formatNumber(values.concentration, 2),
+      weight: formatNumber(values.weight, 1),
+      factor: getReferenceTimeFactor(referenceRange),
+      dose: formatNumber(dose, 3),
+      unit: doseUnit
+    })
+    : t("infusion_dose_formula_absolute", {
+      rate: formatNumber(values.pumpRate, 2),
+      concentration: formatNumber(values.concentration, 2),
+      factor: getReferenceTimeFactor(referenceRange),
+      dose: formatNumber(dose, 3),
+      unit: doseUnit
+    });
   renderReferenceList(infusionReferenceList, referenceIds);
   resultCard.classList.toggle("is-warning", isOutOfRange);
   primaryResult.classList.toggle("is-warning", isOutOfRange);
@@ -3662,8 +4979,8 @@ function showRateToDoseResult(values) {
   secondaryResult.classList.toggle("is-warning", isOutOfRange);
   secondaryResult.classList.toggle("is-out-of-range", isOutOfRange);
   resultWarning.textContent = isOutOfRange
-    ? "Calculated dose is outside the preset reference range. Clinical and study-based ranges may reflect common practice rather than universal standards, so verify the original source, pump setup, and institutional protocol."
-    : "Calculated dose is for reference only. Label, clinical, and study-based sources may reflect different contexts, so verify the original source, pump setup, and institutional protocol.";
+    ? t("infusion_result_out_of_range")
+    : t("infusion_result_reference_only");
   resultCard.classList.remove("hidden");
 }
 
@@ -3684,31 +5001,39 @@ function showReferenceTableResult(values) {
   });
   const referenceIds = getInfusionReferenceIds(values);
 
-  resultLabel.textContent = "Reference Dosing Table";
+  resultLabel.textContent = t("reference_dosing_table");
+  renderRangeSourceBadge(resultRangeBadge, values.drug);
+  renderUseCaseBadge(resultUseCaseBadge, values.drug);
+  resultUseCaseText.textContent = getDrugUseCaseSummary(values.drug);
+  applyRangeSourceTheme(resultCard, values.drug);
   primaryResult.textContent = values.drug.name;
-  secondaryResultLabel.textContent = "Setup";
+  secondaryResultLabel.textContent = t("result_setup");
   secondaryResult.textContent = usesWeight
     ? `${formatNumber(values.weight, 1)} kg / ${formatNumber(values.concentration, 2)} ${concentrationUnit}`
-    : `${formatNumber(values.concentration, 2)} ${concentrationUnit} / absolute-dose mode`;
-  concentrationResult.textContent = `Reference doses: ${doseList.join(", ")}`;
+    : `${formatNumber(values.concentration, 2)} ${concentrationUnit} / ${t("absolute_dose_mode")}`;
+  concentrationResult.textContent = doseUnit === "mcg/kg/hr"
+    ? `${t("reference_doses")}: ${doseList.map(function (dose) {
+      return `${formatNumber(dose, 3)} mcg/kg/hr (${formatNumber(dose / 1000, 3)} mg/kg/hr)`;
+    }).join(", ")}`
+    : `${t("reference_doses")}: ${doseList.join(", ")}`;
   concentrationExplanation.textContent = usesWeight
-    ? "Reference Dosing Table은 선택한 농도와 체중 기준으로 각 dose에 대응하는 mL/hr를 보여줍니다."
-    : "Reference Dosing Table은 선택한 농도 기준으로 absolute dose에 대응하는 mL/hr를 보여줍니다.";
+    ? t("reference_table_explanation_weight")
+    : t("reference_table_explanation_absolute");
   rateExplanation.textContent = usesWeight
-    ? `표의 모든 행은 동일한 공식으로 계산됩니다: (dose x weight x ${getReferenceTimeFactor(referenceRange)}) / concentration.`
-    : `표의 모든 행은 동일한 공식으로 계산됩니다: (dose x ${getReferenceTimeFactor(referenceRange)}) / concentration.`;
+    ? t("formula_same_weight", { factor: getReferenceTimeFactor(referenceRange) })
+    : t("formula_same_absolute", { factor: getReferenceTimeFactor(referenceRange) });
   renderReferenceList(infusionReferenceList, referenceIds);
   referenceTableCaption.textContent = usesWeight
     ? `${values.drug.name} / ${formatNumber(values.weight, 1)} kg / ${formatNumber(values.concentration, 2)} ${concentrationUnit}`
-    : `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / absolute-dose mode`;
+    : `${values.drug.name} / ${formatNumber(values.concentration, 2)} ${concentrationUnit} / ${t("absolute_dose_mode")}`;
   renderReferenceRows(rows, doseUnit);
   resultCard.classList.toggle("is-warning", hasOutOfRangeRow);
   primaryResult.classList.remove("is-warning");
   secondaryResult.classList.toggle("is-warning", hasOutOfRangeRow);
   referenceTableCard.classList.remove("hidden");
   resultWarning.textContent = hasOutOfRangeRow
-    ? "Some reference doses are outside the preset reference range. Clinical and study-based ranges may reflect common practice or selected study settings, so verify the original source and institutional protocol."
-    : "Reference Dosing Table is informational only. Label, clinical, and study-based sources may reflect different contexts, so verify the original source and institutional protocol before use.";
+    ? t("infusion_result_out_of_range")
+    : t("infusion_result_reference_only");
   resultCard.classList.remove("hidden");
 }
 
@@ -3725,23 +5050,48 @@ function showPediatricDoseResult(values) {
   const referenceIds = getPediatricDoseReferenceIds(values);
   const verificationConfig = getPediatricVerificationConfig(values.profile.verificationStatus);
 
-  pediatricResultLabel.textContent = "Pediatric Weight-Based Bolus";
+  pediatricResultLabel.textContent = t("pediatric_weight_based_bolus");
   pediatricPrimaryResult.textContent = `${formatNumber(adjustedDoseRange.minDose, 2)} - ${formatNumber(adjustedDoseRange.maxDose, 2)} ${values.profile.doseAmountUnit}`;
-  pediatricSecondaryResultLabel.textContent = "Recommended dose range";
+  pediatricSecondaryResultLabel.textContent = t("recommended_dose_range_label");
   pediatricSecondaryResult.textContent = `${values.profile.recommendedRange.min} - ${values.profile.recommendedRange.max} ${values.profile.dosePerKgUnit} / ${values.ageGroup}`;
   pediatricConcentrationResult.textContent = `${values.drug.name} / ${formatNumber(values.weight, 1)} kg / ${formatNumber(values.concentration, 2)} ${values.profile.concentration.unit}`;
   pediatricDoseExplanation.textContent = adjustedDoseRange.wasAdjusted
-    ? `Dose calculation: ${formatNumber(values.weight, 1)} kg x ${values.profile.recommendedRange.min}-${values.profile.recommendedRange.max} ${values.profile.dosePerKgUnit} = ${formatNumber(rawDoseRange.minDose, 2)}-${formatNumber(rawDoseRange.maxDose, 2)} ${values.profile.doseAmountUnit}. ${limitMessage}`
-    : `Dose calculation: ${formatNumber(values.weight, 1)} kg x ${values.profile.recommendedRange.min}-${values.profile.recommendedRange.max} ${values.profile.dosePerKgUnit} = ${formatNumber(rawDoseRange.minDose, 2)}-${formatNumber(rawDoseRange.maxDose, 2)} ${values.profile.doseAmountUnit}`;
-  pediatricVolumeExplanation.textContent = `Optional volume calculation: ${formatNumber(adjustedDoseRange.minDose, 2)}-${formatNumber(adjustedDoseRange.maxDose, 2)} ${values.profile.doseAmountUnit} / ${formatNumber(values.concentration, 2)} ${values.profile.concentration.unit} = ${formatNumber(minVolume, 2)}-${formatNumber(maxVolume, 2)} mL`;
+    ? t("pediatric_dose_formula_adjusted", {
+      weight: formatNumber(values.weight, 1),
+      min: values.profile.recommendedRange.min,
+      max: values.profile.recommendedRange.max,
+      unitPerKg: values.profile.dosePerKgUnit,
+      rawMin: formatNumber(rawDoseRange.minDose, 2),
+      rawMax: formatNumber(rawDoseRange.maxDose, 2),
+      amountUnit: values.profile.doseAmountUnit,
+      limitMessage: limitMessage
+    })
+    : t("pediatric_dose_formula_plain", {
+      weight: formatNumber(values.weight, 1),
+      min: values.profile.recommendedRange.min,
+      max: values.profile.recommendedRange.max,
+      unitPerKg: values.profile.dosePerKgUnit,
+      rawMin: formatNumber(rawDoseRange.minDose, 2),
+      rawMax: formatNumber(rawDoseRange.maxDose, 2),
+      amountUnit: values.profile.doseAmountUnit
+    });
+  pediatricVolumeExplanation.textContent = t("pediatric_optional_volume_formula", {
+    minDose: formatNumber(adjustedDoseRange.minDose, 2),
+    maxDose: formatNumber(adjustedDoseRange.maxDose, 2),
+    amountUnit: values.profile.doseAmountUnit,
+    concentration: formatNumber(values.concentration, 2),
+    concentrationUnit: values.profile.concentration.unit,
+    minVolume: formatNumber(minVolume, 2),
+    maxVolume: formatNumber(maxVolume, 2)
+  });
   renderReferenceList(pediatricDoseReferenceList, referenceIds);
   pediatricResultWarning.textContent = adjustedDoseRange.wasAdjusted
-    ? `${limitMessage} ${verificationConfig.warning ? `${verificationConfig.warning} ` : ""}${values.ageGuidance && values.ageGuidance.warning ? `${values.ageGuidance.warning} ` : ""}Verify with institutional protocols and current references.`
+    ? `${limitMessage} ${verificationConfig.warning ? `${verificationConfig.warning} ` : ""}${values.ageGuidance && values.ageGuidance.warning ? `${values.ageGuidance.warning} ` : ""}${t("pediatric_warning_suffix")}`
     : values.ageGuidance && values.ageGuidance.warning
-      ? `${verificationConfig.warning ? `${verificationConfig.warning} ` : ""}${values.ageGuidance.warning} Verify with institutional protocols and current references.`
+      ? `${verificationConfig.warning ? `${verificationConfig.warning} ` : ""}${values.ageGuidance.warning} ${t("pediatric_warning_suffix")}`
       : verificationConfig.warning
-        ? `${verificationConfig.warning} Verify with institutional protocols and current references.`
-        : "Pediatric dosing presets are examples only. Verify with institutional protocols and current references.";
+        ? `${verificationConfig.warning} ${t("pediatric_warning_suffix")}`
+        : t("pediatric_verify_reference_only");
   pediatricResultCard.classList.remove("hidden");
 }
 
@@ -3769,125 +5119,125 @@ function showPediatricAirwayResult(values) {
     ? getFaceMaskRecommendation(values.weight, values.ageYears)
     : null;
   const referenceIds = getPediatricAirwayReferenceIds(values);
-  const ageText = isPositiveNumber(values.ageYears) ? `${formatNumber(values.ageYears, 1)} yr` : "Age not entered";
+  const ageText = isPositiveNumber(values.ageYears) ? `${formatNumber(values.ageYears, 1)} yr` : t("age_not_entered");
   const weightText = isPositiveNumber(values.weight) ? ` / ${formatNumber(values.weight, 1)} kg` : "";
   const isInfantRange = values.ageYears < 1;
   const airwayResultLabel = document.querySelector("#pediatric-airway-result-card .result-label");
 
   if (airwayResultLabel) {
     airwayResultLabel.textContent = isETTMode
-      ? "Pediatric ETT Result"
+      ? t("pediatric_ett_result")
       : isSupraglotticMode
-        ? "Pediatric Supraglottic Result"
+        ? t("pediatric_supraglottic_result")
         : isOralAirwayMode
-        ? "Pediatric Oral Airway Result"
+        ? t("pediatric_oral_airway_result")
         : isNasalAirwayMode
-          ? "Pediatric Nasal Airway Result"
+          ? t("pediatric_nasal_airway_result")
           : isFaceMaskMode
-            ? "Pediatric Face Mask Result"
-          : "Pediatric Laryngoscope Result";
+            ? t("pediatric_face_mask_result")
+          : t("pediatric_laryngoscope_result");
   }
 
   pediatricAirwayPrimaryResult.textContent = isETTMode
     ? `Cuffed ${formatNumber(estimates.cuffedSize, 1)} / Uncuffed ${formatNumber(estimates.uncuffedSize, 1)}`
     : isSupraglotticMode
-      ? `${SUPRAGLOTTIC_DEVICE_GUIDES[values.deviceModel].label} ${supraglotticRecommendation ? `size ${supraglotticRecommendation.size}` : "reference"}`
+      ? `${SUPRAGLOTTIC_DEVICE_GUIDES[values.deviceModel].label} ${supraglotticRecommendation ? `size ${supraglotticRecommendation.size}` : (currentLanguage === "en" ? "reference" : "참고값")}`
       : isOralAirwayMode
-        ? (oralAirwayRecommendation ? `Oral airway size ${oralAirwayRecommendation.size} (${oralAirwayRecommendation.length})` : "Oral airway reference")
+        ? (oralAirwayRecommendation ? `Oral airway size ${oralAirwayRecommendation.size} (${oralAirwayRecommendation.length})` : (currentLanguage === "en" ? "Oral airway reference" : "Oral airway 참고값"))
         : isNasalAirwayMode
-          ? "Nasal airway guide"
+          ? (currentLanguage === "en" ? "Nasal airway guide" : "Nasal airway 가이드")
           : isFaceMaskMode
-            ? (faceMaskRecommendation ? `Face mask size ${faceMaskRecommendation.size}` : "Face mask guide")
-        : (laryngoscopeRecommendation ? laryngoscopeRecommendation.primaryBlade : "Laryngoscope reference");
+            ? (faceMaskRecommendation ? `Face mask size ${faceMaskRecommendation.size}` : (currentLanguage === "en" ? "Face mask guide" : "Face mask 가이드"))
+        : (laryngoscopeRecommendation ? laryngoscopeRecommendation.primaryBlade : (currentLanguage === "en" ? "Laryngoscope reference" : "Laryngoscope 참고값"));
   pediatricAirwaySecondaryLabel.textContent = isETTMode
-    ? "Estimated oral depth (from lip)"
+    ? t("oral_depth_from_lip")
     : isSupraglotticMode
-      ? "Reference weight range"
+      ? t("reference_weight_range")
       : isOralAirwayMode
-        ? "Sizing method"
+        ? t("sizing_method")
         : isNasalAirwayMode
-          ? "Preferred measurement"
+          ? t("preferred_measurement")
           : isFaceMaskMode
-            ? "Reference band"
-        : "Alternative guide";
+            ? t("reference_band")
+        : t("alternative_guide");
   pediatricAirwaySecondaryResult.textContent = isETTMode
-    ? `${formatNumber(estimates.oralDepth, 1)} cm from lip`
+    ? t("cm_from_lip", { depth: formatNumber(estimates.oralDepth, 1) })
     : isSupraglotticMode
-      ? (supraglotticRecommendation ? `${supraglotticRecommendation.weightRange}` : "Enter weight to show size range")
+      ? (supraglotticRecommendation ? `${supraglotticRecommendation.weightRange}` : t("enter_weight_size_range"))
       : isOralAirwayMode
-        ? "Measure mouth corner to angle of mandible"
+        ? t("oral_airway_measure_method")
         : isNasalAirwayMode
-          ? "Nostril to tragus minus 10 mm"
+          ? t("nasal_airway_measure_method")
           : isFaceMaskMode
-            ? (faceMaskRecommendation ? faceMaskRecommendation.label : "Enter age or weight to show size band")
-        : (laryngoscopeRecommendation ? laryngoscopeRecommendation.secondaryBlade : "Enter age or weight to show blade guide");
-  pediatricAirwayContext.textContent = `Age ${ageText}${weightText}`;
+            ? (faceMaskRecommendation ? faceMaskRecommendation.label : t("enter_age_or_weight_face_mask"))
+        : (laryngoscopeRecommendation ? laryngoscopeRecommendation.secondaryBlade : t("enter_age_or_weight_blade"));
+  pediatricAirwayContext.textContent = t("airway_age_context", { ageText: ageText, weightText: weightText });
   pediatricAirwayDeviceResult.textContent = isETTMode
-    ? "Device category: ETT"
+    ? t("device_category_ett")
     : isSupraglotticMode
       ? (supraglotticRecommendation
         ? `${supraglotticRecommendation.deviceLabel} reference: size ${supraglotticRecommendation.size} (${supraglotticRecommendation.weightRange}, ${supraglotticRecommendation.sourceLabel})`
-        : `Enter weight to show ${SUPRAGLOTTIC_DEVICE_GUIDES[values.deviceModel].label} size reference.`)
+        : t("enter_supraglottic_reference", { deviceLabel: SUPRAGLOTTIC_DEVICE_GUIDES[values.deviceModel].label }))
       : isOralAirwayMode
         ? (oralAirwayRecommendation
-          ? `Reference band: ${oralAirwayRecommendation.label}`
-          : "Enter age or weight to show oral airway reference band.")
+          ? t("device_reference_band", { label: oralAirwayRecommendation.label })
+          : t("enter_age_or_weight_blade"))
         : isNasalAirwayMode
           ? (nasalAirwayRecommendation
-            ? `Infant depth band: ${nasalAirwayRecommendation.insertionDepth} (${nasalAirwayRecommendation.label})`
-            : "Use external measurement first; infant age/weight only gives a rough guide.")
+            ? t("infant_depth_band", { depth: nasalAirwayRecommendation.insertionDepth, label: nasalAirwayRecommendation.label })
+            : t("use_external_measurement_first"))
           : isFaceMaskMode
             ? (faceMaskRecommendation
-              ? `Reference band: ${faceMaskRecommendation.label}`
-              : "Enter age or weight to show face mask guide.")
+              ? t("device_reference_band", { label: faceMaskRecommendation.label })
+              : t("enter_face_mask_guide"))
         : (laryngoscopeRecommendation
-          ? `Reference band: ${laryngoscopeRecommendation.label}`
-          : "Enter age or weight to show laryngoscope guide.");
+          ? t("device_reference_band", { label: laryngoscopeRecommendation.label })
+          : t("enter_laryngoscope_guide"));
   pediatricAirwaySizeExplanation.textContent = isETTMode
     ? `ETT size estimate: uncuffed = age/4 + 4, cuffed = age/4 + 3.5, rounded to available 0.5 mm ID sizes -> ${formatNumber(estimates.uncuffedSize, 1)} / ${formatNumber(estimates.cuffedSize, 1)} mm ID`
     : isSupraglotticMode
-      ? `${SUPRAGLOTTIC_DEVICE_GUIDES[values.deviceModel].label} size is selected by manufacturer weight guide rather than age-based formula.`
+      ? t("suction_reference_size_only", { deviceLabel: SUPRAGLOTTIC_DEVICE_GUIDES[values.deviceModel].label })
       : isOralAirwayMode
         ? (oralAirwayRecommendation
-          ? `Oral airway quick guide: size ${oralAirwayRecommendation.size} (${oralAirwayRecommendation.length}) is a starting reference for the ${oralAirwayRecommendation.label.toLowerCase()} range.`
-          : "Oral airway size is shown as a quick reference only.")
+          ? t("oral_airway_quick_guide", { size: oralAirwayRecommendation.size, length: oralAirwayRecommendation.length, label: oralAirwayRecommendation.label.toLowerCase() })
+          : t("oral_airway_reference_only"))
         : isNasalAirwayMode
-          ? "Nasopharyngeal airway sizing should start with external measurement rather than age-based formula alone."
+          ? t("nasal_airway_external_measurement")
           : isFaceMaskMode
             ? (faceMaskRecommendation
-              ? `Face mask quick guide: commonly size ${faceMaskRecommendation.size} for the ${faceMaskRecommendation.label.toLowerCase()} range. Manufacturer numbering may differ.`
-              : "Face mask sizing is shown as a broad reference only.")
+              ? t("face_mask_quick_guide", { size: faceMaskRecommendation.size, label: faceMaskRecommendation.label.toLowerCase() })
+              : t("face_mask_reference_only"))
         : (laryngoscopeRecommendation
-          ? `Laryngoscope quick guide: ${laryngoscopeRecommendation.primaryBlade} is the first-choice reference for the ${laryngoscopeRecommendation.label.toLowerCase()} range.`
-          : "Laryngoscope blade guidance is shown as a quick reference only.");
+          ? t("laryngoscope_quick_guide", { blade: laryngoscopeRecommendation.primaryBlade, label: laryngoscopeRecommendation.label.toLowerCase() })
+          : t("laryngoscope_reference_only"));
   pediatricAirwayDepthExplanation.textContent = isETTMode
     ? `${values.ageYears < 2
-      ? `Depth estimate: for infants and toddlers under 2 years, this calculator uses the 10-12 cm age progression reference from the lip.`
-      : `Depth estimate: oral = age/2 + 12 -> ${formatNumber(estimates.oralDepth, 1)} cm from the lip.`} Tube size x 3 gives an additional cuffed oral depth cross-check of ${formatNumber(estimates.cuffedDepthBySize, 1)} cm. For oral ETT, interpret this as lip depth; if you need tooth depth, use your local labeling convention and confirm clinically.`
+      ? t("ett_depth_under_two")
+      : t("ett_depth_age_formula", { depth: formatNumber(estimates.oralDepth, 1) })} ${t("ett_depth_crosscheck", { depth: formatNumber(estimates.cuffedDepthBySize, 1) })}`
     : isSupraglotticMode
-      ? `${SUPRAGLOTTIC_DEVICE_GUIDES[values.deviceModel].label} result is a supraglottic airway size reference only. Depth-style ETT formulas do not apply here.`
+      ? t("supraglottic_depth_note", { deviceLabel: SUPRAGLOTTIC_DEVICE_GUIDES[values.deviceModel].label })
       : isOralAirwayMode
-        ? "Use the oral airway as a starting estimate only, then confirm external fit from the mouth corner to the angle of the mandible and reassess clinically."
+        ? t("oral_airway_depth_note")
         : isNasalAirwayMode
           ? (nasalAirwayRecommendation
-            ? `For children younger than 2 years, the attached study reported an approximate insertion depth band of ${nasalAirwayRecommendation.insertionDepth}. Outside infancy, rely more on external measurement and clinical confirmation than on age-only estimates.`
-            : "Use nostril-to-tragus style external measurement as the primary guide, then confirm patency and position clinically.")
+            ? t("nasal_airway_infant_study", { depth: nasalAirwayRecommendation.insertionDepth })
+            : t("nasal_airway_depth_note"))
           : isFaceMaskMode
-            ? "Choose the smallest mask that seals nose and mouth without resting on the eyes. Brand-specific numbering and cushion shape vary, so confirm fit clinically."
-        : "Blade type and size vary with anatomy, pathology, and operator preference. Straight blades are often preferred in younger infants, while curved blades become more common with larger children.";
+            ? t("face_mask_depth_note")
+        : t("laryngoscope_depth_note");
   pediatricAirwayResultWarning.textContent = isETTMode
     ? isInfantRange
-      ? "Age-based ETT formulas are less reliable in neonates and young infants. Use infant-specific references and confirm clinically."
-      : "ETT formulas are reference estimates only. Confirm tube fit, leak, depth, and position clinically."
+      ? t("airway_warning_ett_infant")
+      : t("airway_warning_ett")
     : isSupraglotticMode
-      ? `${SUPRAGLOTTIC_DEVICE_GUIDES[values.deviceModel].label} sizing is based on manufacturer weight guidance. Verify product-specific instructions and clinical fit.`
+      ? t("airway_warning_supraglottic", { deviceLabel: SUPRAGLOTTIC_DEVICE_GUIDES[values.deviceModel].label })
       : isOralAirwayMode
-        ? "Oral airway size guidance is approximate. Confirm fit externally and reassess airway patency clinically."
+        ? t("airway_warning_oral")
         : isNasalAirwayMode
-          ? "Nasal airway guidance is approximate and should not replace external measurement, lubrication, gentle insertion, and clinical confirmation."
+          ? t("airway_warning_nasal")
           : isFaceMaskMode
-            ? "Face mask guidance is approximate. Check seal, dead space, eye clearance, and brand-specific numbering before use."
-        : "Laryngoscope blade guidance is approximate. Confirm mouth opening, airway anatomy, and operator preference before selection.";
+            ? t("airway_warning_face_mask")
+        : t("airway_warning_laryngoscope");
   renderReferenceList(pediatricAirwayReferenceList, referenceIds);
   pediatricAirwayResultCard.classList.remove("hidden");
 }
@@ -3903,13 +5253,19 @@ function showDantroleneResult(values) {
   dantroleneContext.textContent = `${formatNumber(values.weight, 1)} kg / ${values.formulation.name} / target ${formatNumber(values.initialDoseMgKg, 2)} mg/kg`;
   dantroleneInitialVials.textContent = `${initialVials} vial(s)`;
   dantroleneMaxVials.textContent = `${maxVials} vial(s)`;
-  dantroleneVialExplanation.textContent = `${values.formulation.name} 기준으로 initial dose에는 약 ${initialVials} vial, cumulative 10 mg/kg 준비에는 약 ${maxVials} vial이 필요합니다.`;
+  dantroleneVialExplanation.textContent = t("dantrolene_vial_explanation", {
+    formulation: values.formulation.name,
+    initialVials: initialVials,
+    maxVials: maxVials
+  });
   dantroleneReconstitutionExplanation.textContent = `${values.formulation.reconstitution} ${values.formulation.notes}`;
-  dantroleneInitialGuide.textContent = `Initial: give ${formatNumber(values.initialDoseMgKg, 2)} mg/kg IV now. Many MH references start with 2.5 mg/kg as the initial treatment dose.`;
-  dantroleneRepeatGuide.textContent = "Repeat bolus: if hypermetabolic signs persist or recur, continue repeat boluses. A common emergency reference is to escalate toward a cumulative 10 mg/kg, while some formulations also describe 1 mg/kg repeat bolus after recurrence.";
-  dantroleneMaintenanceGuide.textContent = "Maintenance: after initial control, many MH references advise 1 mg/kg IV every 4-6 hours, or an equivalent infusion strategy, for at least 24 hours.";
+  dantroleneInitialGuide.textContent = t("dantrolene_initial_guide", {
+    dose: formatNumber(values.initialDoseMgKg, 2)
+  });
+  dantroleneRepeatGuide.textContent = t("dantrolene_repeat_guide");
+  dantroleneMaintenanceGuide.textContent = t("dantrolene_maintenance_guide");
   renderReferenceList(dantroleneReferenceList, values.formulation.references);
-  dantroleneResultWarning.textContent = "Emergency quick reference only. Continue with your institutional MH protocol, redosing plan, cooling, and post-crisis monitoring.";
+  dantroleneResultWarning.textContent = t("dantrolene_emergency_reference_only");
   dantroleneResultCard.classList.remove("hidden");
 }
 
@@ -4016,6 +5372,21 @@ function handleDilutionApply() {
   updateDrugUI();
   clearResult();
   errorMessage.textContent = "";
+}
+
+function setLanguage(language) {
+  currentLanguage = language === "en" ? "en" : "ko";
+  saveLanguagePreference(currentLanguage);
+  applyStaticTranslations();
+  updateFeedbackLinks();
+  updateSupportLinks();
+  updateQuickDrugUI();
+  updateDrugUI();
+  updatePediatricDrugUI();
+  renderInfusionWorkspace();
+  clearResult();
+  clearPediatricResult();
+  clearDantroleneResult();
 }
 
 function handlePediatricSubmit(event) {
@@ -4137,8 +5508,8 @@ function handlePediatricSaveCustomDrug() {
     activeSavedCustomDrugId: savedDrug.id
   });
   pediatricErrorMessage.textContent = activeSavedCustomDrugId
-    ? "Saved custom drug updated locally."
-    : "Custom drug saved locally.";
+    ? (currentLanguage === "en" ? "Saved custom drug updated locally." : "저장된 custom drug가 로컬에서 업데이트되었습니다.")
+    : (currentLanguage === "en" ? "Custom drug saved locally." : "Custom drug가 로컬에 저장되었습니다.");
   applyPediatricDoseStateToView(getPediatricDoseState());
   updatePediatricDrugUI();
 }
@@ -4168,7 +5539,9 @@ function handlePediatricDeleteSavedDrug() {
   applyPediatricDoseStateToView(getPediatricDoseState());
   updatePediatricDrugUI();
   clearPediatricResult();
-  pediatricErrorMessage.textContent = "Saved custom drug removed.";
+  pediatricErrorMessage.textContent = currentLanguage === "en"
+    ? "Saved custom drug removed."
+    : "저장된 custom drug가 삭제되었습니다.";
 }
 
 function handlePediatricToggleUnverified() {
@@ -4221,7 +5594,7 @@ function handleWorkspaceAddCard() {
   const workspaceState = getInfusionWorkspaceState();
 
   if ((workspaceState.cards || []).length >= 6) {
-    workspaceHelp.textContent = "Workspace card는 최대 6개까지 추가할 수 있습니다.";
+    workspaceHelp.textContent = t("workspace_limit_help");
     return;
   }
 
@@ -4321,7 +5694,7 @@ function handleWorkspaceCardClick(event) {
     }
 
     updateWorkspaceCardState(cardId, "concentration", String(dilutionPreset.finalConcentration));
-    workspaceHelp.textContent = `${preset.name} standard dilution applied: ${formatDilutionPreset(dilutionPreset)}.`;
+    workspaceHelp.textContent = `${preset.name} ${t("workspace_standard_dilution_note", { dilution: formatDilutionPreset(dilutionPreset) })}`;
     renderInfusionWorkspace();
     return;
   }
@@ -4376,7 +5749,7 @@ function handleWorkspaceSaveTemplate() {
   const templateNote = workspaceTemplateNoteInput.value.trim();
 
   if (!templateName) {
-    workspaceHelp.textContent = "Template name을 입력한 뒤 저장해 주세요.";
+    workspaceHelp.textContent = currentLanguage === "en" ? "Enter a template name before saving." : "저장하기 전에 template name을 입력해 주세요.";
     return;
   }
 
@@ -4402,7 +5775,9 @@ function handleWorkspaceSaveTemplate() {
   updateInfusionWorkspaceState({
     selectedTemplateId: savedTemplate.id
   });
-  workspaceHelp.textContent = `Template saved: ${savedTemplate.name}. Saved setups load drug cards only and do not assess interactions.`;
+  workspaceHelp.textContent = currentLanguage === "en"
+    ? `Template saved: ${savedTemplate.name}. Saved setups load drug cards only and do not assess interactions.`
+    : `Template 저장 완료: ${savedTemplate.name}. 저장된 setup은 drug card만 불러오며 interaction은 평가하지 않습니다.`;
   renderInfusionWorkspace();
 }
 
@@ -4413,7 +5788,7 @@ function handleWorkspaceLoadTemplate() {
   });
 
   if (!selectedTemplate) {
-    workspaceHelp.textContent = "불러올 template를 먼저 선택해 주세요.";
+    workspaceHelp.textContent = currentLanguage === "en" ? "Select a template to load first." : "불러올 template를 먼저 선택해 주세요.";
     return;
   }
 
@@ -4421,7 +5796,9 @@ function handleWorkspaceLoadTemplate() {
     selectedTemplateId: selectedTemplate.id,
     cards: cloneWorkspaceCards(selectedTemplate.cards)
   });
-  workspaceHelp.textContent = `Loaded template: ${selectedTemplate.name}. Shared weight는 현재 환자 기준으로 유지됩니다.`;
+  workspaceHelp.textContent = currentLanguage === "en"
+    ? `Loaded template: ${selectedTemplate.name}. Shared weight remains based on the current patient.`
+    : `불러온 template: ${selectedTemplate.name}. Shared weight는 현재 환자 기준으로 유지됩니다.`;
   renderInfusionWorkspace();
 }
 
@@ -4429,7 +5806,7 @@ function handleWorkspaceDeleteTemplate() {
   const selectedTemplateId = workspaceTemplateSelect.value;
 
   if (!selectedTemplateId) {
-    workspaceHelp.textContent = "삭제할 template를 먼저 선택해 주세요.";
+    workspaceHelp.textContent = currentLanguage === "en" ? "Select a template to delete first." : "삭제할 template를 먼저 선택해 주세요.";
     return;
   }
 
@@ -4445,8 +5822,8 @@ function handleWorkspaceDeleteTemplate() {
   });
   workspaceTemplateNameInput.value = "";
   workspaceHelp.textContent = selectedTemplate
-    ? `Deleted template: ${selectedTemplate.name}.`
-    : "Template deleted.";
+    ? (currentLanguage === "en" ? `Deleted template: ${selectedTemplate.name}.` : `삭제한 template: ${selectedTemplate.name}.`)
+    : (currentLanguage === "en" ? "Template deleted." : "Template를 삭제했습니다.");
   renderInfusionWorkspace();
 }
 
@@ -4607,9 +5984,9 @@ dilutionInputs.form.addEventListener("submit", function (e) {
       const stockConc = Number(dilutionInputs.stockConcentration.value);
       const stockUnit = dilutionInputs.stockUnit.value; // "mcg" or "mg"
 
-      if (!isPositiveNumber(targetConc)) throw new Error("Target concentration must be a positive number.");
-      if (!isPositiveNumber(finalVolume)) throw new Error("Final volume must be a positive number.");
-      if (!isPositiveNumber(stockConc)) throw new Error("Stock concentration must be a positive number.");
+      if (!isPositiveNumber(targetConc)) throw new Error(t("dilution_error_target_concentration"));
+      if (!isPositiveNumber(finalVolume)) throw new Error(t("dilution_error_final_volume"));
+      if (!isPositiveNumber(stockConc)) throw new Error(t("dilution_error_stock_concentration"));
 
       // Convert target back to mg/mL for calculation base
       const targetConcMg = targetUnit === "mcg" ? targetConc / 1000 : targetConc;
@@ -4619,7 +5996,7 @@ dilutionInputs.form.addEventListener("submit", function (e) {
       const drawVolume = totalDrugMgNeeded / stockConcMg;
 
       if (drawVolume > finalVolume) {
-        throw new Error("Target concentration is higher than the stock concentration. Dilution impossible.");
+        throw new Error(t("dilution_error_dilution_impossible"));
       }
 
       const diluentVolume = finalVolume - drawVolume;
@@ -4628,22 +6005,24 @@ dilutionInputs.form.addEventListener("submit", function (e) {
       const formattedDiluentVol = Number(diluentVolume.toFixed(2));
       const totalDrugDisplay = targetUnit === "mcg" ? (totalDrugMgNeeded * 1000).toFixed(1) + " mcg" : totalDrugMgNeeded.toFixed(2) + " mg";
 
-      dilutionInputs.resultLabel.textContent = "Mixing Instructions";
+      dilutionInputs.resultLabel.textContent = t("dilution_result_mix");
       dilutionInputs.resultBox2.classList.remove("hidden");
-      dilutionInputs.resultTitle1.textContent = "Draw Drug Volume";
+      dilutionInputs.resultTitle1.textContent = t("dilution_result_draw_volume");
       dilutionInputs.resultValue1.textContent = `${formattedDrawVol} mL`;
-      dilutionInputs.resultTitle2.textContent = "Add Diluent (NS/D5W)";
+      dilutionInputs.resultTitle2.textContent = t("dilution_result_add_diluent");
       dilutionInputs.resultValue2.textContent = `${formattedDiluentVol} mL`;
-      dilutionInputs.summaryHeading.textContent = "Summary";
-      dilutionInputs.summaryText.innerHTML = `To achieve <strong>${targetConc} ${targetUnit}/mL</strong> in <strong>${finalVolume} mL</strong> (Total drug: ${totalDrugDisplay}):<br>Draw <strong>${formattedDrawVol} mL</strong> of stock drug and mix with <strong>${formattedDiluentVol} mL</strong> of diluent.`;
+      dilutionInputs.summaryHeading.textContent = t("dilution_result_summary");
+      dilutionInputs.summaryText.innerHTML = currentLanguage === "en"
+        ? `To achieve <strong>${targetConc} ${targetUnit}/mL</strong> in <strong>${finalVolume} mL</strong> (Total drug: ${totalDrugDisplay}):<br>Draw <strong>${formattedDrawVol} mL</strong> of stock drug and mix with <strong>${formattedDiluentVol} mL</strong> of diluent.`
+        : `<strong>${targetConc} ${targetUnit}/mL</strong> 농도를 <strong>${finalVolume} mL</strong>로 만들려면 (총 약물량: ${totalDrugDisplay}):<br>원액 약물 <strong>${formattedDrawVol} mL</strong>를 뽑고 diluent <strong>${formattedDiluentVol} mL</strong>를 추가하세요.`;
 
     } else if (modeId === "mix-to-conc") {
       const drugAmount = Number(dilutionInputs.reverseDrugAmount.value);
       const drugUnit = dilutionInputs.reverseDrugUnit.value; // "mcg" or "mg"
       const finalVolume = Number(dilutionInputs.reverseFinalVolume.value);
 
-      if (!isPositiveNumber(drugAmount)) throw new Error("Drug amount must be a positive number.");
-      if (!isPositiveNumber(finalVolume)) throw new Error("Final volume must be a positive number.");
+      if (!isPositiveNumber(drugAmount)) throw new Error(t("dilution_error_drug_amount"));
+      if (!isPositiveNumber(finalVolume)) throw new Error(t("dilution_error_final_volume"));
 
       const drugAmountMg = drugUnit === "mcg" ? drugAmount / 1000 : drugAmount;
       const finalConcMg = drugAmountMg / finalVolume;
@@ -4652,9 +6031,9 @@ dilutionInputs.form.addEventListener("submit", function (e) {
       const formattedMg = Number(finalConcMg.toFixed(2));
       const formattedMcg = Number(finalConcMcg.toFixed(1));
 
-      dilutionInputs.resultLabel.textContent = "Final Concentration";
+      dilutionInputs.resultLabel.textContent = t("dilution_result_final_concentration");
       dilutionInputs.resultBox2.classList.add("hidden");
-      dilutionInputs.resultTitle1.textContent = "Target Conc.";
+      dilutionInputs.resultTitle1.textContent = t("dilution_result_target_conc");
       
       if (formattedMg >= 1) {
         dilutionInputs.resultValue1.textContent = `${formattedMg} mg/mL`;
@@ -4662,8 +6041,10 @@ dilutionInputs.form.addEventListener("submit", function (e) {
         dilutionInputs.resultValue1.textContent = `${formattedMcg} mcg/mL`;
       }
 
-      dilutionInputs.summaryHeading.textContent = "Calculated Result";
-      dilutionInputs.summaryText.innerHTML = `Mixing <strong>${drugAmount} ${drugUnit}</strong> in a total volume of <strong>${finalVolume} mL</strong> yields a final concentration of:<br><strong style="font-size: 1.1em; color: var(--primary);">${formattedMg} mg/mL</strong> (or ${formattedMcg} mcg/mL).`;
+      dilutionInputs.summaryHeading.textContent = t("dilution_result_calculated");
+      dilutionInputs.summaryText.innerHTML = currentLanguage === "en"
+        ? `Mixing <strong>${drugAmount} ${drugUnit}</strong> in a total volume of <strong>${finalVolume} mL</strong> yields a final concentration of:<br><strong style="font-size: 1.1em; color: var(--primary);">${formattedMg} mg/mL</strong> (or ${formattedMcg} mcg/mL).`
+        : `총 <strong>${finalVolume} mL</strong>에 <strong>${drugAmount} ${drugUnit}</strong>를 섞으면 최종 농도는 다음과 같습니다:<br><strong style="font-size: 1.1em; color: var(--primary);">${formattedMg} mg/mL</strong> (또는 ${formattedMcg} mcg/mL).`;
     }
 
     dilutionInputs.resultCard.classList.remove("hidden");
@@ -4680,10 +6061,20 @@ dilutionInputs.resetButton.addEventListener("click", function () {
   dilutionInputs.errorMessage.textContent = "";
 });
 
+if (languageSelect) {
+  languageSelect.addEventListener("change", function () {
+    setLanguage(languageSelect.value);
+  });
+}
+
 // -----------------------------
 // Initial restore
 // -----------------------------
 
+currentLanguage = loadLanguagePreference();
+applyStaticTranslations();
+updateFeedbackLinks();
+updateSupportLinks();
 applySingleDrugStateToView(getSingleDrugState());
 applyPediatricDoseStateToView(getPediatricDoseState());
 applyDantroleneQuickStateToView(getDantroleneQuickState());
