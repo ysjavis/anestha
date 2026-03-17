@@ -23,6 +23,14 @@ Important interpretation rules:
 | `pediatric_ketamine_dailymed` | Ketamine dosing | DailyMed | Official | Verified | DailyMed link was re-opened successfully in this pediatric dosing pass. |
 | `pediatric_ondansetron_dailymed` | Ondansetron dosing | DailyMed | Official | Verified | DailyMed link was re-opened successfully in this pediatric dosing pass. |
 
+## Emergency References
+
+| Pediatric reference id | Drug / topic | Source | Current link type | Link status | Audit note |
+| --- | --- | --- | --- | --- | --- |
+| `pediatric_emergency_cardiac_arrest_aha` | Pediatric cardiac arrest algorithm | AHA | Official guideline / algorithm | Verified | AHA algorithm PDF was re-opened successfully; current quick-reference cards use only the explicitly listed epinephrine, amiodarone, and lidocaine doses from the algorithm. |
+| `pediatric_emergency_bradycardia_aha` | Pediatric bradycardia with a pulse algorithm | AHA | Official guideline / algorithm | Verified | AHA algorithm PDF was re-opened successfully; atropine and epinephrine bradycardia-context dosing were taken directly from the algorithm text. |
+| `pediatric_emergency_tachycardia_aha` | Pediatric tachyarrhythmia with a pulse algorithm | AHA | Official guideline / algorithm | Verified | AHA algorithm PDF was re-opened successfully; adenosine first- and second-dose values were taken directly from the algorithm text. |
+
 ## Airway References
 
 | Pediatric reference id | Topic | Source | Current link type | Link status | Audit note |
@@ -49,6 +57,7 @@ Important interpretation rules:
 | `Propofol` | `1-3 mg/kg` single bolus range | Downgraded to `Off-label / Reference only` | The attached label is real, but the preset blends sedation and induction contexts into one quick range. It should not appear as fully source-matched pediatric guidance. |
 | `Ketamine` | `1-2 mg/kg` IV bolus range | Acceptable as quick-reference only | The linked source is valid, but clinical context still matters because analgesia, sedation, and induction targets differ. |
 | `Ondansetron` | `0.1-0.15 mg/kg`, max `4 mg` | Acceptable as quick-reference range | The cap and range are reasonable for common perioperative use, but indication- and age-specific exceptions still belong to protocol review. |
+| `Emergency quick reference` | Epinephrine, atropine, adenosine, amiodarone, lidocaine from AHA PALS algorithms | Acceptable if kept tightly scoped | Current implementation intentionally limits itself to core drug doses listed in official PALS algorithms and does not attempt to encode the full resuscitation workflow. |
 | `ETT sizing` | `age/4 + 4`, `age/4 + 3.5`, oral depth rules, `tube size x 3` cross-check | Keep as reference-only formula support | These are standard quick estimates, but they are assembled from educational formula patterns rather than a single authoritative source. They should stay clearly labeled as estimates. |
 | `Other airway devices` | weight/age bands for oral airway, laryngoscope, nasal airway, face mask, supraglottic devices | Acceptable as guide-band logic | Manufacturer and educational links support the broad categories, but fit and numbering remain brand- and anatomy-dependent. |
 

@@ -25,7 +25,7 @@ Verify that Anestha remains readable and usable on iPhone Safari and Android Chr
 - Favorite / recent chips wrap cleanly
 - Preset summary rows do not overlap badges
 - Result card badges wrap cleanly on narrow width
-- `Reference Dosing Table` can scroll horizontally without breaking layout
+- Supporting reference table can scroll horizontally without breaking layout
 - Long reference notes remain readable
 
 ## Multi Drug
@@ -39,9 +39,11 @@ Verify that Anestha remains readable and usable on iPhone Safari and Android Chr
 ## Pediatric
 
 - Dosing / Airway mode buttons stack cleanly
+- Dosing / Airway / Emergency mode buttons stack cleanly
 - Custom drug fields remain readable in one-column layout
 - Result card headings and warnings do not collide
 - Airway result text wraps cleanly for long explanations
+- Emergency quick-reference cards stack cleanly and remain readable
 
 ## MH / Dantrolene
 

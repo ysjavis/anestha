@@ -40,13 +40,17 @@ Implemented calculators:
 Implemented inside `Infusion > Single Drug`:
 - `Dose -> Infusion Rate`
 - `Infusion Rate -> Dose`
-- `Reference Dosing Table`
 
 Supported features:
+- `Quick / Full` input layouts for Single Drug
+- automatic live calculation in `Quick`
+- `+ / -` steppers for weight, concentration, target dose, and pump rate in `Quick`
+- `Quick` sliders for weight and the active calculation field
 - preset drugs
 - custom drug
 - editable concentration
 - editable reference dose list
+- supporting reference table shown after calculation
 - standard dilution preset display
 - `Apply` button for standard dilution
 - warning when outside reference range
@@ -61,16 +65,23 @@ Current infusion presets include:
 - phenylephrine
 - vasopressin
 - nitroglycerin
+- nicardipine
 - dopamine
 - dobutamine
 - milrinone
 - isoproterenol
+- remifentanil
+- propofol (TIVA)
+- esmolol
+- dexmedetomidine
 - remimazolam (GA induction)
 - remimazolam (GA maintenance)
 
 Infusion references:
 - connected through `REFERENCE_REGISTRY`
-- mostly precise `DailyMed` label links
+- mix of official label, clinical education, and study links
+- cards now show `Source year` separately from `Last reviewed` when that year is known
+- key references can include `Context` and `Check section` to make manual verification easier
 
 ### Multi Drug
 
@@ -116,6 +127,7 @@ Template behavior:
 `Pediatric` currently has two major modes:
 - `Dosing`
 - `Airway Equipment`
+- `Emergency`
 
 ### Pediatric Dosing
 
@@ -152,6 +164,24 @@ Examples of pediatric presets:
 - dexamethasone
 - glycopyrrolate (preanesthetic)
 - glycopyrrolate (reversal pairing)
+
+### Pediatric Emergency
+
+Implemented:
+- weight-based emergency quick reference
+- core PALS drug cards
+- official AHA algorithm references
+
+Current emergency drug quick reference includes:
+- epinephrine
+- atropine
+- adenosine
+- amiodarone
+- lidocaine
+
+Notes:
+- this is a core-code drug quick reference, not a full resuscitation workflow
+- rhythm recognition, cardioversion/defibrillation, airway steps, and institutional emergency protocol still require separate review
 
 ### Pediatric Airway Equipment
 
@@ -240,16 +270,18 @@ Current product principle:
 **Release & QA Checklist:**
 - [ ] Review all reference values before release
 - [ ] Implement login / custom configuration saving (cloud persistence?)
-- [ ] Multi-language support toggle
+- [x] `KO / EN` language toggle
+- [ ] Additional language support beyond `KO / EN` (only if it can be meaningfully reviewed)
 
 ### Focus Area 1: Infusion (Infusion Pump Calculator)
 *   **Enhancements:**
     - [x] Indicate rate limits visually (e.g., turn text/background red if target rate exceeds reference range).
     - [ ] Create distinct Multi Drug case workspaces (Case 1, Case 2...) via horizontal tabs or similar UI layout.
 *   **Implemented Features (Review list):**
-    - [x] Drug presets included: NE, Epi, Phenylephrine, Vasopressin, NTG, Dopamine, Dobutamine, Milrinone, Isoproterenol.
+    - [x] Drug presets included: NE, Epi, Phenylephrine, Vasopressin, NTG, Nicardipine, Dopamine, Dobutamine, Milrinone, Isoproterenol, Remifentanil, Propofol, Esmolol, Dexmedetomidine.
     - [x] Remimazolam split into GA induction and GA maintenance presets, with procedural sedation kept as a separately labeled reference context.
     - [x] Standard dilution presets displayed.
+    - [x] Single Drug `Quick / Full` layout with auto-calc, steppers, and sliders.
     - [x] Favorites and recent drugs list.
     - [x] Multiple drugs on one page (vertical stack with Add Drug button).
     - [x] Linked drug cards with dosing and references.
@@ -258,14 +290,14 @@ Current product principle:
 
 ### Focus Area 2: Pediatric (Pediatric Anesthesia)
 *   **Dosing Enhancements:**
-    - [ ] Calculate drug dose limits (min/max dose).
+    - [x] Calculate drug dose limits (min/max dose).
     - [x] Calculate expected volume (mL) when concentration is entered.
-    - [ ] Implement emergency drug dosing quick reference for code situations.
+    - [x] Implement emergency drug dosing quick reference for code situations.
 *   **Implemented Features (Review list):**
     - [x] Weight and age-based dosing guidelines.
     - [x] Selected presets (Rocuronium, Sugammadex, Neostigmine, Pyridostigmine, Propofol, Ketamine, Thiopental, Fentanyl, Atropine, Ondansetron, Dexamethasone).
     - [x] Airway equipment size guidelines (ETT depth, Laryngoscope, LMA/i-gel, Oral/Nasal airway) based on age/weight.
-    - [x] Ventilation settings recommendations (Mode, Tv, RR, Pressure).
+    - [x] Saved custom pediatric drugs with verification status display.
 
 ---
 
@@ -339,6 +371,7 @@ During recent work:
 - infusion reference ranges were split into `Label`, `Clinical`, and `Study-specific` contexts
 - `Infusion > Workspace` user-facing naming was updated to `Infusion > Multi Drug`
 - infusion reference links were manually rechecked and marked `Verified` in the audit file
+- reference cards were updated to show source year, context, and recommended section-to-check when curated
 - pediatric dosing reference links were manually rechecked and official glycopyrrolate sourcing was restored
 - pediatric airway references were rechecked and unstable face-mask links were replaced with more stable manufacturer URLs
 

@@ -23,6 +23,7 @@ Verification status rules:
 | Phenylephrine | `0.5-1.4 mcg/kg/min` | Label | DailyMed anesthesia-associated hypotension infusion range | perioperative safety study | Verified | DailyMed also includes a broader vasodilatory-shock infusion range, but the calculator intentionally keeps the narrower OR hypotension band as the default. |
 | Vasopressin | `0.01-0.04 unit/min` | Clinical | OpenAnesthesia perioperative refractory hypotension dosing | DailyMed label | Verified | DailyMed and OpenAnesthesia links were repaired in this pass; perioperative use is shown in `unit/min`. |
 | Nitroglycerin | `5-200 mcg/min` | Label | DailyMed titration approach | OpenAnesthesia nitroglycerin article | Verified | DailyMed and OpenAnesthesia links were re-opened successfully in this pass. |
+| Nicardipine | `2.5-15 mg/hr` | Label | DailyMed titration range for continuous infusion | perioperative emergence study | Verified | Current preset stays in absolute `mg/hr` because that matches the label-style titration workflow; a perioperative study using `mcg/kg/min` is linked separately as contextual support only. |
 | Dopamine | `2-50 mcg/kg/min` | Label | DailyMed infusion labeling | perioperative cardiac study | Verified | DailyMed and PubMed links were re-opened successfully in this pass. |
 | Dobutamine | `2.5-20 mcg/kg/min` | Label | DailyMed infusion labeling | none added yet beyond label | Verified | DailyMed link was re-opened successfully in this pass; it still lacks an added perioperative anesthesia-specific supporting source. |
 | Milrinone | `0.375-0.75 mcg/kg/min` | Clinical | OpenAnesthesia perioperative maintenance dosing | DailyMed label | Verified | DailyMed and OpenAnesthesia links were re-opened successfully in this pass. |
@@ -76,7 +77,7 @@ These are the next presets most likely to diverge from day-to-day perioperative 
 ### Lower Priority For Now
 
 - `Nitroglycerin`
-  - Current absolute-dose framing already matches common OR titration language reasonably well.
+  - Current absolute-dose framing, with optional `mcg/kg/min` display support, already matches common OR titration language reasonably well.
 
 - `Dopamine`
   - Less likely to need a workflow-driven adjustment unless the local site still uses dopamine frequently and wants narrower clinical bands.

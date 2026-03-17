@@ -25,10 +25,10 @@
 
 ## Infusion Check
 
-- [ ] `Single Drug` tab works in all 3 modes:
+- [ ] `Single Drug` tab works in both calculation modes:
   - `Dose to Rate`
   - `Rate to Dose`
-  - `Reference Dosing Table`
+- [ ] Supporting reference table renders correctly after calculation
 - [ ] `Multi Drug` tab works with:
   - shared weight
   - add/remove card
@@ -59,6 +59,7 @@
 
 - [ ] `Dosing` mode works with representative presets
 - [ ] `Airway / ETT` mode works for each device category
+- [ ] `Emergency` mode works with representative weights
 - [ ] Preset summary wording is clear:
   - range
   - verification

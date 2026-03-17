@@ -18,6 +18,14 @@ const resultWarning = document.getElementById("result-warning");
 const resultRangeBadge = document.getElementById("result-range-badge");
 const resultUseCaseText = document.getElementById("result-use-case-text");
 const resultUseCaseBadge = document.getElementById("result-use-case-badge");
+const quickResultPreview = document.getElementById("quick-result-preview");
+const quickResultLabel = document.getElementById("quick-result-label");
+const quickResultBadge = document.getElementById("quick-result-badge");
+const quickResultContext = document.getElementById("quick-result-context");
+const quickPrimaryResult = document.getElementById("quick-primary-result");
+const quickSecondaryResultLabel = document.getElementById("quick-secondary-result-label");
+const quickSecondaryResult = document.getElementById("quick-secondary-result");
+const quickConcentrationResult = document.getElementById("quick-concentration-result");
 const multiDrugWarning = document.getElementById("multi-drug-warning");
 const drugSelect = document.getElementById("drug-select");
 const drugHelp = document.getElementById("drug-help");
@@ -48,10 +56,26 @@ const referenceTableCaption = document.getElementById("reference-table-caption")
 const referenceTableBody = document.getElementById("reference-table-body");
 const infusionModeTabs = document.querySelectorAll("[data-infusion-mode-tab]");
 const infusionModePanels = document.querySelectorAll("[data-infusion-mode-panel]");
+const infusionLayoutTabs = document.querySelectorAll("[data-infusion-layout-tab]");
 const infusionViewTabs = document.querySelectorAll("[data-infusion-view-tab]");
 const infusionViewPanels = document.querySelectorAll("[data-infusion-view-panel]");
 const calculatorTabs = document.querySelectorAll("[data-calculator-tab]");
 const calculatorViews = document.querySelectorAll("[data-calculator-view]");
+const infusionSingleDrugPanel = document.getElementById("infusion-view-single-drug");
+const infusionQuickModeHint = document.getElementById("infusion-quick-mode-hint");
+const calculateButton = document.getElementById("calculate-button");
+const quickWeightSliderWrap = document.getElementById("quick-weight-slider-wrap");
+const quickWeightSlider = document.getElementById("quick-weight-slider");
+const quickWeightSliderMin = document.getElementById("quick-weight-slider-min");
+const quickWeightSliderMax = document.getElementById("quick-weight-slider-max");
+const quickTargetDoseSliderWrap = document.getElementById("quick-target-dose-slider-wrap");
+const quickTargetDoseSlider = document.getElementById("quick-target-dose-slider");
+const quickTargetDoseSliderMin = document.getElementById("quick-target-dose-slider-min");
+const quickTargetDoseSliderMax = document.getElementById("quick-target-dose-slider-max");
+const quickPumpRateSliderWrap = document.getElementById("quick-pump-rate-slider-wrap");
+const quickPumpRateSlider = document.getElementById("quick-pump-rate-slider");
+const quickPumpRateSliderMin = document.getElementById("quick-pump-rate-slider-min");
+const quickPumpRateSliderMax = document.getElementById("quick-pump-rate-slider-max");
 const dantroleneForm = document.getElementById("dantrolene-form");
 const dantroleneResetButton = document.getElementById("dantrolene-reset-button");
 const dantroleneErrorMessage = document.getElementById("dantrolene-error-message");
@@ -109,6 +133,12 @@ const pediatricAirwaySizeExplanation = document.getElementById("pediatric-airway
 const pediatricAirwayDepthExplanation = document.getElementById("pediatric-airway-depth-explanation");
 const pediatricAirwayReferenceList = document.getElementById("pediatric-airway-reference-list");
 const pediatricAirwayResultWarning = document.getElementById("pediatric-airway-result-warning");
+const pediatricEmergencyResultCard = document.getElementById("pediatric-emergency-result-card");
+const pediatricEmergencyPrimaryResult = document.getElementById("pediatric-emergency-primary-result");
+const pediatricEmergencyContext = document.getElementById("pediatric-emergency-context");
+const pediatricEmergencyDoseGrid = document.getElementById("pediatric-emergency-dose-grid");
+const pediatricEmergencyReferenceList = document.getElementById("pediatric-emergency-reference-list");
+const pediatricEmergencyResultWarning = document.getElementById("pediatric-emergency-result-warning");
 
 const inputs = {
   weight: document.getElementById("weight"),
@@ -133,6 +163,7 @@ const workspaceHelp = document.getElementById("workspace-help");
 
 const pediatricInputs = {
   weight: document.getElementById("pediatric-weight"),
+  emergencyWeight: document.getElementById("pediatric-emergency-weight"),
   ageGroup: document.getElementById("pediatric-age-group"),
   concentration: document.getElementById("pediatric-concentration"),
   customDrugName: document.getElementById("pediatric-custom-drug-name"),
@@ -184,6 +215,9 @@ const languageSelect = document.getElementById("language-select");
 const feedbackGeneralLink = document.getElementById("feedback-general-link");
 const feedbackReferenceLink = document.getElementById("feedback-reference-link");
 const feedbackBugLink = document.getElementById("feedback-bug-link");
+const contactLink = document.getElementById("contact-link");
+const contactEmailRow = document.getElementById("contact-email-row");
+const contactEmailText = document.getElementById("contact-email-text");
 const feedbackStatus = document.getElementById("feedback-status");
 const supportDonateCard = document.getElementById("support-donate-card");
 const supportTossLink = document.getElementById("support-toss-link");
@@ -196,6 +230,10 @@ const FEEDBACK_CONFIG = {
   referenceUrl: "https://docs.google.com/forms/d/e/1FAIpQLSekcnkvm28ePkxhL0tGtDDtIas3uVhr4mwiGdcKnwTn_W2qvw/viewform?usp=publish-editor",
   bugUrl: "https://docs.google.com/forms/d/e/1FAIpQLSekcnkvm28ePkxhL0tGtDDtIas3uVhr4mwiGdcKnwTn_W2qvw/viewform?usp=publish-editor",
   email: ""
+};
+const CONTACT_CONFIG = {
+  url: "",
+  email: "Anestha.contact@gmail.com"
 };
 const SUPPORT_CONFIG = {
   tossUrl: "",
@@ -215,10 +253,15 @@ const TRANSLATIONS = {
     feedback_reference: "레퍼런스 오류 제보",
     feedback_bug: "버그 제보",
     feedback_kicker: "Feedback",
-    feedback_support_description: "bug, reference issue, usability suggestion을 이곳에서 바로 보낼 수 있습니다.",
+    feedback_support_description: "bug, reference issue, usability suggestion을 바로 보낼 수 있습니다.",
     feedback_support_note: "",
     feedback_status_unconfigured: "",
     feedback_status_configured: "",
+    contact_kicker: "Contact",
+    contact_heading: "문의하기",
+    contact_description: "일반 문의, 협업 제안, support 외 연락이 필요할 때 사용할 수 있는 창구입니다.",
+    contact_email_label: "이메일",
+    contact_open: "이메일로 문의하기",
     calculator_switcher_aria: "계산기 선택",
     calculator_tablist_aria: "계산기 목록",
     available_calculators: "사용 가능한 계산기",
@@ -229,7 +272,7 @@ const TRANSLATIONS = {
     tab_support: "Support",
     support_kicker: "Support",
     support_heading: "Support Anestha",
-    support_description: "업데이트 지원과 feedback 채널을 한곳에서 확인할 수 있습니다.",
+    support_description: "feedback와 update support를 한곳에서 확인합니다.",
     support_donate_kicker: "Support",
     support_donate_heading: "지속적인 업데이트 지원",
     support_donate_description: "이 앱이 도움이 되었다면 업데이트와 유지보수를 위한 support를 보낼 수 있습니다.",
@@ -239,6 +282,7 @@ const TRANSLATIONS = {
     support_status_unconfigured: "",
     support_status_configured: "",
     support_legal_note: "앱 사용 범위와 로컬 저장 항목은 Privacy / Disclaimer에서 확인할 수 있습니다.",
+    view_support_legal: "Privacy / Disclaimer 보기",
     privacy_page_link: "Privacy",
     disclaimer_page_link: "Disclaimer",
     footer_reference_note: "Anestha는 reference-oriented tool입니다. independent verification과 institutional protocol 확인이 계속 필요합니다.",
@@ -249,6 +293,11 @@ const TRANSLATIONS = {
     single_drug: "Single Drug",
     multi_drug: "Multi Drug",
     infusion_mode_aria: "Infusion 계산 모드",
+    infusion_layout_aria: "Infusion 입력 화면",
+    infusion_layout_title: "입력 방식",
+    quick_mode: "Quick",
+    full_mode: "Full",
+    infusion_quick_mode_help: "Quick mode는 값을 바꾸면 자동으로 계산됩니다. Full mode에서는 전체 폼과 수동 계산 흐름을 사용할 수 있습니다.",
     calculation_mode: "계산 방식",
     dose_to_rate: "Dose to Rate",
     rate_to_dose: "Rate to Dose",
@@ -270,19 +319,30 @@ const TRANSLATIONS = {
     notes: "메모",
     standard_dilution: "표준 희석",
     apply: "Apply",
-    source: "Source",
-    last_reviewed: "Last reviewed",
+    source: "출처",
+    last_reviewed: "검토일",
+    source_year: "자료 연도",
+    reference_context: "적용 맥락",
+    reference_check_section: "우선 확인할 섹션",
+    usage_note: "사용 메모",
     view_reference_interpretation: "레퍼런스 해석 보기",
     view_reference_checklist: "레퍼런스 확인 방법",
     view_reference_table_note: "Reference Table 안내",
+    view_calculation_details: "계산 과정 보기",
+    view_additional_details: "추가 정보 보기",
+    quick_live_result: "실시간 결과",
     view_multi_drug_caution: "Multi Drug 주의사항",
     view_pediatric_caution: "Pediatric 주의사항",
     view_age_adjustment_caution: "연령 보정 주의사항",
+    view_emergency_note: "세부 설명 보기",
     view_airway_caution: "Airway 주의사항",
+    view_airway_calculation_details: "계산 근거 보기",
     view_airway_device_note: "장비 선택 안내",
     view_mh_workflow_note: "MH workflow 안내",
     view_workspace_range_basis: "범위 근거 보기",
-    infusion_reference_note: "Reference range는 계산 편의를 위한 preset입니다. Label, Clinical, Study-specific는 서로 다른 맥락의 자료일 수 있으므로 절대적 표준 처방으로 해석하지 말고, 기관 프로토콜과 원문 레퍼런스를 함께 확인해야 합니다.",
+    view_dantrolene_preparation: "준비 메모 보기",
+    view_dantrolene_guide: "투여 안내 보기",
+    infusion_reference_note: "Reference range는 preset입니다. 실제 사용 전 원문과 기관 프로토콜을 함께 확인하세요.",
     custom_drug_name: "Custom Drug Name",
     custom_notes: "추가 메모",
     patient_weight: "Patient Weight",
@@ -293,10 +353,12 @@ const TRANSLATIONS = {
     reference_dose_list_help: "쉼표로 구분해 dose 값을 입력하세요. 이 값들은 참고용이며 병원별 관행에 따라 달라질 수 있습니다.",
     calculate: "계산",
     reset: "초기화",
+    decrease_value: "값 줄이기",
+    increase_value: "값 늘리기",
     references: "레퍼런스",
     workflow_preview: "사용 흐름 미리보기",
     multi_drug_heading: "Multi Drug Infusion",
-    multi_drug_description: "한 환자에서 여러 infusion drug를 한 화면에서 함께 볼 수 있는 화면입니다. 각 card는 shared weight를 사용할 수 있지만 계산은 서로 독립적으로 이뤄집니다.",
+    multi_drug_description: "한 환자에서 여러 infusion drug를 같은 화면에서 빠르게 계산합니다.",
     multi_drug_note: "Multi Drug 계산은 각 card별 참고용입니다. 약물 상호작용과 compatibility는 별도로 확인해야 합니다.",
     shared_patient_weight: "공통 Patient Weight",
     template_name: "Template 이름",
@@ -306,14 +368,15 @@ const TRANSLATIONS = {
     load_template: "Template 불러오기",
     save_current_setup: "현재 구성 저장",
     delete_template: "Template 삭제",
-    workspace_help: "Shared weight를 입력하면 각 Multi Drug card의 target dose와 Reference Dosing Table이 같은 환자 기준으로 계산됩니다.",
+    workspace_help: "Shared weight를 입력하면 모든 card에 같은 환자 체중이 적용됩니다.",
     add_drug: "+ 약물 추가",
     pediatric_heading: "Pediatric Calculator",
-    pediatric_description: "소아 약물 용량과 airway / ETT reference를 한곳에서 빠르게 확인합니다.",
+    pediatric_description: "소아 약물 용량, emergency drug quick reference, airway / ETT reference를 한곳에서 빠르게 확인합니다.",
     pediatric_mode_aria: "Pediatric 모드",
     pediatric_mode: "Pediatric 보기",
     dosing: "용량 계산",
     airway_ett: "Airway / ETT",
+    emergency_quick_ref: "Emergency",
     pediatric_drug_help_default: "Pediatric preset drug를 선택하면 권장 bolus dose range와 예시 농도가 표시됩니다.",
     pediatric_drug_help_custom: "Custom pediatric drug를 선택했습니다. 이름, dose range, unit, concentration을 직접 입력하세요.",
     show_unverified_presets: "Show unverified presets",
@@ -323,10 +386,20 @@ const TRANSLATIONS = {
     pediatric_dosing_result: "Pediatric Dosing 결과",
     calculated_dose_range: "계산된 dose 범위",
     calculation_details: "계산 과정",
-    pediatric_dosing_audit_note: "Pediatric dosing preset은 참고용입니다. 투여 전 기관 프로토콜과 최신 레퍼런스로 다시 확인하세요.",
+    pediatric_dosing_audit_note: "Pediatric dosing preset은 참고용입니다. 투여 전 원문과 기관 프로토콜을 다시 확인하세요.",
     pediatric_airway_result: "Pediatric Airway / ETT 결과",
     estimated_oral_depth: "예상 oral depth (lip 기준)",
-    pediatric_airway_audit_note: "Pediatric airway/ETT 값은 추정 참고치입니다. 실제 size, depth, leak, position은 임상적으로 반드시 확인하세요.",
+    pediatric_airway_audit_note: "Pediatric airway/ETT 값은 추정 참고치입니다. 실제 fit과 position은 임상적으로 확인하세요.",
+    pediatric_emergency_summary_title: "핵심 PALS 약물 quick reference",
+    included_drugs: "포함 약물",
+    scope: "적용 범위",
+    view_emergency_caution: "Emergency 주의사항",
+    pediatric_emergency_drug_list: "Epinephrine, Atropine, Adenosine, Amiodarone, Lidocaine",
+    pediatric_emergency_scope_text: "공식 PALS 알고리즘에 있는 핵심 code drug의 체중 기반 dose만 빠르게 보여줍니다. 전체 소생술 workflow를 대체하지 않습니다.",
+    pediatric_emergency_note: "이 화면은 rhythm 판단, cardioversion/defibrillation, airway decision, reversible cause 평가, 기관 emergency protocol을 대신하지 않습니다.",
+    pediatric_emergency_result: "Pediatric Emergency Quick Reference",
+    pediatric_emergency_audit_note: "Emergency quick reference 값은 공식 PALS dose 요약입니다. 실제 사용 전 원문과 기관 workflow를 다시 확인하세요.",
+    pediatric_emergency_warning_default: "Emergency quick reference는 참고용입니다. full algorithm과 기관 프로토콜을 함께 확인하세요.",
     emergency_tool: "응급 상황 도구",
     dantrolene_heading: "Dantrolene / MH Quick Reference",
     dantrolene_description: "체중과 제형을 기준으로 MH 초기 용량, 누적 최대 용량, 예상 vial 수를 빠르게 확인합니다.",
@@ -363,8 +436,10 @@ const TRANSLATIONS = {
     placeholder_initial_dose: "예: 2.5",
     result_label_calc: "계산 결과",
     supporting_information: "참고 정보",
-    current_references_verified: "각 reference 링크를 열어 원문을 직접 확인할 수 있습니다.",
-    reference_table_info_only: "Reference Dosing Table은 참고용입니다. 기관 프로토콜과 함께 확인하세요.",
+    current_references_verified: "각 링크에서 원문을 직접 확인할 수 있습니다.",
+    reference_years_note: "자료 연도는 원문 연도, 검토일은 이 앱에서 링크를 다시 확인한 날짜입니다.",
+    reference_table_info_only: "Reference Dosing Table은 참고용입니다. 원문과 기관 프로토콜을 함께 확인하세요.",
+    view_dilution_summary: "요약 보기",
     result_warning_default: "계산 결과는 참고용입니다. 실제 사용 전 반드시 별도로 검증해야 합니다.",
     infusion_result_reference_only: "Reference dose 값은 참고용입니다. Label, Clinical, Study-specific source는 하나의 절대 기준이 아니므로 원문과 기관 프로토콜을 함께 확인하세요.",
     infusion_result_out_of_range: "현재 입력값이 선택한 preset reference range를 벗어났습니다. 빨간 표시는 오류 확정이 아니라 기본 preset 범위 밖이라는 뜻이며, 원문 레퍼런스와 기관 프로토콜을 다시 확인해야 합니다.",
@@ -376,8 +451,9 @@ const TRANSLATIONS = {
     reference_table_explanation_weight: "Reference Dosing Table은 선택한 농도와 체중 기준으로 각 dose에 대응하는 mL/hr를 보여줍니다.",
     reference_table_explanation_absolute: "Reference Dosing Table은 선택한 농도 기준으로 absolute dose에 대응하는 mL/hr를 보여줍니다.",
     pediatric_result_warning_default: "Pediatric dosing 예시는 참고용입니다. 실제 사용 전 반드시 검증하세요.",
-    pediatric_airway_warning_default: "Airway estimate는 reference formula일 뿐입니다. tube fit, leak, depth, position은 임상적으로 확인해야 합니다.",
-    dantrolene_result_warning_default: "기관 MH protocol, redosing plan, emergency workflow를 확인하세요.",
+    pediatric_airway_warning_default: "Airway estimate는 참고용입니다. 실제 size, depth, leak, position은 임상적으로 확인하세요.",
+    validation_pediatric_emergency_weight: "Emergency quick reference를 보려면 patient weight가 필요합니다.",
+    dantrolene_result_warning_default: "기관 MH protocol과 emergency workflow를 확인하세요.",
     dilution_result_mix: "희석 안내",
     dilution_result_draw_volume: "뽑아야 할 약물 부피",
     dilution_result_add_diluent: "추가할 Diluent (NS/D5W)",
@@ -501,11 +577,11 @@ const TRANSLATIONS = {
     dantrolene_initial_guide: "Initial: 지금 {dose} mg/kg IV를 투여합니다. 많은 MH reference는 initial treatment dose로 2.5 mg/kg를 제시합니다.",
     dantrolene_repeat_guide: "Repeat bolus: hypermetabolic sign가 지속되거나 재발하면 repeat bolus를 이어갑니다. 흔한 emergency reference는 cumulative 10 mg/kg까지 증량을 권하고, 일부 formulation은 recurrence 후 1 mg/kg repeat bolus도 제시합니다.",
     dantrolene_maintenance_guide: "Maintenance: initial control 뒤에는 많은 MH reference가 최소 24시간 동안 4-6시간마다 1 mg/kg IV 또는 이에 준하는 infusion strategy를 권합니다.",
-    dantrolene_emergency_reference_only: "Emergency quick reference only. 기관 MH protocol, redosing plan, cooling, post-crisis monitoring을 계속 따르세요.",
+    dantrolene_emergency_reference_only: "Emergency quick reference only. 기관 MH protocol과 post-crisis plan을 계속 따르세요.",
     workspace_select_template: "Template 선택",
     workspace_limit_title: "Multi Drug card는 최대 6개까지 추가할 수 있습니다",
     workspace_add_card_title: "drug card 추가",
-    workspace_current_shared_weight: "현재 shared weight는 {weight} kg입니다. 각 card는 같은 환자 체중을 사용하지만 계산은 서로 독립적입니다.",
+    workspace_current_shared_weight: "Shared weight: {weight} kg",
     workspace_loaded_template: "불러온 template: {name}.",
     workspace_loaded_template_note: " (메모: {note})",
     workspace_limit_help: "Multi Drug card는 최대 6개까지 추가할 수 있습니다.",
@@ -515,12 +591,12 @@ const TRANSLATIONS = {
     workspace_drug: "Drug",
     workspace_concentration: "Concentration",
     workspace_target_dose: "Target Dose",
-    workspace_ntg_unit_hint: "Nitroglycerin 기본 reference는 mcg/min입니다. mcg/kg/min 선택 시 shared weight가 필요합니다.",
+    workspace_ntg_unit_hint: "Nitroglycerin은 기본값이 mcg/min이며, mcg/kg/min에는 shared weight가 필요합니다.",
     workspace_enter_shared_weight: "shared weight와 유효한 card 값을 입력하세요.",
     workspace_enter_valid_values: "유효한 card 값을 입력하세요.",
-    workspace_target_at_concentration: "Target {dose} {unit} at {concentration} {concentrationUnit}",
+    workspace_target_at_concentration: "Target {dose} {unit} · {concentration} {concentrationUnit}",
     workspace_out_of_range: "Reference range를 벗어났습니다. 기관 프로토콜을 다시 확인하세요.",
-    workspace_reference_range_note: "Reference range: {min} - {max} {unit}.{sharedWeightNote}",
+    workspace_reference_range_note: "Reference range {min} - {max} {unit}.{sharedWeightNote}",
     workspace_shared_weight_not_used: " 이 drug에는 shared weight를 사용하지 않습니다.",
     workspace_use_case_note: "사용 맥락: {useCase}",
     workspace_range_basis_note: "범위 근거: {basis}",
@@ -551,6 +627,11 @@ const TRANSLATIONS = {
     feedback_support_note: "",
     feedback_status_unconfigured: "",
     feedback_status_configured: "",
+    contact_kicker: "Contact",
+    contact_heading: "Contact Us",
+    contact_description: "Use this channel for general inquiries, collaboration ideas, or contact that does not fit the support links.",
+    contact_email_label: "Email",
+    contact_open: "Email us",
     calculator_switcher_aria: "Calculator selector",
     calculator_tablist_aria: "Calculator tabs",
     available_calculators: "Available Calculators",
@@ -561,7 +642,7 @@ const TRANSLATIONS = {
     tab_support: "Support",
     support_kicker: "Support",
     support_heading: "Support Anestha",
-    support_description: "Find update support and feedback channels in one place.",
+    support_description: "Find feedback and update support in one place.",
     support_donate_kicker: "Support",
     support_donate_heading: "Support ongoing updates",
     support_donate_description: "If this app has been helpful, you can support ongoing updates and maintenance.",
@@ -571,6 +652,7 @@ const TRANSLATIONS = {
     support_status_unconfigured: "",
     support_status_configured: "",
     support_legal_note: "See Privacy and Disclaimer for local storage details and intended use.",
+    view_support_legal: "View Privacy / Disclaimer",
     privacy_page_link: "Privacy",
     disclaimer_page_link: "Disclaimer",
     footer_reference_note: "Anestha is a reference-oriented tool. Independent verification and institutional protocols remain necessary.",
@@ -581,6 +663,11 @@ const TRANSLATIONS = {
     single_drug: "Single Drug",
     multi_drug: "Multi Drug",
     infusion_mode_aria: "Infusion calculation mode",
+    infusion_layout_aria: "Infusion input layout",
+    infusion_layout_title: "Input layout",
+    quick_mode: "Quick",
+    full_mode: "Full",
+    infusion_quick_mode_help: "Quick mode recalculates automatically while you edit. Use Full mode when you want the full form and manual calculate flow.",
     calculation_mode: "Calculation Mode",
     dose_to_rate: "Dose to Rate",
     rate_to_dose: "Rate to Dose",
@@ -604,17 +691,28 @@ const TRANSLATIONS = {
     apply: "Apply",
     source: "Source",
     last_reviewed: "Last reviewed",
+    source_year: "Source year",
+    reference_context: "Context",
+    reference_check_section: "Check section",
+    usage_note: "Usage note",
     view_reference_interpretation: "Reference interpretation",
     view_reference_checklist: "How to verify references",
     view_reference_table_note: "Reference table note",
+    view_calculation_details: "View calculation details",
+    view_additional_details: "View more details",
+    quick_live_result: "Live result",
     view_multi_drug_caution: "Multi Drug caution",
     view_pediatric_caution: "Pediatric caution",
     view_age_adjustment_caution: "Age-adjustment caution",
+    view_emergency_note: "View note",
     view_airway_caution: "Airway caution",
+    view_airway_calculation_details: "View size and depth note",
     view_airway_device_note: "Device selection note",
     view_mh_workflow_note: "MH workflow note",
     view_workspace_range_basis: "View range basis",
-    infusion_reference_note: "The displayed reference range is a calculator preset for workflow convenience. Label, Clinical, and Study-specific sources may reflect different contexts, so do not treat them as a single universal dosing standard.",
+    view_dantrolene_preparation: "View preparation note",
+    view_dantrolene_guide: "View dosing guide",
+    infusion_reference_note: "The displayed reference range is a preset. Verify the original source and local protocol before use.",
     custom_drug_name: "Custom Drug Name",
     custom_notes: "Custom Notes",
     patient_weight: "Patient Weight",
@@ -625,10 +723,12 @@ const TRANSLATIONS = {
     reference_dose_list_help: "Enter comma-separated dose values. These are informational references and may differ by institutional practice.",
     calculate: "Calculate",
     reset: "Reset",
+    decrease_value: "Decrease value",
+    increase_value: "Increase value",
     references: "References",
     workflow_preview: "Workflow Preview",
     multi_drug_heading: "Multi Drug Infusion",
-    multi_drug_description: "View multiple infusion drugs for one patient on a single screen. Each card can share the patient weight, but calculations remain independent.",
+    multi_drug_description: "Quickly calculate multiple infusion drugs for one patient on a single screen.",
     multi_drug_note: "Multi Drug calculations are reference-only for each card. Check interactions and compatibility separately.",
     shared_patient_weight: "Shared Patient Weight",
     template_name: "Template Name",
@@ -638,14 +738,15 @@ const TRANSLATIONS = {
     load_template: "Load template",
     save_current_setup: "Save current setup",
     delete_template: "Delete template",
-    workspace_help: "When shared weight is entered, each multi-drug card uses the same patient weight for target dose and Reference Dosing Table calculations.",
+    workspace_help: "When shared weight is entered, all cards use the same patient weight.",
     add_drug: "+ Add drug",
     pediatric_heading: "Pediatric Calculator",
-    pediatric_description: "Quickly review pediatric drug dosing and airway / ETT references in one place.",
+    pediatric_description: "Quickly review pediatric drug dosing, emergency drug quick reference, and airway / ETT references in one place.",
     pediatric_mode_aria: "Pediatric mode",
     pediatric_mode: "Pediatric Mode",
     dosing: "Dosing",
     airway_ett: "Airway / ETT",
+    emergency_quick_ref: "Emergency",
     pediatric_drug_help_default: "Select a pediatric preset drug to display the recommended bolus dose range and example concentration.",
     pediatric_drug_help_custom: "Custom pediatric drug selected. Enter the name, dose range, unit, and concentration directly.",
     show_unverified_presets: "Show unverified presets",
@@ -655,10 +756,20 @@ const TRANSLATIONS = {
     pediatric_dosing_result: "Pediatric Dosing Result",
     calculated_dose_range: "Calculated dose range",
     calculation_details: "Calculation Details",
-    pediatric_dosing_audit_note: "Pediatric dosing presets are reference-only. Verify with your institutional protocol and current sources before use.",
+    pediatric_dosing_audit_note: "Pediatric dosing presets are reference-only. Verify the source and institutional protocol before use.",
     pediatric_airway_result: "Pediatric Airway / ETT Result",
     estimated_oral_depth: "Estimated oral depth (from lip)",
-    pediatric_airway_audit_note: "Pediatric airway/ETT values are estimate references only. Always confirm size, depth, leak, and position clinically.",
+    pediatric_airway_audit_note: "Pediatric airway/ETT values are estimate references only. Always confirm fit and position clinically.",
+    pediatric_emergency_summary_title: "Core PALS drug quick reference",
+    included_drugs: "Included drugs",
+    scope: "Scope",
+    view_emergency_caution: "Emergency caution",
+    pediatric_emergency_drug_list: "Epinephrine, Atropine, Adenosine, Amiodarone, Lidocaine",
+    pediatric_emergency_scope_text: "Shows only weight-based core code drug doses from official PALS algorithms. It does not replace the full resuscitation workflow.",
+    pediatric_emergency_note: "This screen does not replace rhythm recognition, cardioversion/defibrillation steps, airway decisions, reversible-cause review, or your institutional emergency protocol.",
+    pediatric_emergency_result: "Pediatric Emergency Quick Reference",
+    pediatric_emergency_audit_note: "Emergency quick-reference values summarize official PALS doses only. Confirm the source and local workflow before use.",
+    pediatric_emergency_warning_default: "Emergency quick-reference values are reference-only. Verify the full algorithm and institutional protocol before use.",
     emergency_tool: "Emergency Tool",
     dantrolene_heading: "Dantrolene / MH Quick Reference",
     dantrolene_description: "Quickly review MH initial dose, cumulative maximum dose, and estimated vial count based on patient weight and formulation.",
@@ -695,8 +806,10 @@ const TRANSLATIONS = {
     placeholder_initial_dose: "e.g. 2.5",
     result_label_calc: "Calculation Result",
     supporting_information: "Supporting information",
-    current_references_verified: "You can open each reference link and review the original source directly.",
-    reference_table_info_only: "Reference Dosing Table is informational only. Verify with institutional protocols.",
+    current_references_verified: "Open each link to review the original source directly.",
+    reference_years_note: "Source year is the original document year, while Last reviewed is when this app rechecked the link.",
+    reference_table_info_only: "Reference Dosing Table is informational only. Verify the source and local protocol.",
+    view_dilution_summary: "View summary",
     result_warning_default: "Calculation results are for reference only. Independently verify before clinical use.",
     infusion_result_reference_only: "Reference dose values are informational only. Label, Clinical, and Study-specific sources may reflect different contexts, so verify the original source and institutional protocol.",
     infusion_result_out_of_range: "The current value is outside the selected preset reference range. Red text does not automatically mean incorrect dosing; it means the value is outside this preset's default bounds and should be checked against the original source and institutional protocol.",
@@ -708,8 +821,9 @@ const TRANSLATIONS = {
     reference_table_explanation_weight: "The Reference Dosing Table shows the mL/hr corresponding to each dose using the selected concentration and patient weight.",
     reference_table_explanation_absolute: "The Reference Dosing Table shows the mL/hr corresponding to each absolute dose using the selected concentration.",
     pediatric_result_warning_default: "Pediatric dosing examples are for reference only. Verify before clinical use.",
-    pediatric_airway_warning_default: "Airway estimates are reference formulas only. Confirm tube fit, leak, depth, and position clinically.",
-    dantrolene_result_warning_default: "Verify your institutional MH protocol, redosing plan, and emergency workflow.",
+    pediatric_airway_warning_default: "Airway estimates are reference-only. Confirm size, depth, leak, and position clinically.",
+    validation_pediatric_emergency_weight: "Patient weight is required for the emergency quick reference.",
+    dantrolene_result_warning_default: "Verify your institutional MH protocol and emergency workflow.",
     dilution_result_mix: "Mixing Instructions",
     dilution_result_draw_volume: "Draw Drug Volume",
     dilution_result_add_diluent: "Add Diluent (NS/D5W)",
@@ -833,11 +947,11 @@ const TRANSLATIONS = {
     dantrolene_initial_guide: "Initial: give {dose} mg/kg IV now. Many MH references start with 2.5 mg/kg as the initial treatment dose.",
     dantrolene_repeat_guide: "Repeat bolus: if hypermetabolic signs persist or recur, continue repeat boluses. A common emergency reference is to escalate toward a cumulative 10 mg/kg, while some formulations also describe a 1 mg/kg repeat bolus after recurrence.",
     dantrolene_maintenance_guide: "Maintenance: after initial control, many MH references advise 1 mg/kg IV every 4-6 hours, or an equivalent infusion strategy, for at least 24 hours.",
-    dantrolene_emergency_reference_only: "Emergency quick reference only. Continue with your institutional MH protocol, redosing plan, cooling, and post-crisis monitoring.",
+    dantrolene_emergency_reference_only: "Emergency quick reference only. Continue with your MH protocol and post-crisis plan.",
     workspace_select_template: "Select template",
     workspace_limit_title: "Maximum 6 Multi Drug cards",
     workspace_add_card_title: "Add another drug card",
-    workspace_current_shared_weight: "Current shared weight: {weight} kg. Each card is calculated independently using the same patient weight.",
+    workspace_current_shared_weight: "Shared weight: {weight} kg",
     workspace_loaded_template: "Loaded template: {name}.",
     workspace_loaded_template_note: " (Note: {note})",
     workspace_limit_help: "A maximum of 6 Multi Drug cards can be added.",
@@ -850,9 +964,9 @@ const TRANSLATIONS = {
     workspace_ntg_unit_hint: "Nitroglycerin default reference is mcg/min. Shared weight is required for mcg/kg/min.",
     workspace_enter_shared_weight: "Enter shared weight and valid card values.",
     workspace_enter_valid_values: "Enter valid card values.",
-    workspace_target_at_concentration: "Target {dose} {unit} at {concentration} {concentrationUnit}",
+    workspace_target_at_concentration: "Target {dose} {unit} · {concentration} {concentrationUnit}",
     workspace_out_of_range: "Outside reference range - verify institutional protocol.",
-    workspace_reference_range_note: "Reference range: {min} - {max} {unit}.{sharedWeightNote}",
+    workspace_reference_range_note: "Reference range {min} - {max} {unit}.{sharedWeightNote}",
     workspace_shared_weight_not_used: " Shared weight is not used for this drug.",
     workspace_use_case_note: "Use case: {useCase}",
     workspace_range_basis_note: "Range basis: {basis}",
@@ -933,6 +1047,19 @@ function buildFeedbackMailto(subject, body) {
   return `mailto:${FEEDBACK_CONFIG.email}?${query.toString()}`;
 }
 
+function buildContactMailto() {
+  if (!CONTACT_CONFIG.email) {
+    return "";
+  }
+
+  const query = new URLSearchParams({
+    subject: "Anestha inquiry",
+    body: "Name:\nInstitution (optional):\nTopic:\nMessage:\n"
+  });
+
+  return `mailto:${CONTACT_CONFIG.email}?${query.toString()}`;
+}
+
 function resolveFeedbackHref(type) {
   if (type === "general") {
     return FEEDBACK_CONFIG.generalUrl || buildFeedbackMailto(
@@ -952,6 +1079,10 @@ function resolveFeedbackHref(type) {
     "Anestha bug report",
     "Category: Bug report\nCalculator:\nDevice/Browser:\nWhat happened?\nExpected behavior:\nSteps to reproduce:\n"
   );
+}
+
+function resolveContactHref() {
+  return CONTACT_CONFIG.url || buildContactMailto() || resolveFeedbackHref("general");
 }
 
 function applyActionLink(element, href) {
@@ -993,6 +1124,8 @@ function updateSupportLinks() {
   const tossHref = SUPPORT_CONFIG.tossUrl || "";
   const kofiHref = SUPPORT_CONFIG.kofiUrl || "";
   const hasLiveChannel = Boolean(tossHref || kofiHref);
+  const contactHref = resolveContactHref();
+  const contactEmail = CONTACT_CONFIG.email || "";
 
   if (supportDonateCard) {
     supportDonateCard.classList.toggle("hidden", !hasLiveChannel);
@@ -1000,6 +1133,12 @@ function updateSupportLinks() {
 
   applyActionLink(supportTossLink, tossHref);
   applyActionLink(supportKofiLink, kofiHref);
+  applyActionLink(contactLink, contactHref);
+
+  if (contactEmailRow && contactEmailText) {
+    contactEmailText.textContent = contactEmail;
+    contactEmailRow.classList.toggle("hidden", !contactEmail);
+  }
 
   if (supportStatus) {
     supportStatus.textContent = hasLiveChannel
@@ -1201,6 +1340,81 @@ function formatEditableDoseList(values) {
   return values.map(function (value) {
     return formatEditableDoseValue(value);
   }).join(", ");
+}
+
+function getPediatricEmergencyCards(weightKg) {
+  const epinephrineDoseMg = weightKg * 0.01;
+  const epinephrineVolumeMl = epinephrineDoseMg / 0.1;
+  const atropineRawMg = weightKg * 0.02;
+  const atropineDoseMg = Math.min(Math.max(atropineRawMg, 0.1), 0.5);
+  const adenosineFirstMg = Math.min(weightKg * 0.1, 6);
+  const adenosineSecondMg = Math.min(weightKg * 0.2, 12);
+  const amiodaroneFirstMg = Math.min(weightKg * 5, 300);
+  const amiodaroneRepeatMg = Math.min(weightKg * 5, 150);
+  const lidocaineDoseMg = weightKg * 1;
+  const isEnglish = currentLanguage === "en";
+
+  return [
+    {
+      context: isEnglish ? "Cardiac arrest / Bradycardia" : "Cardiac arrest / Bradycardia",
+      name: "Epinephrine",
+      primary: `${formatNumber(epinephrineDoseMg, 2)} mg IV/IO`,
+      secondary: isEnglish
+        ? `0.1 mg/mL concentration: ${formatNumber(epinephrineVolumeMl, 2)} mL`
+        : `0.1 mg/mL 농도 기준 ${formatNumber(epinephrineVolumeMl, 2)} mL`,
+      note: isEnglish
+        ? "Cardiac arrest / symptomatic bradycardia context. In arrest, repeat every 3-5 minutes."
+        : "Cardiac arrest / symptomatic bradycardia 맥락입니다. Arrest에서는 3-5분마다 반복합니다."
+    },
+    {
+      context: "Bradycardia",
+      name: "Atropine",
+      primary: `${formatNumber(atropineDoseMg, 2)} mg IV/IO`,
+      secondary: isEnglish
+        ? "0.02 mg/kg (minimum 0.1 mg, maximum 0.5 mg)"
+        : "0.02 mg/kg (최소 0.1 mg, 최대 0.5 mg)",
+      note: isEnglish
+        ? `${atropineRawMg < 0.1 ? "Minimum single dose applied. " : atropineRawMg > 0.5 ? "Maximum single dose applied. " : ""}May repeat once for bradycardia with increased vagal tone or primary AV block.`
+        : `${atropineRawMg < 0.1 ? "최소 1회 용량이 적용되었습니다. " : atropineRawMg > 0.5 ? "최대 1회 용량이 적용되었습니다. " : ""}Increased vagal tone 또는 primary AV block 관련 bradycardia에서 1회 반복할 수 있습니다.`
+    },
+    {
+      context: isEnglish ? "Regular narrow-complex tachycardia" : "Regular narrow-complex tachycardia",
+      name: "Adenosine",
+      primary: isEnglish
+        ? `First dose: ${formatNumber(adenosineFirstMg, 2)} mg IV/IO`
+        : `1차 dose: ${formatNumber(adenosineFirstMg, 2)} mg IV/IO`,
+      secondary: isEnglish
+        ? `Second dose: ${formatNumber(adenosineSecondMg, 2)} mg IV/IO`
+        : `2차 dose: ${formatNumber(adenosineSecondMg, 2)} mg IV/IO`,
+      note: isEnglish
+        ? "Regular narrow-complex tachycardia context. Give as a rapid push followed by flush."
+        : "Regular narrow-complex tachycardia 맥락입니다. Rapid push 후 flush가 필요합니다."
+    },
+    {
+      context: "VF/pVT arrest",
+      name: "Amiodarone",
+      primary: isEnglish
+        ? `First dose: ${formatNumber(amiodaroneFirstMg, 2)} mg IV/IO`
+        : `1차 dose: ${formatNumber(amiodaroneFirstMg, 2)} mg IV/IO`,
+      secondary: isEnglish
+        ? `Subsequent dose ceiling: ${formatNumber(amiodaroneRepeatMg, 2)} mg`
+        : `이후 dose 상한: ${formatNumber(amiodaroneRepeatMg, 2)} mg`,
+      note: isEnglish
+        ? "Shock-refractory VF/pVT arrest context. Algorithm lists 5 mg/kg bolus, max 300 mg first dose then 150 mg."
+        : "Shock-refractory VF/pVT arrest 맥락입니다. Algorithm 기준 5 mg/kg bolus이며 1차 최대 300 mg, 이후 150 mg입니다."
+    },
+    {
+      context: "VF/pVT arrest",
+      name: "Lidocaine",
+      primary: `${formatNumber(lidocaineDoseMg, 2)} mg IV/IO`,
+      secondary: isEnglish
+        ? "1 mg/kg bolus"
+        : "1 mg/kg bolus",
+      note: isEnglish
+        ? "Alternative antiarrhythmic for shock-refractory VF/pVT when amiodarone is not used."
+        : "Amiodarone을 사용하지 않을 때 shock-refractory VF/pVT의 대안 antiarrhythmic입니다."
+    }
+  ];
 }
 
 function calculatePediatricAirwayEstimates(ageYears) {
@@ -1445,27 +1659,71 @@ const REFERENCE_REGISTRY = {
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=97713356-f42b-4a67-95f6-561afa68c0c2",
     lastReviewed: "2026-03-14"
   },
+  pediatric_emergency_cardiac_arrest_aha: {
+    title: "PALS Pediatric Cardiac Arrest Algorithm",
+    source: "AHA",
+    referenceType: "guideline",
+    sourceYear: "2025",
+    url: "https://www.heart.org/-/media/CPR-Files/CPR-Guidelines-Files/2025-Algorithms/Algorithm-PALS-CA-250123.pdf",
+    linkLabel: "Open algorithm PDF",
+    referenceContext: "Pediatric cardiac arrest algorithm",
+    checkSection: "Medication dosing lines within the algorithm PDF",
+    usageNote: "Official cardiac-arrest algorithm context: epinephrine 0.01 mg/kg IV/IO every 3-5 minutes; amiodarone 5 mg/kg bolus (max 300 mg first dose, then 150 mg) or lidocaine 1 mg/kg for shock-refractory VF/pVT.",
+    lastReviewed: "2026-03-17"
+  },
+  pediatric_emergency_bradycardia_aha: {
+    title: "PALS Pediatric Bradycardia With a Pulse Algorithm",
+    source: "AHA",
+    referenceType: "guideline",
+    sourceYear: "2025",
+    url: "https://cpr.heart.org/-/media/CPR-Files/CPR-Guidelines-Files/2025-Accessible/Algorithm-PALS-Bradycardia-LngDscrp-250729-Ed.pdf",
+    linkLabel: "Open algorithm PDF",
+    referenceContext: "Pediatric bradycardia with a pulse algorithm",
+    checkSection: "Medication dosing lines within the algorithm PDF",
+    usageNote: "Official bradycardia context: atropine 0.02 mg/kg IV/IO (minimum 0.1 mg, maximum 0.5 mg; may repeat once) and epinephrine 0.01 mg/kg IV/IO using 0.1 mg/mL concentration.",
+    lastReviewed: "2026-03-17"
+  },
+  pediatric_emergency_tachycardia_aha: {
+    title: "PALS Pediatric Tachyarrhythmia With a Pulse Algorithm",
+    source: "AHA",
+    referenceType: "guideline",
+    sourceYear: "2025",
+    url: "https://cpr.heart.org/-/media/CPR-Files/CPR-Guidelines-Files/2025-Accessible/Algorithm-PALS-Tachyarrhythmia-LngDscrp-250729-Ed.pdf?sc_lang=en",
+    linkLabel: "Open algorithm PDF",
+    referenceContext: "Pediatric tachyarrhythmia with a pulse algorithm",
+    checkSection: "Medication dosing lines within the algorithm PDF",
+    usageNote: "Official tachyarrhythmia context: adenosine 0.1 mg/kg rapid IV/IO push (max 6 mg), then 0.2 mg/kg (max 12 mg) if needed.",
+    lastReviewed: "2026-03-17"
+  },
   infusion_norepinephrine_dailymed: {
     title: "Norepinephrine label dose",
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=a27fb6e0-8f7a-11db-9739-0050c2490048",
     linkLabel: "Open full label",
+    referenceContext: "Adult vasopressor infusion labeling",
+    checkSection: "Dosage and Administration",
     usageNote: "Label dosing: initial 8-12 mcg/min by IV infusion, then adjust to hemodynamic effect. Typical maintenance is 2-4 mcg/min.",
     lastReviewed: "2026-03-15"
   },
   infusion_norepinephrine_openanesthesia: {
     title: "Norepinephrine anesthesia clinical dosing",
     source: "OpenAnesthesia",
+    sourceYear: "2025",
     url: "https://www.openanesthesia.org/keywords/epinephrine-and-norepinephrine/",
     linkLabel: "Open article",
+    referenceContext: "Perioperative vasopressor support",
+    checkSection: "Norepinephrine dosing discussion",
     usageNote: "Anesthesia reference: adult infusion commonly starts around 0.02-0.15 mcg/kg/min and is titrated to target MAP. Use as a perioperative weight-based reference, not as a product label dose.",
     lastReviewed: "2026-03-15"
   },
   infusion_norepinephrine_periop_study: {
     title: "Norepinephrine perioperative induction study",
     source: "PubMed",
+    sourceYear: "2025",
     url: "https://pubmed.ncbi.nlm.nih.gov/40744797/",
     linkLabel: "Open abstract",
+    referenceContext: "Hemodynamic stabilization during induction of high-risk noncardiac surgery",
+    checkSection: "Methods / infusion protocol",
     usageNote: "Study-specific perioperative evidence: high-risk noncardiac surgery induction data support continuous norepinephrine infusion as a blood pressure stabilization strategy. Treat this as context evidence rather than a universal standard dose range.",
     lastReviewed: "2026-03-15"
   },
@@ -1474,14 +1732,19 @@ const REFERENCE_REGISTRY = {
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=3b1ac82f-6920-4e40-a77e-598398679f2d",
     linkLabel: "Open full label",
+    referenceContext: "Adult vasopressor / inotrope infusion labeling",
+    checkSection: "Dosage and Administration",
     usageNote: "Adult continuous infusion labeling commonly falls in the 0.05-2 mcg/kg/min range, titrated to hemodynamic effect.",
     lastReviewed: "2026-03-15"
   },
   infusion_epinephrine_openanesthesia: {
     title: "Epinephrine anesthesia clinical context",
     source: "OpenAnesthesia",
+    sourceYear: "2025",
     url: "https://www.openanesthesia.org/keywords/epinephrine-and-norepinephrine/",
     linkLabel: "Open article",
+    referenceContext: "Perioperative vasopressor and inotrope support",
+    checkSection: "Clinical uses / epinephrine section",
     usageNote: "Perioperative context: epinephrine provides mixed alpha and beta support, with stronger beta effects at lower doses and increasing alpha vasoconstriction as dose rises.",
     lastReviewed: "2026-03-15"
   },
@@ -1490,14 +1753,19 @@ const REFERENCE_REGISTRY = {
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=1e77b9c8-fa17-4aa4-adc8-ff716ab2e5d7",
     linkLabel: "Open full label",
+    referenceContext: "Anesthesia-induced hypotension infusion labeling",
+    checkSection: "Dosage and Administration",
     usageNote: "For anesthesia-induced hypotension, labeling supports infusion around 0.5-1.4 mcg/kg/min with titration to blood pressure response.",
     lastReviewed: "2026-03-15"
   },
   infusion_phenylephrine_periop_study: {
     title: "Phenylephrine perioperative infusion study",
     source: "PubMed",
+    sourceYear: "2025",
     url: "https://pubmed.ncbi.nlm.nih.gov/39544834/",
     linkLabel: "Open abstract",
+    referenceContext: "Peripheral phenylephrine infusion safety initiative in the operating room",
+    checkSection: "Abstract / concentration standardization and safety findings",
     usageNote: "Operating-room context: anesthesia safety initiative describing peripheral phenylephrine infusions during anesthesia and highlighting concentration standardization and infusion safety.",
     lastReviewed: "2026-03-15"
   },
@@ -1506,14 +1774,19 @@ const REFERENCE_REGISTRY = {
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/getFile.cfm?setid=b1147beb-743e-4c62-8927-91192447f8b8&type=pdf",
     linkLabel: "Open full label",
+    referenceContext: "Shock and vasodilatory hypotension labeling",
+    checkSection: "Dosage and Administration",
     usageNote: "Shock: 0.01 – 0.04 units/min. Not weight-based. Typically added to norepinephrine.",
     lastReviewed: "2026-03-15"
   },
   infusion_vasopressin_openanesthesia: {
     title: "Vasopressin anesthesia clinical dosing",
     source: "OpenAnesthesia",
-    url: "https://www.openanesthesia.org/keywords/aba_arginine_vasopressin/",
+    sourceYear: "2025",
+    url: "https://www.openanesthesia.org/keywords/vasopressin/",
     linkLabel: "Open article",
+    referenceContext: "Perioperative refractory hypotension and vasoplegia",
+    checkSection: "Clinical Uses / Refractory Hypotension (Vasoplegia)",
     usageNote: "Perioperative refractory hypotension reference: low-dose infusion or boluses of 0.01-0.04 U/min or 0.5-1 U bolus can be used during general anesthesia.",
     lastReviewed: "2026-03-15"
   },
@@ -1522,14 +1795,19 @@ const REFERENCE_REGISTRY = {
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=b8af0974-33ea-4dd5-9ff7-3b61272aeb25",
     linkLabel: "Open full label",
+    referenceContext: "Adult antihypertensive / anti-ischemic infusion labeling",
+    checkSection: "Dosage and Administration",
     usageNote: "Label dosing starts at 5 mcg/min IV infusion with stepwise upward titration; non-PVC tubing and glass bottles are commonly recommended.",
     lastReviewed: "2026-03-15"
   },
   infusion_nitroglycerin_openanesthesia: {
     title: "Nitroglycerin anesthesia clinical dosing",
     source: "OpenAnesthesia",
+    sourceYear: "2025",
     url: "https://www.openanesthesia.org/keywords/nitroglycerin/",
     linkLabel: "Open article",
+    referenceContext: "Intraoperative vasodilator titration",
+    checkSection: "Dosing / clinical uses",
     usageNote: "Operating-room reference: continuous IV nitroglycerin is commonly started at 5 mcg/min and titrated every 3-5 minutes. Common OR uses include hypertensive urgency and myocardial ischemia.",
     lastReviewed: "2026-03-15"
   },
@@ -1538,14 +1816,19 @@ const REFERENCE_REGISTRY = {
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=76fc52c1-d975-4968-82bb-0acf4f67a07e",
     linkLabel: "Open full label",
+    referenceContext: "Adult blood pressure control infusion labeling",
+    checkSection: "Dosage and Administration",
     usageNote: "Label dosing for continuous IV infusion typically starts at 5 mg/hr with stepwise titration (often by 2.5 mg/hr) to target blood pressure, up to 15 mg/hr in the common range.",
     lastReviewed: "2026-03-16"
   },
   infusion_nicardipine_periop_study: {
     title: "Nicardipine anesthesia emergence study",
     source: "PubMed",
+    sourceYear: "2009",
     url: "https://pubmed.ncbi.nlm.nih.gov/30625931/",
     linkLabel: "Open abstract",
+    referenceContext: "Emergence hypertension during total intravenous anesthesia",
+    checkSection: "Methods / nicardipine infusion protocol",
     usageNote: "Study-specific context: during emergence from total intravenous anesthesia, nicardipine infusion around 2 mcg/kg/min helped blunt blood pressure rise. This reflects a selected protocol, not a universal default range.",
     lastReviewed: "2026-03-16"
   },
@@ -1554,14 +1837,19 @@ const REFERENCE_REGISTRY = {
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=0e499952-46c7-4172-8c70-186312e240a3",
     linkLabel: "Open full label",
+    referenceContext: "Adult vasopressor and inotrope infusion labeling",
+    checkSection: "Dosage and Administration",
     usageNote: "Label dosing spans about 2-50 mcg/kg/min IV infusion. Hemodynamic effects shift across lower, intermediate, and higher dose bands.",
     lastReviewed: "2026-03-15"
   },
   infusion_dopamine_periop_study: {
     title: "Dopamine perioperative hemodynamic study",
     source: "PubMed",
+    sourceYear: "1979",
     url: "https://pubmed.ncbi.nlm.nih.gov/117821/",
     linkLabel: "Open abstract",
+    referenceContext: "Coronary bypass anesthesia hemodynamic support",
+    checkSection: "Abstract / dopamine infusion protocol",
     usageNote: "Cardiac-surgery context: anesthesia study describing dopamine 8 mcg/kg/min before bypass, with improved cardiac index but higher filling pressures unless balanced with nitroglycerin.",
     lastReviewed: "2026-03-15"
   },
@@ -1570,6 +1858,8 @@ const REFERENCE_REGISTRY = {
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=9794e9d0-c8b7-4d18-8cd1-15cc4f2a9a55",
     linkLabel: "Open full label",
+    referenceContext: "Adult inotrope infusion labeling",
+    checkSection: "Dosage and Administration",
     usageNote: "Adult infusion labeling commonly uses 2.5-20 mcg/kg/min, titrated to cardiac output and perfusion goals.",
     lastReviewed: "2026-03-15"
   },
@@ -1578,14 +1868,19 @@ const REFERENCE_REGISTRY = {
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=fde1e354-4f15-4ade-9ae3-db2ba67e0431",
     linkLabel: "Open full label",
+    referenceContext: "Adult inotrope infusion labeling",
+    checkSection: "Dosage and Administration",
     usageNote: "Maintenance infusion is typically 0.375-0.75 mcg/kg/min after any loading dose. Adjust carefully for renal impairment.",
     lastReviewed: "2026-03-15"
   },
   infusion_milrinone_openanesthesia: {
     title: "Milrinone perioperative dosing",
     source: "OpenAnesthesia",
+    sourceYear: "2015",
     url: "https://www.openanesthesia.org/keywords/milrinone_pharmacology/",
     linkLabel: "Open article",
+    referenceContext: "Perioperative inotrope use and CPB weaning",
+    checkSection: "Administration",
     usageNote: "Cardiac anesthesia reference: 50 mcg/kg IV over 10 minutes followed by 0.375-0.75 mcg/kg/min infusion, commonly used for perioperative low-output states and RV dysfunction.",
     lastReviewed: "2026-03-15"
   },
@@ -1594,14 +1889,19 @@ const REFERENCE_REGISTRY = {
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=d2a9b767-0274-49bf-83cd-2fcce9bedc78",
     linkLabel: "Open full label",
+    referenceContext: "Adult chronotrope / beta-agonist infusion labeling",
+    checkSection: "Dosage and Administration",
     usageNote: "Adult infusion labeling commonly starts at 0.5 mcg/min with titration; usual effective rates are often 0.5-5 mcg/min.",
     lastReviewed: "2026-03-15"
   },
   infusion_isoproterenol_tiva_study: {
     title: "Isoproterenol during TIVA study",
     source: "PubMed",
+    sourceYear: "2012",
     url: "https://pubmed.ncbi.nlm.nih.gov/22366997/",
     linkLabel: "Open abstract",
+    referenceContext: "Atrial fibrillation ablation under total intravenous anesthesia",
+    checkSection: "Abstract / isoproterenol infusion effects on consciousness",
     usageNote: "Electrophysiology/TIVA context: isoproterenol infusion increased BIS and consciousness level during atrial fibrillation ablation, so anesthetic depth may need adjustment when it is used intraoperatively.",
     lastReviewed: "2026-03-15"
   },
@@ -1628,14 +1928,19 @@ const REFERENCE_REGISTRY = {
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=8b4c8696-e23e-4c51-a4d2-babab5bd945a",
     linkLabel: "Open full label",
+    referenceContext: "General anesthesia maintenance labeling",
+    checkSection: "Dosage and Administration",
     usageNote: "Maintenance infusion for general anesthesia commonly ranges from about 0.05-2 mcg/kg/min depending on the anesthetic technique.",
     lastReviewed: "2026-03-15"
   },
   infusion_remifentanil_periop_study: {
     title: "Remifentanil general anesthesia study",
     source: "PubMed",
+    sourceYear: "2025",
     url: "https://pubmed.ncbi.nlm.nih.gov/41142244/",
     linkLabel: "Open abstract",
+    referenceContext: "Thoracoscopic esophagectomy induction hemodynamic study",
+    checkSection: "Methods / induction regimen and hemodynamic outcomes",
     usageNote: "General anesthesia context: remifentanil-based induction was associated with more stable early hemodynamics than fentanyl in thoracoscopic esophagectomy, while bradycardia remained a relevant adverse effect.",
     lastReviewed: "2026-03-15"
   },
@@ -1644,14 +1949,19 @@ const REFERENCE_REGISTRY = {
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=800646b8-83a8-01d9-3dc8-bb2ddcb8570c",
     linkLabel: "Open full label",
+    referenceContext: "General anesthesia maintenance labeling",
+    checkSection: "Dosage and Administration",
     usageNote: "For maintenance of general anesthesia in healthy adults under 55 years, labeling commonly cites 100-200 mcg/kg/min, with lower rates often needed in older or sicker patients.",
     lastReviewed: "2026-03-15"
   },
   infusion_propofol_openanesthesia: {
     title: "Propofol anesthesia clinical context",
     source: "OpenAnesthesia",
+    sourceYear: "2023",
     url: "https://www.openanesthesia.org/keywords/propofol/",
     linkLabel: "Open article",
+    referenceContext: "General anesthesia induction and maintenance discussion",
+    checkSection: "Clinical uses / induction and maintenance of general anesthesia",
     usageNote: "General anesthesia reference: propofol remains the most common IV induction and maintenance agent, and continuous infusion is standard for precise TIVA depth control.",
     lastReviewed: "2026-03-15"
   },
@@ -1660,14 +1970,19 @@ const REFERENCE_REGISTRY = {
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=4cfdfa50-579b-43e7-bc0a-e831d3099bfd",
     linkLabel: "Open full label",
+    referenceContext: "Short-acting beta-blocker infusion labeling",
+    checkSection: "Dosage and Administration",
     usageNote: "Initial dose: 50 – 300 mcg/kg/min. Ultra-short acting beta blocker.",
     lastReviewed: "2026-03-15"
   },
   infusion_esmolol_meta_analysis: {
     title: "Esmolol anesthesia meta-analysis",
     source: "PubMed",
+    sourceYear: "2025",
     url: "https://pubmed.ncbi.nlm.nih.gov/41134986/",
     linkLabel: "Open abstract",
+    referenceContext: "Intraoperative multimodal anesthesia adjunct",
+    checkSection: "Abstract / maintenance infusion rates in included trials",
     usageNote: "General anesthesia adjunct evidence: perioperative esmolol infusions across randomized trials ranged from about 0.3-6 mg/kg/h and were associated with reduced intraoperative and postoperative opioid use.",
     lastReviewed: "2026-03-15"
   },
@@ -1676,38 +1991,52 @@ const REFERENCE_REGISTRY = {
     source: "DailyMed",
     url: "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=4fe788bc-4ad1-4b32-83d3-dcbfcd8429aa",
     linkLabel: "Open full label",
+    referenceContext: "Monitored sedation / ICU sedation labeling",
+    checkSection: "Dosage and Administration",
     usageNote: "Official dosing guidance includes maintenance infusions around 0.2-1 mcg/kg/hr in monitored sedation contexts, while ICU or selected settings may extend higher depending on the product label.",
     lastReviewed: "2026-03-15"
   },
   infusion_dexmedetomidine_openanesthesia: {
     title: "Dexmedetomidine anesthesia clinical dosing",
     source: "OpenAnesthesia",
+    sourceYear: "2024",
     url: "https://www.openanesthesia.org/keywords/dexmedetomidine/",
     linkLabel: "Open article",
+    referenceContext: "Anesthesia adjunct and sedation discussion",
+    checkSection: "Dosing / clinical uses",
     usageNote: "General anesthesia adjunct reference: dexmedetomidine shows linear pharmacokinetics in the 0.2-0.7 mcg/kg/h range and can reduce sevoflurane, propofol, and opioid requirements.",
     lastReviewed: "2026-03-15"
   },
   infusion_remimazolam_dailymed: {
     title: "Remimazolam procedural sedation label",
     source: "FDA",
+    sourceYear: "2023",
     url: "https://www.accessdata.fda.gov/drugsatfda_docs/label/2023/212295s003lbl.pdf",
     linkLabel: "Open full label",
+    referenceContext: "Procedural sedation label",
+    checkSection: "Dosage and Administration",
     usageNote: "BYFAVO label: initial 5 mg IV over 1 minute for procedural sedation, then supplemental 2.5 mg doses over 15 seconds no sooner than 2 minutes apart. This is a bolus/top-up regimen, not a continuous infusion default.",
     lastReviewed: "2026-03-15"
   },
   infusion_remimazolam_openanesthesia: {
     title: "Remimazolam anesthesia clinical dosing",
     source: "OpenAnesthesia",
+    sourceYear: "2026",
     url: "https://www.openanesthesia.org/keywords/remimazolam/",
     linkLabel: "Open article",
+    referenceContext: "General anesthesia induction and maintenance discussion",
+    checkSection: "Dosing / clinical uses",
     usageNote: "Anesthesia reference: induction infusion has been described around 6-12 mg/kg/hr until loss of consciousness, with maintenance around 1-2 mg/kg/hr depending on anesthetic context.",
     lastReviewed: "2026-03-15"
   },
   infusion_remimazolam_study: {
     title: "Remimazolam general anesthesia trial",
     source: "PubMed",
+    sourceYear: "2020",
     url: "https://pubmed.ncbi.nlm.nih.gov/32417976/",
     linkLabel: "Open abstract",
+    referenceContext: "General anesthesia induction and maintenance trial protocol",
+    checkSection: "Methods / infusion regimen",
     usageNote: "Phase IIb/III trial context: induction infusion arms of 6 or 12 mg/kg/hr were evaluated, followed by maintenance infusion around 1 mg/kg/hr with adjustment as needed.",
     lastReviewed: "2026-03-15"
   }
@@ -1754,6 +2083,10 @@ function getReferenceType(item) {
     return item.referenceType;
   }
 
+  if (item.source === "AHA" || /algorithm|guideline/i.test(item.title)) {
+    return "guideline";
+  }
+
   if (item.source === "DailyMed" || item.source === "FDA" || /label dose/i.test(item.title)) {
     return "label";
   }
@@ -1770,6 +2103,10 @@ function getReferenceType(item) {
 }
 
 function getReferenceTypeBadge(type) {
+  if (type === "guideline") {
+    return '<span class="reference-badge is-guideline">Guideline</span>';
+  }
+
   if (type === "label") {
     return '<span class="reference-badge is-label">Label</span>';
   }
@@ -1852,6 +2189,103 @@ function getDisplaySourceLabel(rawSource) {
   return source;
 }
 
+function extractReferenceYears(text) {
+  if (typeof text !== "string" || !text.trim()) {
+    return [];
+  }
+
+  const matches = text.match(/\b(19|20)\d{2}\b/g);
+  return matches ? Array.from(new Set(matches)) : [];
+}
+
+function getReferenceSourceYear(item) {
+  if (!item) {
+    return "";
+  }
+
+  if (item.sourceYear) {
+    return String(item.sourceYear);
+  }
+
+  const candidateYears = [
+    ...extractReferenceYears(item.title),
+    ...extractReferenceYears(item.url)
+  ];
+
+  return candidateYears.length ? candidateYears[0] : "";
+}
+
+function getReferenceMetaText(item) {
+  if (!item) {
+    return "";
+  }
+
+  const sourceLine = item.source
+    ? `<span class="reference-summary-meta-line reference-summary-meta-source">${item.source}</span>`
+    : "";
+  const secondaryParts = [];
+  const sourceYear = getReferenceSourceYear(item);
+
+  if (sourceYear) {
+    secondaryParts.push(`${t("source_year")}: ${sourceYear}`);
+  }
+
+  if (item.lastReviewed) {
+    secondaryParts.push(`${t("last_reviewed")}: ${item.lastReviewed}`);
+  }
+
+  const secondaryLine = secondaryParts.length
+    ? `<span class="reference-summary-meta-line reference-summary-meta-secondary">${secondaryParts.join(" · ")}</span>`
+    : "";
+
+  return `${sourceLine}${secondaryLine}`;
+}
+
+function getReferenceDisclaimer(item) {
+  const type = getReferenceType(item);
+  const isEnglish = currentLanguage === "en";
+
+  if (type === "label") {
+    return isEnglish
+      ? "Label references reflect approved prescribing information. Confirm concentration, indication, and local protocol before use."
+      : "Label reference는 허가사항 기반 자료입니다. 실제 사용 전 농도, 적응증, 기관 프로토콜을 함께 확인하세요.";
+  }
+
+  if (type === "guideline") {
+    return isEnglish
+      ? "Guideline references summarize official algorithm or society recommendations, but they still require patient-specific interpretation and protocol alignment."
+      : "Guideline reference는 공식 algorithm 또는 학회 권고를 요약한 자료이지만, 실제 적용에는 환자 상태와 기관 프로토콜을 함께 반영해야 합니다.";
+  }
+
+  if (type === "study") {
+    return isEnglish
+      ? "Study-specific references describe selected protocols or research settings and should not be treated as universal dosing standards."
+      : "Study-specific reference는 특정 연구 프로토콜 또는 제한된 연구 환경을 반영하므로, 절대적 표준 용법으로 해석하면 안 됩니다.";
+  }
+
+  return isEnglish
+    ? "Clinical references describe common practice patterns or selected educational summaries and should be checked against the original source and local protocol."
+    : "Clinical reference는 관행적 사용이나 교육용 요약을 반영하므로, 원문과 기관 프로토콜을 함께 확인해야 합니다.";
+}
+
+function getReferenceDetailMetadataMarkup(item) {
+  const detailRows = [];
+
+  if (item.referenceContext) {
+    detailRows.push(`<p class="reference-detail-meta"><strong>${t("reference_context")}:</strong> ${item.referenceContext}</p>`);
+  }
+
+  if (item.checkSection) {
+    detailRows.push(`<p class="reference-detail-meta"><strong>${t("reference_check_section")}:</strong> ${item.checkSection}</p>`);
+  }
+
+  if (!detailRows.length) {
+    return "";
+  }
+
+  return `<div class="reference-detail-grid">${detailRows.join("")}</div>`;
+}
+
 function renderUseCaseBadge(container, drug) {
   if (!container) {
     return;
@@ -1899,10 +2333,12 @@ function renderReferenceList(container, referenceIds) {
   }
 
   container.innerHTML = referenceItems.map(function (item) {
-    const reviewedStr = `<span class="reference-reviewed">(Reviewed: ${item.lastReviewed})</span>`;
     const badgeStr = getReferenceTypeBadge(getReferenceType(item));
+    const metaText = getReferenceMetaText(item);
+    const detailMetadataMarkup = getReferenceDetailMetadataMarkup(item);
+    const hasExpandedDetail = Boolean(item.usageNote || detailMetadataMarkup);
 
-    if (item.usageNote) {
+    if (hasExpandedDetail) {
       return `<li class="reference-item">
                 <details class="reference-details">
                   <summary class="reference-summary">
@@ -1910,11 +2346,12 @@ function renderReferenceList(container, referenceIds) {
                       <span class="reference-summary-title">${item.title}</span>
                       ${badgeStr}
                     </span>
-                    <span class="reference-summary-meta">${item.source} ${reviewedStr}</span>
+                    <span class="reference-summary-meta">${metaText}</span>
                   </summary>
                   <div class="reference-detail-body">
-                    <p class="reference-usage-note"><strong>Usage note:</strong> ${item.usageNote}</p>
-                    <p class="reference-disclaimer">Clinical and study-based references describe common practice patterns or selected study settings. They should not be treated as universal dosing standards without protocol review.</p>
+                    ${detailMetadataMarkup}
+                    ${item.usageNote ? `<p class="reference-usage-note"><strong>${t("usage_note")}:</strong> ${item.usageNote}</p>` : ""}
+                    <p class="reference-disclaimer">${getReferenceDisclaimer(item)}</p>
                     <a class="reference-external-link" href="${item.url}" target="_blank" rel="noreferrer">${item.linkLabel || "Open reference"}</a>
                   </div>
                 </details>
@@ -1926,7 +2363,7 @@ function renderReferenceList(container, referenceIds) {
                 <span class="reference-summary-title">${item.title}</span>
                 ${badgeStr}
               </span>
-              <span class="reference-summary-meta">${item.source} ${reviewedStr}</span>
+              <span class="reference-summary-meta">${metaText}</span>
               <a class="reference-external-link" href="${item.url}" target="_blank" rel="noreferrer">${item.linkLabel || "Open reference"}</a>
             </li>`;
   }).join("");
@@ -3358,6 +3795,12 @@ const PEDIATRIC_DRUG_PRESETS = [
   }
 ];
 
+const PEDIATRIC_EMERGENCY_REFERENCE_IDS = [
+  "pediatric_emergency_cardiac_arrest_aha",
+  "pediatric_emergency_bradycardia_aha",
+  "pediatric_emergency_tachycardia_aha"
+];
+
 function getDefaultDrugPreset() {
   return DRUG_PRESETS[0];
 }
@@ -3494,6 +3937,7 @@ function createDefaultSingleDrugState() {
   return {
     selectedDrugId: getDefaultDrugPreset().id,
     activeMode: "dose-to-rate",
+    viewMode: "quick",
     nitroglycerinDoseUnitView: "mcg/min",
     favoriteDrugIds: [],
     recentDrugIds: [],
@@ -3543,6 +3987,10 @@ function sanitizeSelectedDrugId(value) {
 function sanitizeActiveMode(value) {
   const allowedModes = ["dose-to-rate", "rate-to-dose"];
   return allowedModes.includes(value) ? value : "dose-to-rate";
+}
+
+function sanitizeInfusionLayoutMode(value) {
+  return ["quick", "full"].includes(value) ? value : "quick";
 }
 
 function sanitizeNitroglycerinDoseUnitView(value) {
@@ -3678,6 +4126,7 @@ function normalizeSingleDrugState(rawState) {
   return {
     selectedDrugId: selectedDrugId,
     activeMode: sanitizeActiveMode(source.activeMode),
+    viewMode: sanitizeInfusionLayoutMode(source.viewMode),
     nitroglycerinDoseUnitView: sanitizeNitroglycerinDoseUnitView(source.nitroglycerinDoseUnitView),
     favoriteDrugIds: normalizeQuickDrugIds(source.favoriteDrugIds),
     recentDrugIds: normalizeQuickDrugIds(source.recentDrugIds),
@@ -3725,6 +4174,7 @@ function createDefaultPediatricDoseState() {
     showUnverifiedPresets: false,
     inputs: {
       weight: "",
+      emergencyWeight: "",
       ageGroup: "child",
       airwayAgeYears: "",
       airwayWeight: "",
@@ -3892,7 +4342,7 @@ function sanitizePediatricSelectedDrugId(value) {
 }
 
 function sanitizePediatricActiveMode(value) {
-  return ["dosing", "airway"].includes(value) ? value : "dosing";
+  return ["dosing", "airway", "emergency"].includes(value) ? value : "dosing";
 }
 
 function normalizePediatricDrugSetting(rawSetting, defaultSetting) {
@@ -3928,6 +4378,7 @@ function normalizePediatricDoseState(rawState) {
     showUnverifiedPresets: Boolean(source.showUnverifiedPresets),
     inputs: {
       weight: sanitizeString(rawInputs.weight, fallback.inputs.weight),
+      emergencyWeight: sanitizeString(rawInputs.emergencyWeight, fallback.inputs.emergencyWeight),
       airwayAgeYears: sanitizeString(rawInputs.airwayAgeYears, fallback.inputs.airwayAgeYears),
       airwayWeight: sanitizeString(rawInputs.airwayWeight, fallback.inputs.airwayWeight),
       airwayDeviceCategory: ["ett", "supraglottic", "oral-airway", "nasal-airway", "laryngoscope", "face-mask"].includes(rawInputs.airwayDeviceCategory)
@@ -4133,6 +4584,11 @@ function getActiveInfusionMode() {
   return selectedTab ? selectedTab.dataset.infusionModeTab : "dose-to-rate";
 }
 
+function getActiveInfusionLayoutMode() {
+  const selectedTab = document.querySelector("[data-infusion-layout-tab].is-active");
+  return selectedTab ? sanitizeInfusionLayoutMode(selectedTab.dataset.infusionLayoutTab) : "quick";
+}
+
 function getCurrentDrugSettings() {
   return getSingleDrugState().drugSettings[drugSelect.value] || createDefaultDrugSettings()[drugSelect.value];
 }
@@ -4240,6 +4696,7 @@ function readSingleDrugSelectionFromView() {
   return {
     selectedDrugId: sanitizeSelectedDrugId(drugSelect.value),
     activeMode: sanitizeActiveMode(getActiveInfusionMode()),
+    viewMode: sanitizeInfusionLayoutMode(getActiveInfusionLayoutMode()),
     nitroglycerinDoseUnitView: getSelectedNitroglycerinDoseView()
   };
 }
@@ -4292,6 +4749,7 @@ function createSingleDrugStateFromView(baseState) {
   return {
     selectedDrugId: selection.selectedDrugId,
     activeMode: selection.activeMode,
+    viewMode: selection.viewMode,
     nitroglycerinDoseUnitView: selection.nitroglycerinDoseUnitView,
     favoriteDrugIds: source.favoriteDrugIds,
     recentDrugIds: source.recentDrugIds,
@@ -4314,6 +4772,24 @@ function createInfusionCardStateFromView(baseCardState) {
 
 function commitSingleDrugStateFromView() {
   persistedState.singleDrug = createSingleDrugStateFromView(getSingleDrugState());
+  savePersistedState(persistedState);
+}
+
+function commitSingleDrugInputsFromView() {
+  const source = normalizeSingleDrugState(getSingleDrugState());
+  const selection = readSingleDrugSelectionFromView();
+
+  persistedState.singleDrug = normalizeSingleDrugState({
+    ...source,
+    selectedDrugId: selection.selectedDrugId,
+    activeMode: selection.activeMode,
+    viewMode: selection.viewMode,
+    nitroglycerinDoseUnitView: selection.nitroglycerinDoseUnitView,
+    inputs: readSingleDrugInputsFromView(
+      selection.selectedDrugId,
+      selection.nitroglycerinDoseUnitView
+    )
+  });
   savePersistedState(persistedState);
 }
 
@@ -4360,6 +4836,10 @@ function applySingleDrugStateToView(singleDrugState) {
   if (nitroglycerinDoseViewSelect) {
     nitroglycerinDoseViewSelect.value = normalizedState.nitroglycerinDoseUnitView;
   }
+  activateInfusionLayoutMode(normalizedState.viewMode, {
+    persist: false,
+    refresh: false
+  });
 }
 
 function recordRecentDrug(drugId) {
@@ -4466,6 +4946,7 @@ function applyPediatricDoseStateToView(pediatricDoseState) {
     : t("show_unverified_presets");
   pediatricDrugSelect.value = getPediatricSelectValueFromState(normalizedState);
   pediatricInputs.weight.value = normalizedState.inputs.weight;
+  pediatricInputs.emergencyWeight.value = normalizedState.inputs.emergencyWeight;
   pediatricInputs.ageGroup.value = normalizedState.inputs.ageGroup;
   pediatricInputs.airwayAgeYears.value = normalizedState.inputs.airwayAgeYears;
   pediatricInputs.airwayWeight.value = normalizedState.inputs.airwayWeight;
@@ -4506,20 +4987,72 @@ function activateCalculator(calculatorId) {
 }
 
 function activateInfusionMode(modeId) {
+  const normalizedModeId = sanitizeActiveMode(modeId);
+
   infusionModeTabs.forEach(function (tab) {
-    const isActive = tab.dataset.infusionModeTab === modeId;
+    const isActive = tab.dataset.infusionModeTab === normalizedModeId;
     tab.classList.toggle("is-active", isActive);
     tab.setAttribute("aria-selected", String(isActive));
   });
 
   infusionModePanels.forEach(function (panel) {
-    const isActive = panel.dataset.infusionModePanel === modeId;
+    const isActive = panel.dataset.infusionModePanel === normalizedModeId;
     panel.classList.toggle("hidden", !isActive);
   });
 
   updateSingleDrugState({
-    activeMode: sanitizeActiveMode(modeId)
+    activeMode: normalizedModeId
   });
+  updateInfusionQuickSliders();
+  refreshInfusionResultForCurrentMode({
+    showValidation: false
+  });
+}
+
+function activateInfusionLayoutMode(modeId, options) {
+  const normalizedModeId = sanitizeInfusionLayoutMode(modeId);
+  const shouldPersist = !options || options.persist !== false;
+  const shouldRefresh = !options || options.refresh !== false;
+  const isQuickMode = normalizedModeId === "quick";
+
+  infusionLayoutTabs.forEach(function (tab) {
+    const isActive = tab.dataset.infusionLayoutTab === normalizedModeId;
+    tab.classList.toggle("is-active", isActive);
+    tab.setAttribute("aria-selected", String(isActive));
+  });
+
+  if (infusionSingleDrugPanel) {
+    infusionSingleDrugPanel.classList.toggle("is-quick-mode", isQuickMode);
+    infusionSingleDrugPanel.classList.toggle("is-full-mode", !isQuickMode);
+  }
+
+  if (infusionQuickModeHint) {
+    infusionQuickModeHint.classList.toggle("hidden", !isQuickMode);
+  }
+
+  if (calculateButton) {
+    calculateButton.classList.toggle("hidden", isQuickMode);
+  }
+
+  updateInfusionQuickSliders();
+
+  if (shouldPersist) {
+    updateSingleDrugState({
+      viewMode: normalizedModeId
+    });
+  }
+
+  if (!shouldRefresh) {
+    return;
+  }
+
+  if (isQuickMode) {
+    maybeRenderLiveInfusionResult({
+      showValidation: false
+    });
+    return;
+  }
+
   clearResult();
   errorMessage.textContent = "";
 }
@@ -4688,6 +5221,7 @@ function updateDrugUI() {
     ? t("drug_help_custom")
     : t("drug_help_selected", { drug: selectedDrug.name });
   updateQuickDrugUI();
+  updateInfusionQuickSliders();
 }
 
 function updatePediatricDrugUI() {
@@ -5044,6 +5578,398 @@ function validateInfusionValues(values) {
   return "";
 }
 
+function hasStartedQuickInfusionInput(values) {
+  if (values.mode === "dose-to-rate" && inputs.targetDose.value.trim() !== "") {
+    return true;
+  }
+
+  if (values.mode === "rate-to-dose" && inputs.pumpRate.value.trim() !== "") {
+    return true;
+  }
+
+  if (drugSelect.value === "custom" && inputs.concentration.value.trim() !== "") {
+    return true;
+  }
+
+  return false;
+}
+
+function maybeRenderLiveInfusionResult(options) {
+  const normalizedOptions = options || {};
+
+  if (getActiveInfusionLayoutMode() !== "quick") {
+    return false;
+  }
+
+  const values = readInfusionFormValues();
+  const validationError = validateInfusionValues(values);
+  const shouldShowValidation = normalizedOptions.showValidation !== false;
+
+  if (validationError) {
+    clearResult();
+    errorMessage.textContent = shouldShowValidation && hasStartedQuickInfusionInput(values)
+      ? validationError
+      : "";
+    return false;
+  }
+
+  errorMessage.textContent = "";
+  clearResult();
+
+  if (values.mode === "rate-to-dose") {
+    showRateToDoseResult(values);
+    return true;
+  }
+
+  showDoseToRateResult(values);
+  return true;
+}
+
+function refreshInfusionResultForCurrentMode(options) {
+  if (getActiveInfusionLayoutMode() === "quick") {
+    maybeRenderLiveInfusionResult(options);
+    return;
+  }
+
+  clearResult();
+  errorMessage.textContent = "";
+}
+
+function getAdaptiveQuickStep(value) {
+  const absValue = Math.abs(Number(value));
+
+  if (!Number.isFinite(absValue) || absValue === 0) {
+    return 0.1;
+  }
+
+  if (absValue >= 100) {
+    return 10;
+  }
+
+  if (absValue >= 20) {
+    return 5;
+  }
+
+  if (absValue >= 5) {
+    return 0.5;
+  }
+
+  if (absValue >= 1) {
+    return 0.1;
+  }
+
+  if (absValue >= 0.2) {
+    return 0.05;
+  }
+
+  if (absValue >= 0.05) {
+    return 0.01;
+  }
+
+  return 0.005;
+}
+
+function getStepPrecision(stepValue) {
+  const stepText = String(stepValue);
+  return stepText.includes(".") ? stepText.split(".")[1].length : 0;
+}
+
+function clampNumber(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getInfusionQuickInput(fieldKey) {
+  switch (fieldKey) {
+    case "weight":
+      return inputs.weight;
+    case "concentration":
+      return inputs.concentration;
+    case "targetDose":
+      return inputs.targetDose;
+    case "pumpRate":
+      return inputs.pumpRate;
+    default:
+      return null;
+  }
+}
+
+function getInfusionQuickFallbackValue(fieldKey) {
+  if (fieldKey === "weight") {
+    return 60;
+  }
+
+  if (fieldKey === "concentration") {
+    return Number(getCurrentDrugSettings().concentration) || Number(getSelectedDrugDefinition().concentration) || 1;
+  }
+
+  if (fieldKey === "pumpRate") {
+    return Number(inputs.pumpRate.value) || 1;
+  }
+
+  if (fieldKey === "targetDose") {
+    const selectedDrug = getSelectedDrugDefinition();
+    const weightValue = Number(inputs.weight.value);
+    const displayDoseUnit = getDisplayDoseUnit(selectedDrug, weightValue, getSelectedNitroglycerinDoseView());
+    const referenceMin = convertDoseValueForDisplay(selectedDrug.referenceRange.min || 0, selectedDrug, weightValue, displayDoseUnit);
+    const referenceMax = convertDoseValueForDisplay(selectedDrug.referenceRange.max || 0, selectedDrug, weightValue, displayDoseUnit);
+
+    if (isPositiveNumber(referenceMin) && isPositiveNumber(referenceMax)) {
+      return (referenceMin + referenceMax) / 2;
+    }
+
+    return Number(inputs.targetDose.value) || 0.1;
+  }
+
+  return 0.1;
+}
+
+function getInfusionQuickStep(fieldKey) {
+  if (fieldKey === "weight") {
+    return 5;
+  }
+
+  return getAdaptiveQuickStep(getInfusionQuickFallbackValue(fieldKey));
+}
+
+function formatQuickSliderBound(value, unit, precision) {
+  const digits = precision === undefined ? 0 : precision;
+  return `${Number(value).toFixed(digits)} ${unit}`;
+}
+
+function getQuickWeightSliderConfig() {
+  const currentWeight = Number(inputs.weight.value);
+  let min = 20;
+  let max = 140;
+
+  if (isPositiveNumber(currentWeight) && currentWeight < min) {
+    min = Math.max(1, Math.floor(currentWeight / 5) * 5 || 1);
+  }
+
+  if (isPositiveNumber(currentWeight) && currentWeight > max) {
+    max = Math.ceil((currentWeight + 10) / 10) * 10;
+  }
+
+  const value = clampNumber(isPositiveNumber(currentWeight) ? currentWeight : 70, min, max);
+
+  return {
+    hidden: getActiveInfusionLayoutMode() !== "quick",
+    min: min,
+    max: max,
+    step: 1,
+    value: value,
+    minLabel: formatQuickSliderBound(min, "kg", 0),
+    maxLabel: formatQuickSliderBound(max, "kg", 0)
+  };
+}
+
+function getQuickDoseSliderConfig() {
+  const selectedDrug = getSelectedDrugDefinition();
+  const currentSettings = getCurrentDrugSettings();
+  const weightValue = Number(inputs.weight.value);
+  const displayDoseUnit = getDisplayDoseUnit(selectedDrug, weightValue, getSelectedNitroglycerinDoseView());
+  const canonicalDoseList = parseDoseList(currentSettings.referenceDoseList) || selectedDrug.referenceDoses || null;
+  const displayDoseList = canonicalDoseList
+    ? convertDoseListForDisplay(canonicalDoseList, selectedDrug, weightValue, displayDoseUnit)
+    : null;
+  const currentTargetDose = Number(inputs.targetDose.value);
+  const fallbackTargetDose = getInfusionQuickFallbackValue("targetDose");
+  let min = displayDoseList ? Math.min.apply(null, displayDoseList) : convertDoseValueForDisplay(selectedDrug.referenceRange.min || 0, selectedDrug, weightValue, displayDoseUnit);
+  let max = displayDoseList ? Math.max.apply(null, displayDoseList) : convertDoseValueForDisplay(selectedDrug.referenceRange.max || 0, selectedDrug, weightValue, displayDoseUnit);
+
+  if (isNitroglycerinDrug(selectedDrug) && displayDoseUnit === "mcg/kg/min" && !isPositiveNumber(weightValue)) {
+    return {
+      hidden: true
+    };
+  }
+
+  if (isNitroglycerinDrug(selectedDrug) && displayDoseUnit === "mcg/kg/min") {
+    const anchor = isPositiveNumber(currentTargetDose) ? currentTargetDose : fallbackTargetDose;
+    const min = Math.max(0.001, anchor * 0.25);
+    const max = Math.max(min + 0.01, anchor * 2.5);
+    const step = getAdaptiveQuickStep(anchor);
+    const precision = Math.min(getStepPrecision(step), 3);
+    const value = clampNumber(anchor, min, max);
+
+    return {
+      hidden: getActiveInfusionLayoutMode() !== "quick" || getActiveInfusionMode() !== "dose-to-rate",
+      min: min,
+      max: max,
+      step: step,
+      value: value,
+      precision: precision,
+      minLabel: formatQuickSliderBound(min, displayDoseUnit, precision),
+      maxLabel: formatQuickSliderBound(max, displayDoseUnit, precision)
+    };
+  }
+
+  if (!isPositiveNumber(min) || !isPositiveNumber(max) || max <= min) {
+    const anchor = isPositiveNumber(currentTargetDose) ? currentTargetDose : fallbackTargetDose;
+    min = Math.max(0.001, anchor * 0.2);
+    max = anchor * 2.5;
+  }
+
+  const step = getAdaptiveQuickStep((min + max) / 2);
+  const precision = Math.min(getStepPrecision(step), 3);
+  const value = clampNumber(
+    isPositiveNumber(currentTargetDose) ? currentTargetDose : fallbackTargetDose,
+    min,
+    max
+  );
+
+  return {
+    hidden: getActiveInfusionLayoutMode() !== "quick" || getActiveInfusionMode() !== "dose-to-rate",
+    min: min,
+    max: max,
+    step: step,
+    value: value,
+    precision: precision,
+    minLabel: formatQuickSliderBound(min, displayDoseUnit, precision),
+    maxLabel: formatQuickSliderBound(max, displayDoseUnit, precision)
+  };
+}
+
+function getQuickPumpRateSliderConfig() {
+  const selectedDrug = getSelectedDrugDefinition();
+  const currentSettings = getCurrentDrugSettings();
+  const weightValue = Number(inputs.weight.value);
+  const referenceRange = selectedDrug.referenceRange || null;
+  const usesWeight = isWeightBasedReferenceRange(referenceRange);
+  const concentrationValue = Number(inputs.concentration.value) || Number(getCurrentDrugSettings().concentration) || Number(selectedDrug.concentration);
+  const currentPumpRate = Number(inputs.pumpRate.value);
+  const fallbackPumpRate = getInfusionQuickFallbackValue("pumpRate");
+  const canonicalDoseList = parseDoseList(currentSettings.referenceDoseList) || selectedDrug.referenceDoses || [];
+  let min = 0;
+  let max = 0;
+
+  if (isPositiveNumber(concentrationValue) && (!usesWeight || isPositiveNumber(weightValue))) {
+    if (canonicalDoseList.length) {
+      min = doseToRate(weightValue, concentrationValue, Math.min.apply(null, canonicalDoseList), referenceRange);
+      max = doseToRate(weightValue, concentrationValue, Math.max.apply(null, canonicalDoseList), referenceRange);
+    } else if (isPositiveNumber(referenceRange.min) && isPositiveNumber(referenceRange.max)) {
+      min = doseToRate(weightValue, concentrationValue, referenceRange.min, referenceRange);
+      max = doseToRate(weightValue, concentrationValue, referenceRange.max, referenceRange);
+    }
+  }
+
+  if (!isPositiveNumber(min) || !isPositiveNumber(max) || max <= min) {
+    const anchor = isPositiveNumber(currentPumpRate) ? currentPumpRate : fallbackPumpRate;
+    min = Math.max(0.1, anchor * 0.2);
+    max = Math.max(min + 1, anchor * 2.5);
+  }
+
+  const step = getAdaptiveQuickStep((min + max) / 2);
+  const precision = Math.min(getStepPrecision(step), 2);
+  const value = clampNumber(
+    isPositiveNumber(currentPumpRate) ? currentPumpRate : fallbackPumpRate,
+    min,
+    max
+  );
+
+  return {
+    hidden: getActiveInfusionLayoutMode() !== "quick" || getActiveInfusionMode() !== "rate-to-dose",
+    min: min,
+    max: max,
+    step: step,
+    value: value,
+    precision: precision,
+    minLabel: formatQuickSliderBound(min, "mL/hr", precision),
+    maxLabel: formatQuickSliderBound(max, "mL/hr", precision)
+  };
+}
+
+function applyQuickSliderConfig(wrapper, slider, minLabelEl, maxLabelEl, config) {
+  if (!wrapper || !slider || !minLabelEl || !maxLabelEl) {
+    return;
+  }
+
+  if (!config || config.hidden) {
+    wrapper.classList.add("hidden");
+    return;
+  }
+
+  wrapper.classList.remove("hidden");
+  slider.min = String(config.min);
+  slider.max = String(config.max);
+  slider.step = String(config.step);
+  slider.value = String(config.value);
+  slider.dataset.sliderPrecision = String(config.precision || 0);
+  minLabelEl.textContent = config.minLabel;
+  maxLabelEl.textContent = config.maxLabel;
+}
+
+function updateInfusionQuickSliders() {
+  applyQuickSliderConfig(
+    quickWeightSliderWrap,
+    quickWeightSlider,
+    quickWeightSliderMin,
+    quickWeightSliderMax,
+    getQuickWeightSliderConfig()
+  );
+  applyQuickSliderConfig(
+    quickTargetDoseSliderWrap,
+    quickTargetDoseSlider,
+    quickTargetDoseSliderMin,
+    quickTargetDoseSliderMax,
+    getQuickDoseSliderConfig()
+  );
+  applyQuickSliderConfig(
+    quickPumpRateSliderWrap,
+    quickPumpRateSlider,
+    quickPumpRateSliderMin,
+    quickPumpRateSliderMax,
+    getQuickPumpRateSliderConfig()
+  );
+}
+
+function adjustInfusionQuickInput(fieldKey, direction) {
+  const input = getInfusionQuickInput(fieldKey);
+
+  if (!input) {
+    return;
+  }
+
+  const stepValue = getInfusionQuickStep(fieldKey);
+  const precision = getStepPrecision(stepValue);
+  const currentValue = Number(input.value);
+  const fallbackValue = getInfusionQuickFallbackValue(fieldKey);
+  const baseValue = isPositiveNumber(currentValue) ? currentValue : fallbackValue;
+  const nextValue = baseValue + (stepValue * direction);
+
+  input.value = nextValue > 0
+    ? Number(nextValue.toFixed(precision)).toString()
+    : "";
+
+  commitSingleDrugInputsFromView();
+  updateDrugUI();
+  refreshInfusionResultForCurrentMode({
+    showValidation: true
+  });
+  input.focus();
+}
+
+function handleInfusionQuickSliderInput(event) {
+  const slider = event.target.closest("[data-infusion-slider-target]");
+
+  if (!slider) {
+    return;
+  }
+
+  const fieldKey = slider.dataset.infusionSliderTarget;
+  const input = getInfusionQuickInput(fieldKey);
+  const precision = Number(slider.dataset.sliderPrecision || "0");
+
+  if (!input) {
+    return;
+  }
+
+  input.value = Number(slider.value).toFixed(precision).replace(/\.0+$/, "").replace(/(\.\d*?)0+$/, "$1");
+  commitSingleDrugInputsFromView();
+  updateDrugUI();
+  refreshInfusionResultForCurrentMode({
+    showValidation: true
+  });
+}
+
 function readPediatricFormValues() {
   if (getActivePediatricMode() === "airway") {
     return {
@@ -5052,6 +5978,13 @@ function readPediatricFormValues() {
       weight: Number(pediatricInputs.airwayWeight.value),
       deviceCategory: pediatricInputs.airwayDeviceCategory.value,
       deviceModel: pediatricInputs.airwayDeviceModel.value
+    };
+  }
+
+  if (getActivePediatricMode() === "emergency") {
+    return {
+      mode: "emergency",
+      weight: Number(pediatricInputs.emergencyWeight.value)
     };
   }
 
@@ -5087,6 +6020,14 @@ function validatePediatricValues(values) {
       && !isPositiveNumber(values.ageYears)
       && !isPositiveNumber(values.weight)) {
       return t("validation_airway_age_or_weight");
+    }
+
+    return "";
+  }
+
+  if (values.mode === "emergency") {
+    if (!isPositiveNumber(values.weight)) {
+      return t("validation_pediatric_emergency_weight");
     }
 
     return "";
@@ -5176,6 +6117,51 @@ function clearResult() {
     resultUseCaseText.textContent = "-";
   }
   applyRangeSourceTheme(resultCard, null);
+  clearQuickResultPreview();
+}
+
+function clearQuickResultPreview() {
+  if (!quickResultPreview) {
+    return;
+  }
+
+  quickResultPreview.classList.add("hidden");
+  quickResultPreview.classList.remove("is-warning");
+  quickResultLabel.textContent = t("quick_live_result");
+  quickPrimaryResult.textContent = "0.00 mL/hr";
+  quickSecondaryResultLabel.textContent = t("supporting_information");
+  quickSecondaryResult.textContent = "-";
+  quickResultContext.textContent = "-";
+  quickConcentrationResult.textContent = "";
+
+  if (quickResultBadge) {
+    quickResultBadge.innerHTML = "";
+  }
+}
+
+function renderQuickResultPreview(config) {
+  if (!quickResultPreview) {
+    return;
+  }
+
+  if (getActiveInfusionLayoutMode() !== "quick") {
+    clearQuickResultPreview();
+    return;
+  }
+
+  quickResultLabel.textContent = t("quick_live_result");
+  quickPrimaryResult.textContent = config.primary;
+  quickSecondaryResultLabel.textContent = config.secondaryLabel;
+  quickSecondaryResult.textContent = config.secondary;
+  quickResultContext.textContent = config.context;
+  quickConcentrationResult.textContent = config.meta;
+  quickResultPreview.classList.toggle("is-warning", Boolean(config.isWarning));
+
+  if (quickResultBadge) {
+    quickResultBadge.innerHTML = config.badgeMarkup || "";
+  }
+
+  quickResultPreview.classList.remove("hidden");
 }
 
 function clearPediatricResult() {
@@ -5201,6 +6187,12 @@ function clearPediatricResult() {
   pediatricAirwayReferenceList.innerHTML = "";
   pediatricAirwayResultWarning.textContent = t("pediatric_airway_warning_default");
   pediatricAirwayWarning.textContent = getPediatricAirwayWarningText(pediatricInputs.airwayDeviceCategory.value);
+  pediatricEmergencyResultCard.classList.add("hidden");
+  pediatricEmergencyPrimaryResult.textContent = "-";
+  pediatricEmergencyContext.textContent = "";
+  pediatricEmergencyDoseGrid.innerHTML = "";
+  pediatricEmergencyReferenceList.innerHTML = "";
+  pediatricEmergencyResultWarning.textContent = t("pediatric_emergency_warning_default");
 }
 
 function clearDantroleneResult() {
@@ -5279,6 +6271,15 @@ function showDoseToRateResult(values) {
     ? t("infusion_result_out_of_range")
     : t("infusion_result_reference_only");
   resultCard.classList.remove("hidden");
+  renderQuickResultPreview({
+    primary: `${formatNumber(rate, 2)} mL/hr`,
+    secondaryLabel: t("target_dose"),
+    secondary: formatInfusionDoseDisplay(displayedTargetDose, doseUnit, values.drug, values.weight),
+    context: getDrugUseCaseSummary(values.drug),
+    meta: concentrationResult.textContent,
+    badgeMarkup: resultRangeBadge ? resultRangeBadge.innerHTML : "",
+    isWarning: isOutOfRange
+  });
 }
 
 function showRateToDoseResult(values) {
@@ -5332,6 +6333,15 @@ function showRateToDoseResult(values) {
     ? t("infusion_result_out_of_range")
     : t("infusion_result_reference_only");
   resultCard.classList.remove("hidden");
+  renderQuickResultPreview({
+    primary: formatInfusionDoseDisplay(displayedDose, doseUnit, values.drug, values.weight),
+    secondaryLabel: t("pump_rate"),
+    secondary: `${formatNumber(values.pumpRate, 2)} mL/hr`,
+    context: getDrugUseCaseSummary(values.drug),
+    meta: concentrationResult.textContent,
+    badgeMarkup: resultRangeBadge ? resultRangeBadge.innerHTML : "",
+    isWarning: isOutOfRange
+  });
 }
 
 function showReferenceTableResult(values) {
@@ -5600,6 +6610,37 @@ function showPediatricAirwayResult(values) {
   pediatricAirwayResultCard.classList.remove("hidden");
 }
 
+function showPediatricEmergencyResult(values) {
+  const cards = getPediatricEmergencyCards(values.weight);
+  const isEnglish = currentLanguage === "en";
+
+  pediatricEmergencyPrimaryResult.textContent = `${formatNumber(values.weight, 1)} kg`;
+  pediatricEmergencyContext.textContent = isEnglish
+    ? "Core weight-based doses from official PALS algorithms."
+    : "공식 PALS algorithm 기반 핵심 weight-based dose를 빠르게 보여줍니다.";
+  pediatricEmergencyDoseGrid.innerHTML = cards.map(function (card) {
+    const noteMarkup = card.note
+      ? `<details class="context-disclosure context-disclosure-compact emergency-dose-disclosure">
+           <summary class="context-disclosure-summary">${t("view_emergency_note")}</summary>
+           <div class="context-disclosure-content">
+             <p class="emergency-dose-note">${card.note}</p>
+           </div>
+         </details>`
+      : "";
+
+    return `<article class="emergency-dose-card">
+              <p class="emergency-dose-kicker">${card.context}</p>
+              <p class="pump-setting-label">${card.name}</p>
+              <p class="pump-setting-range">${card.primary}</p>
+              <p class="emergency-dose-secondary">${card.secondary}</p>
+              ${noteMarkup}
+            </article>`;
+  }).join("");
+  renderReferenceList(pediatricEmergencyReferenceList, PEDIATRIC_EMERGENCY_REFERENCE_IDS);
+  pediatricEmergencyResultWarning.textContent = t("pediatric_emergency_warning_default");
+  pediatricEmergencyResultCard.classList.remove("hidden");
+}
+
 function showDantroleneResult(values) {
   const initialDoseMg = calculateDantroleneDose(values.weight, values.initialDoseMgKg);
   const maxDoseMg = calculateDantroleneDose(values.weight, values.formulation.cumulativeMaxMgKg);
@@ -5679,20 +6720,25 @@ function handleDrugChange() {
   });
   recordRecentDrug(drugSelect.value);
   updateDrugUI();
-  clearResult();
-  errorMessage.textContent = "";
+  refreshInfusionResultForCurrentMode({
+    showValidation: false
+  });
 }
 
 function handleSessionInputChange() {
-  commitSingleDrugStateFromView();
+  commitSingleDrugInputsFromView();
   updateDrugUI();
-  clearResult();
+  refreshInfusionResultForCurrentMode({
+    showValidation: true
+  });
 }
 
 function handleDrugSettingsChange() {
   commitSingleDrugStateFromView();
   updateDrugUI();
-  clearResult();
+  refreshInfusionResultForCurrentMode({
+    showValidation: true
+  });
 }
 
 function handleNitroglycerinDoseViewChange() {
@@ -5750,8 +6796,9 @@ function handleNitroglycerinDoseViewChange() {
   });
   commitSingleDrugStateFromView();
   updateDrugUI();
-  clearResult();
-  errorMessage.textContent = "";
+  refreshInfusionResultForCurrentMode({
+    showValidation: true
+  });
 }
 
 function handleFavoriteDrugToggle() {
@@ -5788,8 +6835,22 @@ function handleDilutionApply() {
   inputs.concentration.value = String(dilutionPreset.finalConcentration);
   commitSingleDrugStateFromView();
   updateDrugUI();
-  clearResult();
-  errorMessage.textContent = "";
+  refreshInfusionResultForCurrentMode({
+    showValidation: false
+  });
+}
+
+function handleInfusionQuickStepperClick(event) {
+  const quickStepperButton = event.target.closest("[data-infusion-step-target]");
+
+  if (!quickStepperButton) {
+    return;
+  }
+
+  adjustInfusionQuickInput(
+    quickStepperButton.dataset.infusionStepTarget,
+    Number(quickStepperButton.dataset.infusionStepDirection) || 1
+  );
 }
 
 function setLanguage(language) {
@@ -5805,6 +6866,9 @@ function setLanguage(language) {
   clearResult();
   clearPediatricResult();
   clearDantroleneResult();
+  maybeRenderLiveInfusionResult({
+    showValidation: false
+  });
 }
 
 function handlePediatricSubmit(event) {
@@ -5823,6 +6887,11 @@ function handlePediatricSubmit(event) {
   clearPediatricResult();
   if (values.mode === "airway") {
     showPediatricAirwayResult(values);
+    return;
+  }
+
+  if (values.mode === "emergency") {
+    showPediatricEmergencyResult(values);
     return;
   }
 
@@ -5868,6 +6937,7 @@ function handlePediatricInputChange() {
       : "",
     inputs: {
       weight: pediatricInputs.weight.value,
+      emergencyWeight: pediatricInputs.emergencyWeight.value,
       ageGroup: pediatricInputs.ageGroup.value,
       airwayAgeYears: pediatricInputs.airwayAgeYears.value,
       airwayWeight: pediatricInputs.airwayWeight.value,
@@ -6347,6 +7417,12 @@ infusionModeTabs.forEach(function (tab) {
   });
 });
 
+infusionLayoutTabs.forEach(function (tab) {
+  tab.addEventListener("click", function () {
+    activateInfusionLayoutMode(tab.dataset.infusionLayoutTab);
+  });
+});
+
 infusionViewTabs.forEach(function (tab) {
   tab.addEventListener("click", function () {
     activateInfusionView(tab.dataset.infusionViewTab);
@@ -6374,6 +7450,8 @@ if (nitroglycerinDoseViewSelect) {
   nitroglycerinDoseViewSelect.addEventListener("change", handleNitroglycerinDoseViewChange);
 }
 form.addEventListener("submit", handleSubmit);
+form.addEventListener("click", handleInfusionQuickStepperClick);
+form.addEventListener("input", handleInfusionQuickSliderInput);
 resetButton.addEventListener("click", resetInfusionForm);
 pediatricDrugSelect.addEventListener("change", handlePediatricDrugChange);
 pediatricInputs.ageGroup.addEventListener("change", handlePediatricInputChange);
@@ -6419,6 +7497,7 @@ pediatricInputs.concentrationUnit.addEventListener("change", function () {
 
 [
   pediatricInputs.weight,
+  pediatricInputs.emergencyWeight,
   pediatricInputs.ageGroup,
   pediatricInputs.concentration,
   pediatricInputs.airwayAgeYears,
@@ -6577,3 +7656,6 @@ renderInfusionWorkspace();
 clearResult();
 clearPediatricResult();
 clearDantroleneResult();
+maybeRenderLiveInfusionResult({
+  showValidation: false
+});

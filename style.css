@@ -212,6 +212,16 @@ body {
   border-top: 1px solid var(--border);
 }
 
+.support-legal.context-disclosure {
+  padding-top: 0;
+  border-top: 0;
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.support-legal .context-disclosure-content {
+  padding-top: 0;
+}
+
 .app-footer {
   max-width: 960px;
   margin: 4px auto 0;
@@ -301,6 +311,11 @@ body {
   gap: 20px;
 }
 
+.infusion-view-panel {
+  display: grid;
+  gap: 20px;
+}
+
 .calculator-heading {
   margin-bottom: 24px;
 }
@@ -348,6 +363,10 @@ body {
   margin-bottom: 18px;
 }
 
+.infusion-layout-selector {
+  margin-bottom: 12px;
+}
+
 .mode-option-button {
   position: relative;
   border: 1px solid rgba(216, 224, 234, 0.92);
@@ -375,6 +394,12 @@ body {
   box-shadow: 0 12px 24px rgba(15, 118, 110, 0.12);
 }
 
+.mode-option-button-secondary {
+  padding: 11px 16px;
+  border-radius: 16px;
+  font-size: 0.92rem;
+}
+
 .mode-option-button.is-active::before {
   content: "";
   position: absolute;
@@ -389,6 +414,39 @@ body {
   border: 1px solid var(--border);
   border-radius: 18px;
   background: var(--panel-soft);
+}
+
+.quick-result-preview {
+  padding: 18px 20px;
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(215, 243, 239, 0.72) 0%, rgba(255, 255, 255, 0.98) 100%);
+  box-shadow: 0 14px 28px rgba(15, 118, 110, 0.08);
+}
+
+.quick-result-preview.is-warning {
+  border-color: rgba(180, 35, 24, 0.22);
+  background: linear-gradient(180deg, rgba(254, 228, 226, 0.88) 0%, rgba(255, 255, 255, 0.98) 100%);
+}
+
+.quick-result-preview h2 {
+  margin: 0;
+  font-size: clamp(1.9rem, 4vw, 2.9rem);
+}
+
+.quick-result-context {
+  margin: 0 0 12px;
+  color: var(--text);
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+
+.quick-result-secondary {
+  margin-top: 14px;
+}
+
+.preset-summary > .context-disclosure {
+  margin-top: 10px;
 }
 
 .preset-summary-row {
@@ -473,6 +531,11 @@ body {
   border-top: 1px solid rgba(216, 224, 234, 0.75);
 }
 
+.context-disclosure-content h3 {
+  margin: 12px 0 0;
+  font-size: 0.98rem;
+}
+
 .context-disclosure-content .reference-note,
 .context-disclosure-content .helper-text {
   margin-top: 10px;
@@ -481,6 +544,10 @@ body {
 .context-disclosure-content .reference-note:first-child,
 .context-disclosure-content .helper-text:first-child {
   margin-top: 12px;
+}
+
+.result-card > .context-disclosure {
+  margin-top: 18px;
 }
 
 .mode-panels {
@@ -541,6 +608,62 @@ body {
 
 .drug-selector {
   margin-bottom: 22px;
+}
+
+.infusion-quick-hint {
+  margin: -8px 0 4px;
+}
+
+.quick-field {
+  position: relative;
+}
+
+.quick-stepper-row {
+  display: none;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.quick-slider-wrap {
+  display: none;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.quick-slider {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.quick-slider-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.quick-stepper-button {
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--accent-dark);
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(20, 32, 51, 0.05);
+}
+
+.quick-stepper-button:hover {
+  border-color: rgba(15, 118, 110, 0.3);
+  background: rgba(15, 118, 110, 0.08);
 }
 
 .quick-drug-actions {
@@ -648,12 +771,30 @@ body {
 }
 
 .reference-summary {
+  display: block;
+  position: relative;
+  padding-right: 20px;
   cursor: pointer;
   list-style: none;
 }
 
 .reference-summary::-webkit-details-marker {
   display: none;
+}
+
+.reference-summary::after {
+  content: "▾";
+  position: absolute;
+  top: 1px;
+  right: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  transition: transform 0.18s ease, color 0.18s ease;
+}
+
+.reference-details[open] .reference-summary::after {
+  transform: rotate(180deg);
+  color: var(--accent-dark);
 }
 
 .reference-summary-title {
@@ -671,10 +812,23 @@ body {
 }
 
 .reference-summary-meta {
-  display: block;
+  display: grid;
+  gap: 2px;
   margin-top: 4px;
   color: var(--muted);
   font-size: 0.84rem;
+}
+
+.reference-summary-meta-line {
+  display: block;
+}
+
+.reference-summary-meta-source {
+  color: var(--text-secondary);
+}
+
+.reference-summary-meta-secondary {
+  font-size: 0.79rem;
 }
 
 .reference-badge {
@@ -692,6 +846,12 @@ body {
   background: rgba(33, 94, 60, 0.14);
   border-color: rgba(33, 94, 60, 0.18);
   color: #215e3c;
+}
+
+.reference-badge.is-guideline {
+  background: rgba(10, 102, 74, 0.14);
+  border-color: rgba(10, 102, 74, 0.18);
+  color: #0a664a;
 }
 
 .reference-badge.is-clinical {
@@ -743,6 +903,23 @@ body {
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px solid var(--border);
+}
+
+.reference-detail-grid {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+
+.reference-detail-meta {
+  margin: 0;
+  padding: 6px 8px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  line-height: 1.45;
 }
 
 .reference-usage-note {
@@ -803,6 +980,109 @@ body {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
+}
+
+#infusion-view-single-drug.is-quick-mode #drug-help {
+  display: none;
+}
+
+#infusion-view-single-drug.is-quick-mode .preset-summary {
+  background: rgba(248, 250, 252, 0.95);
+}
+
+#infusion-view-single-drug.is-quick-mode #infusion-form-stack {
+  display: grid;
+}
+
+#infusion-view-single-drug.is-quick-mode .drug-selector {
+  order: 1;
+}
+
+#infusion-view-single-drug.is-quick-mode .infusion-primary-grid {
+  order: 2;
+}
+
+#infusion-view-single-drug.is-quick-mode .mode-panels {
+  order: 3;
+}
+
+#infusion-view-single-drug.is-quick-mode #quick-result-preview {
+  order: 4;
+}
+
+#infusion-view-single-drug.is-quick-mode #preset-summary {
+  order: 5;
+}
+
+#infusion-view-single-drug.is-quick-mode #custom-drug-fields {
+  order: 6;
+}
+
+#infusion-view-single-drug.is-quick-mode .quick-field {
+  padding: 16px;
+  border: 1px solid rgba(216, 224, 234, 0.92);
+  border-radius: 20px;
+  background: rgba(248, 250, 252, 0.92);
+  box-shadow: 0 12px 24px rgba(20, 32, 51, 0.04);
+}
+
+#infusion-view-single-drug.is-quick-mode .quick-field .input-row {
+  background: rgba(255, 255, 255, 0.98);
+}
+
+#infusion-view-single-drug.is-quick-mode .quick-field .input-row input {
+  padding: 18px 16px;
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+#infusion-view-single-drug.is-quick-mode .quick-field .unit,
+#infusion-view-single-drug.is-quick-mode .quick-field .unit-select {
+  height: 58px;
+  font-size: 0.98rem;
+}
+
+#infusion-view-single-drug.is-quick-mode .quick-field .helper-text {
+  margin-top: 10px;
+}
+
+#infusion-view-single-drug.is-quick-mode .quick-stepper-row {
+  display: flex;
+}
+
+#infusion-view-single-drug.is-quick-mode .quick-slider-wrap {
+  display: grid;
+}
+
+#infusion-view-single-drug.is-quick-mode .submode-panel {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+#infusion-view-single-drug.is-quick-mode .mode-panels {
+  gap: 14px;
+}
+
+#infusion-view-single-drug.is-quick-mode .actions {
+  justify-content: flex-end;
+}
+
+#infusion-view-single-drug.is-quick-mode #result-card {
+  padding-top: 18px;
+}
+
+#infusion-view-single-drug.is-quick-mode #result-card .result-label-row,
+#infusion-view-single-drug.is-quick-mode #result-card > h2,
+#infusion-view-single-drug.is-quick-mode #result-card > .pump-setting,
+#infusion-view-single-drug.is-quick-mode #result-card > .concentration-result {
+  display: none;
+}
+
+#infusion-view-single-drug.is-quick-mode #result-card .reference-panel {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
 }
 
 .field {
@@ -1234,6 +1514,62 @@ body {
 
 .result-summary-item .pump-setting-range {
   font-size: 1.3rem;
+}
+
+.emergency-dose-grid {
+  margin-top: 20px;
+}
+
+.emergency-dose-card {
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgba(15, 118, 110, 0.08);
+  border: 1px solid rgba(15, 118, 110, 0.16);
+}
+
+.emergency-dose-kicker {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.emergency-dose-card .pump-setting-label {
+  margin-bottom: 8px;
+}
+
+.emergency-dose-card .pump-setting-range {
+  font-size: 1.16rem;
+}
+
+.emergency-dose-secondary {
+  margin: 8px 0 0;
+  color: var(--text);
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.emergency-dose-note {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+  font-size: 0.94rem;
+}
+
+.emergency-dose-disclosure {
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.emergency-dose-disclosure .context-disclosure-summary {
+  font-size: 0.82rem;
+  padding: 8px 10px;
+}
+
+.emergency-dose-disclosure .context-disclosure-content {
+  padding: 0 10px 10px;
 }
 
 .reference-table-card {
