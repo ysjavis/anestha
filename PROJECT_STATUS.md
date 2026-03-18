@@ -101,6 +101,9 @@ Multi Drug behavior:
 - no compatibility / combined effect logic
 - shared weight applies to all multi-drug cards when the drug uses weight-based dosing
 - some drugs now use absolute-dose mode (`mcg/min`, `unit/min`) and do not require shared weight
+- workspace-level `Quick / Detail` mode is available
+- `Quick` supports compact card controls with stepper-based adjustment
+- template controls are moved behind disclosure in `Quick`
 
 Current multi-drug card UI:
 - drug name shown clearly in header
@@ -277,6 +280,7 @@ Current product principle:
 *   **Enhancements:**
     - [x] Indicate rate limits visually (e.g., turn text/background red if target rate exceeds reference range).
     - [ ] Create distinct Multi Drug case workspaces (Case 1, Case 2...) via horizontal tabs or similar UI layout.
+    - [x] Build `Multi Drug Quick Mode v1` as a compact, manipulation-first workspace for common OR infusion setups.
 *   **Implemented Features (Review list):**
     - [x] Drug presets included: NE, Epi, Phenylephrine, Vasopressin, NTG, Nicardipine, Dopamine, Dobutamine, Milrinone, Isoproterenol, Remifentanil, Propofol, Esmolol, Dexmedetomidine.
     - [x] Remimazolam split into GA induction and GA maintenance presets, with procedural sedation kept as a separately labeled reference context.
@@ -287,6 +291,92 @@ Current product principle:
     - [x] Linked drug cards with dosing and references.
     - [x] Range source badges and rationale notes shown for infusion presets.
     - [x] Audit file added to track calculator range basis by drug.
+
+#### Multi Drug Quick Mode v1 Plan
+
+**Goal**
+- make `Multi Drug` feel like a fast OR manipulation workspace rather than a settings-heavy screen
+- reduce reading burden and increase `at-a-glance` usability
+- keep reference support available without letting it dominate the first screen
+
+**Core UX principle**
+- `Single Drug` quick mode is for focused calculation
+- `Multi Drug` quick mode should be for `compare + adjust + glance`
+
+**Primary user tasks**
+- enter one shared patient weight
+- load or assemble a routine infusion set quickly
+- adjust concentration / target dose with minimal taps
+- see resulting `mL/hr` immediately for several drugs on one screen
+- notice out-of-range cards without opening extra text
+
+**Proposed v1 scope**
+- workspace-level `Quick / Detail` toggle (not per-card)
+- `Quick` as the default view
+- compact card layout with:
+  - drug name
+  - category chip
+  - concentration
+  - target dose
+  - immediate `mL/hr` result
+  - `+ / -` steppers
+  - `Apply standard dilution`
+  - short out-of-range warning
+- keep `NTG` unit selection behavior in quick mode
+- move reference basis / rationale / long notes behind disclosure in quick mode
+
+**What should be hidden or deprioritized in Quick**
+- long source notes
+- rationale paragraphs
+- `Last reviewed`
+- detailed range-basis text
+- template management details while actively titrating
+
+**What should stay visible in Quick**
+- shared weight
+- card title
+- drug group/category
+- editable concentration
+- editable target dose
+- calculated pump rate
+- range warning state
+
+**Workspace-level layout direction**
+- top row:
+  - shared weight
+  - `Quick / Detail`
+  - `Add drug`
+- template management should be visually reduced or placed behind a secondary disclosure
+- drug cards should be short enough that multiple cards can be scanned on mobile without excessive scrolling
+
+**Interaction rules**
+- auto-calculate as values change
+- use steppers first, sliders only if later testing shows real value
+- keep warnings short in the main card
+- put supporting explanation behind `View basis` / `References`
+
+**Not in v1**
+- per-card quick/full toggle
+- per-card slider controls
+- drag-and-drop sorting
+- case memo system
+- interaction/compatibility logic
+- expanded case tabs
+
+**Implementation order**
+1. add workspace-level `Quick / Detail` state
+2. update `renderInfusionWorkspace()` to render compact cards in `Quick`
+3. reduce template controls visually in `Quick`
+4. move range/source/rationale text into disclosures
+5. add concentration / target-dose steppers
+6. confirm auto-calc behavior stays stable for absolute-dose drugs such as `NTG`
+7. manually review mobile density before release
+
+**Success criteria**
+- multiple cards can be understood with a quick visual scan
+- fewer taps are needed to update concentration or target dose
+- `mL/hr` result becomes the dominant value on each card
+- reference support remains available but no longer blocks the main workflow
 
 ### Focus Area 2: Pediatric (Pediatric Anesthesia)
 *   **Dosing Enhancements:**
@@ -353,6 +443,23 @@ Current product principle:
 - Share patient weight/age across the entire case level.
 - Add Case Note / Quick Memo.
 - Save and load recent cases.
+
+**12. Weight & Body Size Utilities**
+- Ideal body weight (`IBW`) calculator.
+- Lean body weight (`LBW`) and adjusted body weight (`AdjBW`) calculator.
+- Body surface area (`BSA`) calculator.
+- Quick comparison of actual body weight vs `IBW / LBW / AdjBW` for dosing context.
+
+**13. Liver Disease Risk / Severity**
+- Cirrhosis `Child-Turcotte-Pugh (CTP)` score calculator.
+- Show component inputs clearly (`bilirubin`, `albumin`, `INR`, `ascites`, `encephalopathy`).
+- Display class (`A / B / C`) with a reminder that this is a severity stratification aid, not a stand-alone perioperative decision tool.
+
+**14. Cardiac Surgery Risk**
+- `EuroSCORE II` calculator for adult cardiac surgery mortality risk.
+- `STS Risk` integration or structured input module if feasible.
+- Keep cardiac-risk tools clearly separated from general anesthesia calculators.
+- Add strong scope note that these tools are for preoperative risk discussion/support and do not replace institutional evaluation.
 
 ## Migration / Resume Notes
 

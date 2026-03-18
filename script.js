@@ -62,6 +62,7 @@ const infusionViewPanels = document.querySelectorAll("[data-infusion-view-panel]
 const calculatorTabs = document.querySelectorAll("[data-calculator-tab]");
 const calculatorViews = document.querySelectorAll("[data-calculator-view]");
 const infusionSingleDrugPanel = document.getElementById("infusion-view-single-drug");
+const infusionWorkspacePanel = document.getElementById("infusion-view-workspace");
 const infusionQuickModeHint = document.getElementById("infusion-quick-mode-hint");
 const calculateButton = document.getElementById("calculate-button");
 const quickWeightSliderWrap = document.getElementById("quick-weight-slider-wrap");
@@ -151,13 +152,17 @@ const inputs = {
 };
 
 const workspaceSharedWeightInput = document.getElementById("workspace-shared-weight");
+const workspaceSharedWeightStepButtons = document.querySelectorAll("[data-workspace-shared-step]");
+const workspaceLayoutTabs = document.querySelectorAll("[data-workspace-layout-tab]");
 const workspaceAddCardButton = document.getElementById("workspace-add-card-button");
+const workspaceQuickModeHint = document.getElementById("workspace-quick-mode-hint");
 const workspaceTemplateNameInput = document.getElementById("workspace-template-name");
 const workspaceTemplateNoteInput = document.getElementById("workspace-template-note");
 const workspaceTemplateSelect = document.getElementById("workspace-template-select");
 const workspaceLoadTemplateButton = document.getElementById("workspace-load-template-button");
 const workspaceSaveTemplateButton = document.getElementById("workspace-save-template-button");
 const workspaceDeleteTemplateButton = document.getElementById("workspace-delete-template-button");
+const workspaceTemplateDisclosure = document.getElementById("workspace-template-disclosure");
 const workspaceCardList = document.getElementById("workspace-card-list");
 const workspaceHelp = document.getElementById("workspace-help");
 
@@ -223,6 +228,15 @@ const supportDonateCard = document.getElementById("support-donate-card");
 const supportTossLink = document.getElementById("support-toss-link");
 const supportKofiLink = document.getElementById("support-kofi-link");
 const supportStatus = document.getElementById("support-status");
+const supportWeightSexInput = document.getElementById("support-weight-sex");
+const supportWeightHeightInput = document.getElementById("support-weight-height");
+const supportWeightTotalInput = document.getElementById("support-weight-total");
+const supportWeightBmi = document.getElementById("support-weight-bmi");
+const supportWeightBsa = document.getElementById("support-weight-bsa");
+const supportWeightIbw = document.getElementById("support-weight-ibw");
+const supportWeightLbw = document.getElementById("support-weight-lbw");
+const supportWeightAdjbw = document.getElementById("support-weight-adjbw");
+const supportWeightNote = document.getElementById("support-weight-note");
 
 const LANGUAGE_STORAGE_KEY = "anestha.language";
 const FEEDBACK_CONFIG = {
@@ -273,6 +287,25 @@ const TRANSLATIONS = {
     support_kicker: "Support",
     support_heading: "Support Anestha",
     support_description: "feedback와 update support를 한곳에서 확인합니다.",
+    weight_tools_kicker: "Weight Tools",
+    weight_tools_heading: "체중 지표 계산기",
+    weight_tools_description: "Height/Weight와 biological sex를 기준으로 BMI, IBW, LBW, AdjBW를 빠르게 계산합니다.",
+    biological_sex: "Biological Sex",
+    male: "Male",
+    female: "Female",
+    height_cm: "Height (cm)",
+    total_body_weight_kg: "Total Body Weight (kg)",
+    placeholder_height_cm: "예: 170",
+    weight_tools_bmi: "BMI",
+    weight_tools_bsa: "BSA (Mosteller)",
+    weight_tools_ibw: "IBW (Devine)",
+    weight_tools_lbw: "LBW (Janmahasatian)",
+    weight_tools_adjbw: "AdjBW (40%)",
+    view_advanced_weight_metrics: "고급 지표 보기",
+    weight_tools_bsa_note: "BSA는 일부 약물/영역에서 쓰이는 지표이며 마취과 일반 도징의 기본값은 아닙니다.",
+    weight_tools_note_default: "Height와 Total Body Weight를 입력하면 체중 지표를 계산합니다.",
+    weight_tools_note_ready: "IBW/LBW/AdjBW는 용량 검토 보조 지표입니다. 최종 용량은 기관 프로토콜과 환자 상태를 함께 확인하세요.",
+    weight_tools_note_non_obese: "현재 체중이 IBW 이하이므로 AdjBW는 Total Body Weight와 동일하게 표시했습니다.",
     support_donate_kicker: "Support",
     support_donate_heading: "지속적인 업데이트 지원",
     support_donate_description: "이 앱이 도움이 되었다면 업데이트와 유지보수를 위한 support를 보낼 수 있습니다.",
@@ -579,6 +612,10 @@ const TRANSLATIONS = {
     dantrolene_maintenance_guide: "Maintenance: initial control 뒤에는 많은 MH reference가 최소 24시간 동안 4-6시간마다 1 mg/kg IV 또는 이에 준하는 infusion strategy를 권합니다.",
     dantrolene_emergency_reference_only: "Emergency quick reference only. 기관 MH protocol과 post-crisis plan을 계속 따르세요.",
     workspace_select_template: "Template 선택",
+    workspace_layout_aria: "Multi Drug 화면 모드",
+    workspace_layout_title: "화면 구성",
+    workspace_quick_mode_help: "Quick에서는 카드 조작을 우선으로 보여주고, Full에서는 템플릿/근거 정보를 더 자세히 봅니다.",
+    view_workspace_templates: "Template 관리 보기",
     workspace_limit_title: "Multi Drug card는 최대 6개까지 추가할 수 있습니다",
     workspace_add_card_title: "drug card 추가",
     workspace_current_shared_weight: "Shared weight: {weight} kg",
@@ -643,6 +680,25 @@ const TRANSLATIONS = {
     support_kicker: "Support",
     support_heading: "Support Anestha",
     support_description: "Find feedback and update support in one place.",
+    weight_tools_kicker: "Weight Tools",
+    weight_tools_heading: "Body Weight Calculator",
+    weight_tools_description: "Quickly calculate BMI, IBW, LBW, and AdjBW from biological sex, height, and weight.",
+    biological_sex: "Biological Sex",
+    male: "Male",
+    female: "Female",
+    height_cm: "Height (cm)",
+    total_body_weight_kg: "Total Body Weight (kg)",
+    placeholder_height_cm: "e.g. 170",
+    weight_tools_bmi: "BMI",
+    weight_tools_bsa: "BSA (Mosteller)",
+    weight_tools_ibw: "IBW (Devine)",
+    weight_tools_lbw: "LBW (Janmahasatian)",
+    weight_tools_adjbw: "AdjBW (40%)",
+    view_advanced_weight_metrics: "View advanced metric",
+    weight_tools_bsa_note: "BSA is available as an advanced metric and is not the default basis for routine anesthesia dosing.",
+    weight_tools_note_default: "Enter height and total body weight to calculate body-weight metrics.",
+    weight_tools_note_ready: "IBW/LBW/AdjBW are dosing-support metrics. Final dosing should be checked against protocol and patient context.",
+    weight_tools_note_non_obese: "Because total body weight is below IBW, AdjBW is shown as total body weight.",
     support_donate_kicker: "Support",
     support_donate_heading: "Support ongoing updates",
     support_donate_description: "If this app has been helpful, you can support ongoing updates and maintenance.",
@@ -949,6 +1005,10 @@ const TRANSLATIONS = {
     dantrolene_maintenance_guide: "Maintenance: after initial control, many MH references advise 1 mg/kg IV every 4-6 hours, or an equivalent infusion strategy, for at least 24 hours.",
     dantrolene_emergency_reference_only: "Emergency quick reference only. Continue with your MH protocol and post-crisis plan.",
     workspace_select_template: "Select template",
+    workspace_layout_aria: "Multi Drug layout mode",
+    workspace_layout_title: "Layout",
+    workspace_quick_mode_help: "Quick focuses on card manipulation. Full keeps template and reference context expanded.",
+    view_workspace_templates: "View template controls",
     workspace_limit_title: "Maximum 6 Multi Drug cards",
     workspace_add_card_title: "Add another drug card",
     workspace_current_shared_weight: "Shared weight: {weight} kg",
@@ -1148,6 +1208,50 @@ function updateSupportLinks() {
   }
 }
 
+function renderSupportWeightTools() {
+  if (
+    !supportWeightSexInput ||
+    !supportWeightHeightInput ||
+    !supportWeightTotalInput ||
+    !supportWeightBmi ||
+    !supportWeightBsa ||
+    !supportWeightIbw ||
+    !supportWeightLbw ||
+    !supportWeightAdjbw ||
+    !supportWeightNote
+  ) {
+    return;
+  }
+
+  const sex = supportWeightSexInput.value;
+  const heightCm = Number(supportWeightHeightInput.value);
+  const totalWeightKg = Number(supportWeightTotalInput.value);
+  const metrics = calculateBodyWeightMetrics(sex, heightCm, totalWeightKg);
+
+  if (!metrics) {
+    supportWeightBmi.textContent = "-";
+    supportWeightBsa.textContent = "-";
+    supportWeightIbw.textContent = "-";
+    supportWeightLbw.textContent = "-";
+    supportWeightAdjbw.textContent = "-";
+    supportWeightNote.textContent = t("weight_tools_note_default");
+    return;
+  }
+
+  supportWeightBmi.textContent = `${formatNumber(metrics.bmi, 2)} kg/m²`;
+  supportWeightBsa.textContent = `${formatNumber(metrics.bsaMosteller, 2)} m²`;
+  supportWeightIbw.textContent = `${formatNumber(metrics.ibw, 1)} kg`;
+  supportWeightLbw.textContent = `${formatNumber(metrics.lbw, 1)} kg`;
+  supportWeightAdjbw.textContent = `${formatNumber(metrics.adjbw, 1)} kg`;
+  supportWeightNote.textContent = metrics.usesAdjustedBodyWeight
+    ? t("weight_tools_note_ready")
+    : t("weight_tools_note_non_obese");
+}
+
+function handleSupportWeightInputChange() {
+  renderSupportWeightTools();
+}
+
 // -----------------------------
 // Calculation engine
 // -----------------------------
@@ -1262,6 +1366,35 @@ function calculateDoseVolume(doseAmount, concentrationPerMl) {
 
 function calculateDantroleneDose(weightKg, dosePerKg) {
   return weightKg * dosePerKg;
+}
+
+function calculateBodyWeightMetrics(sex, heightCm, totalWeightKg) {
+  if (!isPositiveNumber(heightCm) || !isPositiveNumber(totalWeightKg)) {
+    return null;
+  }
+
+  const normalizedSex = sex === "female" ? "female" : "male";
+  const heightM = heightCm / 100;
+  const bmi = totalWeightKg / (heightM * heightM);
+  const bsaMosteller = Math.sqrt((heightCm * totalWeightKg) / 3600);
+  const ibwBase = normalizedSex === "female" ? 45.5 : 50;
+  const ibw = Math.max(0, ibwBase + (0.9 * (heightCm - 152.4)));
+  const lbwDenominator = normalizedSex === "female"
+    ? (8780 + (244 * bmi))
+    : (6680 + (216 * bmi));
+  const lbw = (9270 * totalWeightKg) / lbwDenominator;
+  const adjbw = totalWeightKg > ibw
+    ? ibw + (0.4 * (totalWeightKg - ibw))
+    : totalWeightKg;
+
+  return {
+    bmi: bmi,
+    bsaMosteller: bsaMosteller,
+    ibw: ibw,
+    lbw: lbw,
+    adjbw: adjbw,
+    usesAdjustedBodyWeight: totalWeightKg > ibw
+  };
 }
 
 function roundToNearestHalf(value) {
@@ -3993,6 +4126,14 @@ function sanitizeInfusionLayoutMode(value) {
   return ["quick", "full"].includes(value) ? value : "quick";
 }
 
+function sanitizeWorkspaceLayoutMode(value) {
+  if (value === "detail") {
+    return "full";
+  }
+
+  return ["quick", "full"].includes(value) ? value : "quick";
+}
+
 function sanitizeNitroglycerinDoseUnitView(value) {
   return ["mcg/min", "mcg/kg/min"].includes(value) ? value : "mcg/min";
 }
@@ -4212,6 +4353,7 @@ function createDefaultInfusionWorkspaceCardState(drugId) {
 function createDefaultInfusionWorkspaceState() {
   return {
     activeView: "single-drug",
+    viewMode: "quick",
     sharedWeight: "",
     selectedTemplateId: "",
     cards: [createDefaultInfusionWorkspaceCardState()]
@@ -4277,6 +4419,7 @@ function normalizeInfusionWorkspaceState(rawState) {
     activeView: ["single-drug", "workspace"].includes(source.activeView)
       ? source.activeView
       : fallback.activeView,
+    viewMode: sanitizeWorkspaceLayoutMode(source.viewMode),
     sharedWeight: sanitizeString(source.sharedWeight, fallback.sharedWeight),
     selectedTemplateId: sanitizeString(source.selectedTemplateId, fallback.selectedTemplateId),
     cards: normalizedCards.length ? normalizedCards : fallback.cards
@@ -5076,6 +5219,52 @@ function activateInfusionView(viewId) {
   });
 }
 
+function syncWorkspaceLayoutUi(modeId) {
+  const normalizedModeId = sanitizeWorkspaceLayoutMode(modeId);
+  const isQuickMode = normalizedModeId === "quick";
+
+  workspaceLayoutTabs.forEach(function (tab) {
+    const isActive = tab.dataset.workspaceLayoutTab === normalizedModeId;
+    tab.classList.toggle("is-active", isActive);
+    tab.setAttribute("aria-selected", String(isActive));
+  });
+
+  if (infusionWorkspacePanel) {
+    infusionWorkspacePanel.classList.toggle("is-quick-mode", isQuickMode);
+    infusionWorkspacePanel.classList.toggle("is-full-mode", !isQuickMode);
+  }
+
+  if (workspaceQuickModeHint) {
+    workspaceQuickModeHint.classList.toggle("hidden", !isQuickMode);
+  }
+
+  if (workspaceTemplateDisclosure) {
+    if (isQuickMode) {
+      workspaceTemplateDisclosure.removeAttribute("open");
+    } else {
+      workspaceTemplateDisclosure.setAttribute("open", "open");
+    }
+  }
+}
+
+function activateWorkspaceLayoutMode(modeId, options) {
+  const normalizedModeId = sanitizeWorkspaceLayoutMode(modeId);
+  const shouldPersist = !options || options.persist !== false;
+  const shouldRender = !options || options.render !== false;
+
+  syncWorkspaceLayoutUi(normalizedModeId);
+
+  if (shouldPersist) {
+    updateInfusionWorkspaceState({
+      viewMode: normalizedModeId
+    });
+  }
+
+  if (shouldRender) {
+    renderInfusionWorkspace();
+  }
+}
+
 function activateDilutionMode(modeId) {
   dilutionInputs.modeTabs.forEach(function (tab) {
     const isActive = tab.dataset.dilutionModeTab === modeId;
@@ -5316,9 +5505,12 @@ function getInfusionDrugCategory(drugId) {
 function renderInfusionWorkspace() {
   const workspaceState = normalizeInfusionWorkspaceState(getInfusionWorkspaceState());
   const templates = getInfusionTemplates();
+  const workspaceLayoutMode = sanitizeWorkspaceLayoutMode(workspaceState.viewMode);
+  const isQuickWorkspaceMode = workspaceLayoutMode === "quick";
   const sharedWeight = Number(workspaceState.sharedWeight);
   const hasReachedWorkspaceCardLimit = workspaceState.cards.length >= 6;
 
+  syncWorkspaceLayoutUi(workspaceLayoutMode);
   workspaceSharedWeightInput.value = workspaceState.sharedWeight;
   workspaceTemplateNameInput.value = "";
   workspaceTemplateNoteInput.value = "";
@@ -5388,16 +5580,24 @@ function renderInfusionWorkspace() {
     const isOutOfRange = hasReadyCalculation && !isWithinReferenceRange(targetDose, preset.referenceRange);
     const dilutionPreset = preset.dilutionPresets[0] || null;
     const showNitroglycerinUnitView = isNitroglycerinDrug(preset);
+    const concentrationStep = getAdaptiveQuickStep(
+      isPositiveNumber(concentration) ? concentration : Number(preset.concentration) || 1
+    );
+    const doseStep = getAdaptiveQuickStep(
+      isPositiveNumber(displayTargetDose)
+        ? displayTargetDose
+        : (isPositiveNumber(displayRangeMin) ? displayRangeMin : 0.1)
+    );
     const optionMarkup = DRUG_PRESETS.map(function (drugPreset) {
       return `<option value="${drugPreset.id}" ${drugPreset.id === card.selectedDrugId ? "selected" : ""}>${drugPreset.name}</option>`;
     }).join("");
 
     return `
-      <article class="workspace-card is-${drugCategory.key}" data-workspace-card-id="${card.cardId}">
+      <article class="workspace-card is-${drugCategory.key} ${isQuickWorkspaceMode ? "is-quick" : "is-full"}" data-workspace-card-id="${card.cardId}">
         <div class="workspace-card-header">
           <div>
             <h3 class="workspace-card-title">${index + 1}. ${preset.name}</h3>
-            <p class="workspace-card-meta">${formatNumber(concentration, 1)} ${preset.concentrationUnit} / ${getDisplaySourceLabel(preset.metadata.source)} / Last reviewed ${preset.metadata.lastReviewed}</p>
+            ${isQuickWorkspaceMode ? "" : `<p class="workspace-card-meta">${formatNumber(concentration, 1)} ${preset.concentrationUnit} / ${getDisplaySourceLabel(preset.metadata.source)} / Last reviewed ${preset.metadata.lastReviewed}</p>`}
             <div class="workspace-card-tag-row">
               <span class="workspace-card-tag is-${drugCategory.key}">${drugCategory.label}</span>
               ${useCaseBadge}
@@ -5444,22 +5644,38 @@ function renderInfusionWorkspace() {
 
           <label class="field">
             <span class="field-label">${t("workspace_concentration")}</span>
-            <div class="input-row">
-              <input data-workspace-field="concentration" data-workspace-card-id="${card.cardId}" type="number" inputmode="decimal" step="any" value="${card.concentration}">
-              <span class="unit">${preset.concentrationUnit}</span>
+            <div class="workspace-input-control-row ${isQuickWorkspaceMode ? "is-inline-stepper" : ""}">
+              <div class="input-row">
+                <input data-workspace-field="concentration" data-workspace-card-id="${card.cardId}" type="number" inputmode="decimal" step="any" value="${card.concentration}">
+                <span class="unit">${preset.concentrationUnit}</span>
+              </div>
+              ${isQuickWorkspaceMode
+                ? `<div class="workspace-stepper-row workspace-stepper-row-inline">
+                    <button type="button" class="workspace-stepper-button" data-workspace-step-card-id="${card.cardId}" data-workspace-step-field="concentration" data-workspace-step-direction="-1" data-workspace-step-size="${concentrationStep}" aria-label="${t("decrease_value")}">-</button>
+                    <button type="button" class="workspace-stepper-button" data-workspace-step-card-id="${card.cardId}" data-workspace-step-field="concentration" data-workspace-step-direction="1" data-workspace-step-size="${concentrationStep}" aria-label="${t("increase_value")}">+</button>
+                  </div>`
+                : ""}
             </div>
           </label>
 
           <label class="field">
             <span class="field-label">${t("workspace_target_dose")}</span>
-            <div class="input-row">
-              <input data-workspace-field="targetDose" data-workspace-card-id="${card.cardId}" data-workspace-dose-display-unit="${displayDoseUnit}" type="number" inputmode="decimal" step="any" value="${targetDoseInputValue}">
-              ${showNitroglycerinUnitView
-                ? `<select class="unit-select" data-workspace-field="nitroglycerinDoseUnitView" data-workspace-card-id="${card.cardId}">
-                    <option value="mcg/min" ${displayDoseUnit === "mcg/min" ? "selected" : ""}>mcg/min</option>
-                    <option value="mcg/kg/min" ${displayDoseUnit === "mcg/kg/min" ? "selected" : ""} ${isPositiveNumber(sharedWeight) ? "" : "disabled"}>mcg/kg/min</option>
-                  </select>`
-                : `<span class="unit">${displayDoseUnit}</span>`}
+            <div class="workspace-input-control-row ${isQuickWorkspaceMode ? "is-inline-stepper" : ""}">
+              <div class="input-row">
+                <input data-workspace-field="targetDose" data-workspace-card-id="${card.cardId}" data-workspace-dose-display-unit="${displayDoseUnit}" type="number" inputmode="decimal" step="any" value="${targetDoseInputValue}">
+                ${showNitroglycerinUnitView
+                  ? `<select class="unit-select" data-workspace-field="nitroglycerinDoseUnitView" data-workspace-card-id="${card.cardId}">
+                      <option value="mcg/min" ${displayDoseUnit === "mcg/min" ? "selected" : ""}>mcg/min</option>
+                      <option value="mcg/kg/min" ${displayDoseUnit === "mcg/kg/min" ? "selected" : ""} ${isPositiveNumber(sharedWeight) ? "" : "disabled"}>mcg/kg/min</option>
+                    </select>`
+                  : `<span class="unit">${displayDoseUnit}</span>`}
+              </div>
+              ${isQuickWorkspaceMode
+                ? `<div class="workspace-stepper-row workspace-stepper-row-inline">
+                    <button type="button" class="workspace-stepper-button" data-workspace-step-card-id="${card.cardId}" data-workspace-step-field="targetDose" data-workspace-step-direction="-1" data-workspace-step-size="${doseStep}" data-workspace-dose-display-unit="${displayDoseUnit}" aria-label="${t("decrease_value")}">-</button>
+                    <button type="button" class="workspace-stepper-button" data-workspace-step-card-id="${card.cardId}" data-workspace-step-field="targetDose" data-workspace-step-direction="1" data-workspace-step-size="${doseStep}" data-workspace-dose-display-unit="${displayDoseUnit}" aria-label="${t("increase_value")}">+</button>
+                  </div>`
+                : ""}
             </div>
             ${showNitroglycerinUnitView ? `<p class="helper-text">${isPositiveNumber(sharedWeight) ? t("workspace_ntg_unit_hint") : t("validation_ntg_weight_for_kg_unit")}</p>` : ""}
           </label>
@@ -5487,7 +5703,7 @@ function renderInfusionWorkspace() {
           ${isOutOfRange ? `<p class="workspace-card-warning">${t("workspace_out_of_range")}</p>` : ""}
         </div>
 
-        <details class="context-disclosure context-disclosure-compact">
+        <details class="context-disclosure context-disclosure-compact workspace-card-reference-disclosure">
           <summary class="context-disclosure-summary">${t("view_workspace_range_basis")}</summary>
           <div class="context-disclosure-content">
             <p class="workspace-card-reference-note">
@@ -6859,6 +7075,7 @@ function setLanguage(language) {
   applyStaticTranslations();
   updateFeedbackLinks();
   updateSupportLinks();
+  renderSupportWeightTools();
   updateQuickDrugUI();
   updateDrugUI();
   updatePediatricDrugUI();
@@ -7078,6 +7295,23 @@ function handleWorkspaceSharedWeightChange() {
   renderInfusionWorkspace();
 }
 
+function handleWorkspaceSharedWeightStepClick(event) {
+  const direction = Number(event.currentTarget.dataset.workspaceSharedStep);
+
+  if (!Number.isFinite(direction) || direction === 0) {
+    return;
+  }
+
+  const currentWeight = Number(workspaceSharedWeightInput.value);
+  const baseWeight = isPositiveNumber(currentWeight)
+    ? currentWeight
+    : 70;
+  const nextWeight = Math.max(1, baseWeight + direction);
+
+  workspaceSharedWeightInput.value = String(Math.round(nextWeight));
+  handleWorkspaceSharedWeightChange();
+}
+
 function handleWorkspaceAddCard() {
   const workspaceState = getInfusionWorkspaceState();
 
@@ -7175,7 +7409,69 @@ function updateWorkspaceCardState(cardId, field, value, options) {
   });
 }
 
+function handleWorkspaceCardStepper(stepButton) {
+  const cardId = stepButton.dataset.workspaceStepCardId;
+  const field = stepButton.dataset.workspaceStepField;
+  const direction = Number(stepButton.dataset.workspaceStepDirection);
+  const stepSize = Number(stepButton.dataset.workspaceStepSize);
+  const displayDoseUnit = stepButton.dataset.workspaceDoseDisplayUnit;
+  const workspaceState = getInfusionWorkspaceState();
+  const card = workspaceState.cards.find(function (item) {
+    return item.cardId === cardId;
+  });
+
+  if (!card || !Number.isFinite(direction) || !Number.isFinite(stepSize) || stepSize <= 0) {
+    return false;
+  }
+
+  if (field === "concentration") {
+    const currentValue = Number(card.concentration);
+    const baseValue = isPositiveNumber(currentValue)
+      ? currentValue
+      : Number(getDrugPresetById(card.selectedDrugId).concentration) || 1;
+    const nextValue = baseValue + (stepSize * direction);
+
+    updateWorkspaceCardState(
+      cardId,
+      field,
+      nextValue > 0 ? formatEditableDoseValue(nextValue) : ""
+    );
+    return true;
+  }
+
+  if (field === "targetDose") {
+    const preset = getDrugPresetById(card.selectedDrugId);
+    const sharedWeight = Number(workspaceState.sharedWeight);
+    const unit = displayDoseUnit || getWorkspaceNitroglycerinDoseView(card, sharedWeight);
+    const canonicalTargetDose = Number(card.targetDose);
+    const displayTargetDose = convertDoseValueForDisplay(canonicalTargetDose, preset, sharedWeight, unit);
+    const baseValue = isPositiveNumber(displayTargetDose) ? displayTargetDose : 0;
+    const nextValue = baseValue + (stepSize * direction);
+
+    updateWorkspaceCardState(
+      cardId,
+      field,
+      nextValue > 0 ? formatEditableDoseValue(nextValue) : "",
+      {
+        displayDoseUnit: unit
+      }
+    );
+    return true;
+  }
+
+  return false;
+}
+
 function handleWorkspaceCardClick(event) {
+  const stepButton = event.target.closest("[data-workspace-step-field]");
+
+  if (stepButton) {
+    if (handleWorkspaceCardStepper(stepButton)) {
+      renderInfusionWorkspace();
+    }
+    return;
+  }
+
   const moveUpButton = event.target.closest("[data-move-workspace-card-up]");
 
   if (moveUpButton) {
@@ -7429,6 +7725,12 @@ infusionViewTabs.forEach(function (tab) {
   });
 });
 
+workspaceLayoutTabs.forEach(function (tab) {
+  tab.addEventListener("click", function () {
+    activateWorkspaceLayoutMode(tab.dataset.workspaceLayoutTab);
+  });
+});
+
 calculatorTabs.forEach(function (tab) {
   tab.addEventListener("click", function () {
     activateCalculator(tab.dataset.calculatorTab);
@@ -7460,6 +7762,9 @@ pediatricResetButton.addEventListener("click", resetPediatricForm);
 dantroleneForm.addEventListener("submit", handleDantroleneSubmit);
 dantroleneResetButton.addEventListener("click", resetDantroleneForm);
 workspaceSharedWeightInput.addEventListener("input", handleWorkspaceSharedWeightChange);
+workspaceSharedWeightStepButtons.forEach(function (button) {
+  button.addEventListener("click", handleWorkspaceSharedWeightStepClick);
+});
 workspaceAddCardButton.addEventListener("click", handleWorkspaceAddCard);
 workspaceTemplateSelect.addEventListener("change", handleWorkspaceTemplateSelectChange);
 workspaceLoadTemplateButton.addEventListener("click", handleWorkspaceLoadTemplate);
@@ -7524,6 +7829,21 @@ pediatricInputs.concentrationUnit.addEventListener("change", function () {
   input.addEventListener("input", handleDantroleneInputChange);
   if (input.tagName === "SELECT") {
     input.addEventListener("change", handleDantroleneInputChange);
+  }
+});
+
+[
+  supportWeightSexInput,
+  supportWeightHeightInput,
+  supportWeightTotalInput
+].forEach(function (input) {
+  if (!input) {
+    return;
+  }
+
+  input.addEventListener("input", handleSupportWeightInputChange);
+  if (input.tagName === "SELECT") {
+    input.addEventListener("change", handleSupportWeightInputChange);
   }
 });
 
@@ -7644,6 +7964,7 @@ currentLanguage = loadLanguagePreference();
 applyStaticTranslations();
 updateFeedbackLinks();
 updateSupportLinks();
+renderSupportWeightTools();
 applySingleDrugStateToView(getSingleDrugState());
 applyPediatricDoseStateToView(getPediatricDoseState());
 applyDantroleneQuickStateToView(getDantroleneQuickState());

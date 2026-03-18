@@ -182,6 +182,10 @@ body {
   background: rgba(248, 250, 252, 0.88);
 }
 
+.support-card-wide {
+  grid-column: 1 / -1;
+}
+
 .support-card-kicker {
   margin: 0;
   font-size: 0.76rem;
@@ -204,6 +208,44 @@ body {
 
 .support-link-group {
   margin-top: 2px;
+}
+
+.weight-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.weight-tools-result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.weight-tools-result-item {
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(216, 224, 234, 0.95);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.weight-tools-result-item .pump-setting-label {
+  margin-bottom: 6px;
+}
+
+.weight-tools-result-item .pump-setting-range {
+  font-size: 1.05rem;
+}
+
+.weight-tools-advanced {
+  margin-top: 6px;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.weight-tools-advanced-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .support-legal {
@@ -618,10 +660,19 @@ body {
   position: relative;
 }
 
+.quick-input-control-row {
+  display: grid;
+  gap: 10px;
+}
+
 .quick-stepper-row {
   display: none;
   gap: 10px;
   margin-top: 12px;
+}
+
+.quick-field-balance-spacer {
+  display: none;
 }
 
 .quick-slider-wrap {
@@ -1046,12 +1097,26 @@ body {
   margin-top: 10px;
 }
 
+#infusion-view-single-drug.is-quick-mode .quick-input-control-row.is-inline-stepper {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
 #infusion-view-single-drug.is-quick-mode .quick-stepper-row {
   display: flex;
 }
 
+#infusion-view-single-drug.is-quick-mode .quick-stepper-row.quick-stepper-row-inline {
+  margin-top: 0;
+}
+
 #infusion-view-single-drug.is-quick-mode .quick-slider-wrap {
   display: grid;
+}
+
+#infusion-view-single-drug.is-quick-mode .quick-field.quick-field-no-slider .quick-field-balance-spacer {
+  display: block;
+  min-height: 58px;
 }
 
 #infusion-view-single-drug.is-quick-mode .submode-panel {
@@ -1205,6 +1270,24 @@ body {
   gap: 14px;
 }
 
+.workspace-layout-selector {
+  min-width: 220px;
+  max-width: 360px;
+}
+
+.workspace-quick-hint {
+  margin-top: 8px;
+}
+
+.workspace-template-disclosure {
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.workspace-template-disclosure .context-disclosure-content {
+  padding-top: 8px;
+}
+
 .workspace-card-list {
   display: grid;
   gap: 16px;
@@ -1217,6 +1300,11 @@ body {
   border-radius: 18px;
   background: rgba(248, 250, 252, 0.88);
   border-left-width: 6px;
+}
+
+.workspace-card.is-quick {
+  padding: 14px;
+  border-radius: 16px;
 }
 
 .workspace-card.is-vasopressor {
@@ -1252,6 +1340,10 @@ body {
   margin: 4px 0 0;
   color: var(--muted);
   font-size: 0.9rem;
+}
+
+.workspace-card.is-quick .workspace-card-meta {
+  display: none;
 }
 
 .workspace-card-tag-row {
@@ -1312,6 +1404,10 @@ body {
   color: var(--text);
 }
 
+.workspace-card.is-quick .workspace-card-rate {
+  font-size: 1.6rem;
+}
+
 .workspace-card-rate.is-warning {
   color: var(--danger);
 }
@@ -1350,6 +1446,44 @@ body {
 .workspace-card-warning {
   color: var(--danger);
   font-weight: 700;
+}
+
+.workspace-stepper-row,
+.workspace-shared-stepper-row {
+  margin-top: 8px;
+  display: inline-flex;
+  gap: 8px;
+}
+
+.workspace-input-control-row {
+  display: grid;
+  gap: 8px;
+}
+
+.workspace-input-control-row.is-inline-stepper {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.workspace-stepper-row.workspace-stepper-row-inline {
+  margin-top: 0;
+}
+
+.workspace-stepper-button {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 118, 110, 0.2);
+  background: rgba(226, 245, 241, 0.75);
+  color: #0f766e;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.workspace-stepper-button:hover {
+  background: rgba(207, 237, 232, 0.92);
 }
 
 .btn {
@@ -1687,6 +1821,11 @@ body {
     grid-template-columns: 1fr;
   }
 
+  .weight-tools-grid,
+  .weight-tools-result-grid {
+    grid-template-columns: 1fr;
+  }
+
   .app-footer {
     flex-direction: column;
     align-items: flex-start;
@@ -1717,6 +1856,28 @@ body {
   .quick-drug-list,
   .workspace-card-tag-row {
     width: 100%;
+  }
+
+  .quick-input-control-row.is-inline-stepper {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .quick-stepper-row.quick-stepper-row-inline {
+    margin-top: 8px;
+  }
+
+  .quick-field-balance-spacer {
+    display: none !important;
+  }
+
+  .workspace-input-control-row.is-inline-stepper {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .workspace-stepper-row.workspace-stepper-row-inline {
+    margin-top: 8px;
   }
 
   .quick-drug-chip,
