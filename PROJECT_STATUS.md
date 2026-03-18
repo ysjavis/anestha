@@ -24,6 +24,7 @@ Top-level calculator tabs:
 - `Dilution`
 - `Pediatric`
 - `MH / Dantrolene`
+- `Weight`
 - `Support`
 
 Implemented calculators:
@@ -31,7 +32,25 @@ Implemented calculators:
 - `Dilution`
 - `Pediatric`
 - `MH / Dantrolene`
+- `Weight`
 - `Support`
+
+## Recent Progress
+
+### 2026-03-18
+
+Latest local workspace progress (including uncommitted UI polish work):
+- `Infusion > Multi Drug` toolbar order refined to `Quick / Full -> Shared Patient Weight -> Add drug`
+- `Multi Drug Quick` now preserves input focus more carefully while re-rendering
+- `Multi Drug Quick` now recalculates during input editing instead of feeling delayed until blur/change
+- mobile quick cards in `Multi Drug` have larger number inputs, clearer supporting text, and more structured action button layout
+- `Single Drug Quick` was simplified further so result support/reference surfaces feel less duplicated
+- empty favorites/recent shortcut groups are now hidden in `Single Drug Quick`
+- neutral reference-only warning styling was added so default result warnings feel less visually alarming when the value is still within range
+- `Multi Drug` top-right `Add drug` action was visually softened to behave more like a secondary toolbar action
+
+Current follow-up check:
+- visually confirm that `Multi Drug Quick` number inputs remain clearly visible after the latest typography/touch-target adjustments
 
 ## Infusion Status
 
@@ -58,6 +77,7 @@ Supported features:
 - result references
 - localStorage restore
 - `KO / EN` language toggle (medical terms remain primarily English in `KO` mode)
+- compact quick-mode reference/support presentation to reduce initial reading burden
 
 Current infusion presets include:
 - norepinephrine
@@ -101,9 +121,11 @@ Multi Drug behavior:
 - no compatibility / combined effect logic
 - shared weight applies to all multi-drug cards when the drug uses weight-based dosing
 - some drugs now use absolute-dose mode (`mcg/min`, `unit/min`) and do not require shared weight
-- workspace-level `Quick / Detail` mode is available
+- workspace-level `Quick / Full` mode is available
 - `Quick` supports compact card controls with stepper-based adjustment
 - template controls are moved behind disclosure in `Quick`
+- `Quick` now prioritizes manipulation-first layout with faster visual scan and lighter reference density
+- current local polish work is improving live input response while preserving focus during quick edits
 
 Current multi-drug card UI:
 - drug name shown clearly in header
@@ -115,6 +137,8 @@ Current multi-drug card UI:
 - reference range shown
 - range-type badge shown (`Label` / `Clinical`)
 - source note and rationale shown in card reference note
+- quick cards use denser layout and larger touch-friendly inputs on mobile
+- quick header/actions are being visually simplified to reduce control clutter
 
 Current limits:
 - maximum 6 multi-drug cards
@@ -230,12 +254,32 @@ Current MH quick guide sections:
 Implemented as separate calculator tab:
 - feedback access
 - support/donation structure
+- direct contact channel
 - donation area hidden until real support links are configured
 
 Current support behavior:
 - `Feedback` is available through Google Form
 - `Support` links can later point to `Toss` and/or `Ko-fi`
 - donation UI remains hidden until a real support URL is added
+- `Contact Us` is available separately from feedback
+- current contact email is `Anestha.contact@gmail.com`
+
+## Weight Status
+
+Implemented as separate calculator tab:
+- biological sex selection
+- height input
+- total body weight input
+- calculated `BMI`
+- calculated `IBW`
+- calculated `LBW`
+- calculated `AdjBW`
+- calculated `BSA (Mosteller)`
+
+Current weight-tools behavior:
+- intended as a quick perioperative body-weight reference helper
+- updates live as values change
+- shows a note when `AdjBW` is effectively the same as total body weight
 
 ## Architecture Notes
 

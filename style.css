@@ -502,6 +502,10 @@ body {
   margin-bottom: 0;
 }
 
+.preset-summary-row-secondary {
+  opacity: 0.92;
+}
+
 .preset-summary-label {
   font-weight: 700;
   color: var(--muted);
@@ -796,6 +800,15 @@ body {
   border-top: 1px solid var(--border);
 }
 
+.reference-panel > .context-disclosure {
+  margin-top: 0;
+}
+
+.reference-panel .context-disclosure-content > .preset-summary-label {
+  display: block;
+  margin-top: 12px;
+}
+
 .reference-list {
   margin: 8px 0 0;
   padding-left: 0;
@@ -1063,10 +1076,23 @@ body {
 
 #infusion-view-single-drug.is-quick-mode #preset-summary {
   order: 5;
+  padding: 14px 16px;
+}
+
+#infusion-view-single-drug.is-quick-mode #preset-summary > .context-disclosure:last-child {
+  display: none;
 }
 
 #infusion-view-single-drug.is-quick-mode #custom-drug-fields {
   order: 6;
+}
+
+#infusion-view-single-drug.is-quick-mode #infusion-shortcuts-disclosure {
+  margin-top: 10px;
+}
+
+#infusion-view-single-drug.is-quick-mode .preset-summary-row-secondary {
+  display: none;
 }
 
 #infusion-view-single-drug.is-quick-mode .quick-field {
@@ -1134,7 +1160,10 @@ body {
 }
 
 #infusion-view-single-drug.is-quick-mode #result-card {
-  padding-top: 18px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 #infusion-view-single-drug.is-quick-mode #result-card .result-label-row,
@@ -1144,10 +1173,22 @@ body {
   display: none;
 }
 
+#infusion-view-single-drug.is-quick-mode #result-card > .context-disclosure {
+  display: none;
+}
+
 #infusion-view-single-drug.is-quick-mode #result-card .reference-panel {
   margin-top: 0;
-  padding-top: 0;
-  border-top: 0;
+  padding: 14px 16px;
+  border: 1px solid rgba(216, 224, 234, 0.92);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 22px rgba(20, 32, 51, 0.04);
+}
+
+#infusion-view-single-drug.is-quick-mode #result-warning {
+  margin-top: 12px;
+  font-size: 0.84rem;
 }
 
 .field {
@@ -1270,6 +1311,32 @@ body {
   gap: 14px;
 }
 
+.workspace-toolbar-actions {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.workspace-toolbar-actions #workspace-add-card-button {
+  padding: 10px 16px;
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--accent-dark);
+  background: rgba(15, 118, 110, 0.06);
+  border: 1px solid rgba(15, 118, 110, 0.16);
+  box-shadow: none;
+}
+
+.workspace-toolbar-actions #workspace-add-card-button:hover {
+  background: rgba(15, 118, 110, 0.1);
+  border-color: rgba(15, 118, 110, 0.22);
+}
+
+.workspace-toolbar-actions #workspace-add-card-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .workspace-layout-selector {
   min-width: 220px;
   max-width: 360px;
@@ -1329,6 +1396,17 @@ body {
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 14px;
+}
+
+.workspace-card-header-main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.workspace-card-header-actions {
+  flex-shrink: 0;
+  gap: 6px;
+  justify-content: flex-end;
 }
 
 .workspace-card-title {
@@ -1443,6 +1521,10 @@ body {
   margin-top: 8px;
 }
 
+.workspace-card-fields {
+  align-items: start;
+}
+
 .workspace-card-warning {
   color: var(--danger);
   font-weight: 700;
@@ -1484,6 +1566,121 @@ body {
 
 .workspace-stepper-button:hover {
   background: rgba(207, 237, 232, 0.92);
+}
+
+#infusion-view-workspace.is-quick-mode #workspace-quick-mode-hint {
+  display: none;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-toolbar {
+  align-items: stretch;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-toolbar .field {
+  flex: 1 1 260px;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-toolbar-actions {
+  flex: 0 0 auto;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-header {
+  margin-bottom: 0;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-title {
+  font-size: 1.05rem;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-tag {
+  padding: 4px 8px;
+  font-size: 0.72rem;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-header-actions .chip-button {
+  padding: 7px 10px;
+  font-size: 0.8rem;
+  box-shadow: none;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-header-actions .chip-button:disabled,
+#infusion-view-workspace.is-quick-mode .workspace-card-footer-actions .chip-button:disabled {
+  display: none;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-result {
+  order: 2;
+  margin-top: 0;
+  padding: 14px 16px;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-rate {
+  font-size: 1.55rem;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-context {
+  font-size: 0.92rem;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-fields-quick {
+  order: 3;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-fields-quick .input-row input {
+  min-height: 56px;
+  padding: 16px 14px;
+  font-size: 1.18rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--text);
+  caret-color: var(--text);
+  -webkit-text-fill-color: var(--text);
+  opacity: 1;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-fields-quick .unit,
+#infusion-view-workspace.is-quick-mode .workspace-card-fields-quick .unit-select {
+  min-height: 56px;
+  font-size: 0.94rem;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-fields-quick .workspace-stepper-button {
+  width: 40px;
+  height: 40px;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-reference-disclosure {
+  order: 4;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-footer-actions {
+  order: 5;
+  margin-top: 0;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-footer-actions .chip-button {
+  padding: 8px 12px;
+  font-size: 0.82rem;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-header-actions .chip-button,
+#infusion-view-workspace.is-quick-mode .workspace-card-footer-actions .chip-button {
+  min-height: 40px;
 }
 
 .btn {
@@ -1758,6 +1955,11 @@ body {
   color: var(--danger);
 }
 
+.result-warning.is-neutral {
+  color: var(--muted);
+  font-weight: 600;
+}
+
 .hidden {
   display: none;
 }
@@ -1841,6 +2043,14 @@ body {
     align-items: stretch;
   }
 
+  .workspace-toolbar-actions {
+    width: 100%;
+  }
+
+  .workspace-toolbar-actions .btn {
+    width: 100%;
+  }
+
   .result-label-row,
   .reference-summary-title-row {
     flex-direction: column;
@@ -1874,6 +2084,30 @@ body {
   .workspace-input-control-row.is-inline-stepper {
     grid-template-columns: 1fr;
     align-items: stretch;
+  }
+
+  #infusion-view-workspace.is-quick-mode .workspace-card-list {
+    grid-template-columns: 1fr;
+  }
+
+  #infusion-view-workspace.is-quick-mode .workspace-card-fields-quick {
+    grid-template-columns: 1fr;
+  }
+
+  #infusion-view-workspace.is-quick-mode .workspace-card-header-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  #infusion-view-workspace.is-quick-mode .workspace-card-header {
+    flex-direction: column;
+  }
+
+  #infusion-view-workspace.is-quick-mode .workspace-card-header-actions .chip-button,
+  #infusion-view-workspace.is-quick-mode .workspace-card-footer-actions .chip-button {
+    width: 100%;
   }
 
   .workspace-stepper-row.workspace-stepper-row-inline {

@@ -219,9 +219,9 @@
 
             <div id="infusion-form-stack" class="form-stack">
               <div class="drug-selector">
-                <label class="field">
-                  <span class="field-label" data-i18n="drug_preset">Drug Preset</span>
-                  <div class="select-row">
+	                <label class="field">
+	                  <span class="field-label" data-i18n="drug_preset">Drug Preset</span>
+	                  <div class="select-row">
                     <select id="drug-select" name="drug-select">
                       <option value="norepinephrine">Norepinephrine</option>
                       <option value="epinephrine">Epinephrine</option>
@@ -239,27 +239,32 @@
                       <option value="dexmedetomidine">Dexmedetomidine</option>
                       <option value="remimazolam-induction">Remimazolam (GA induction)</option>
                       <option value="remimazolam-maintenance">Remimazolam (GA maintenance)</option>
-                      <option value="custom">Custom drug</option>
-                    </select>
-                  </div>
-                </label>
-                <div class="quick-drug-actions">
-                  <button type="button" id="favorite-drug-button" class="chip-button chip-button-secondary" data-i18n="add_to_favorites">Add to favorites</button>
-                </div>
-                <div class="quick-drug-groups">
-                  <div class="quick-drug-row">
-                    <span class="quick-drug-label" data-i18n="favorites">Favorites</span>
-                    <div id="favorite-drugs" class="quick-drug-list"></div>
-                  </div>
-                  <div class="quick-drug-row">
-                    <span class="quick-drug-label" data-i18n="recent">Recent</span>
-                    <div id="recent-drugs" class="quick-drug-list"></div>
-                  </div>
-                </div>
-                <p id="drug-help" class="helper-text" data-i18n="drug_help_default">
-                  Preset drug를 선택하면 기본 농도와 Reference Dosing Table 값이 자동으로 입력됩니다.
-                </p>
-              </div>
+	                      <option value="custom">Custom drug</option>
+	                    </select>
+	                  </div>
+	                </label>
+	                <details id="infusion-shortcuts-disclosure" class="context-disclosure context-disclosure-compact">
+	                  <summary class="context-disclosure-summary" data-i18n="view_drug_shortcuts">Drug shortcuts</summary>
+	                  <div class="context-disclosure-content">
+	                    <div class="quick-drug-actions">
+	                      <button type="button" id="favorite-drug-button" class="chip-button chip-button-secondary" data-i18n="add_to_favorites">Add to favorites</button>
+	                    </div>
+	                    <div class="quick-drug-groups">
+	                      <div class="quick-drug-row">
+	                        <span class="quick-drug-label" data-i18n="favorites">Favorites</span>
+	                        <div id="favorite-drugs" class="quick-drug-list"></div>
+	                      </div>
+	                      <div class="quick-drug-row">
+	                        <span class="quick-drug-label" data-i18n="recent">Recent</span>
+	                        <div id="recent-drugs" class="quick-drug-list"></div>
+	                      </div>
+	                    </div>
+	                  </div>
+	                </details>
+	                <p id="drug-help" class="helper-text" data-i18n="drug_help_default">
+	                  Preset drug를 선택하면 기본 농도와 Reference Dosing Table 값이 자동으로 입력됩니다.
+	                </p>
+	              </div>
 
               <div id="preset-summary" class="preset-summary">
                 <div class="preset-summary-row">
@@ -269,10 +274,10 @@
                     <span id="reference-range-badge"></span>
                   </span>
                 </div>
-                <div class="preset-summary-row">
-                  <span class="preset-summary-label" data-i18n="use_case">Use case</span>
-                  <span class="preset-summary-value-row">
-                    <span id="reference-use-case-text" class="preset-summary-value">-</span>
+	                <div class="preset-summary-row preset-summary-row-secondary">
+	                  <span class="preset-summary-label" data-i18n="use_case">Use case</span>
+	                  <span class="preset-summary-value-row">
+	                    <span id="reference-use-case-text" class="preset-summary-value">-</span>
                     <span id="reference-use-case-badge"></span>
                   </span>
                 </div>
@@ -514,20 +519,25 @@
             </div>
           </details>
 
-          <div class="reference-panel">
-            <p class="preset-summary-label" data-i18n="references">References</p>
-            <ul id="infusion-reference-list" class="reference-list"></ul>
-            <details class="context-disclosure context-disclosure-compact">
-              <summary class="context-disclosure-summary" data-i18n="view_reference_checklist">How to verify references</summary>
-              <div class="context-disclosure-content">
-                <p class="helper-text" data-i18n="current_references_verified">You can open each reference link and review the original source directly.</p>
-                <p class="helper-text" data-i18n="reference_years_note">Source year refers to the original document year when available, while Last reviewed is the date this app rechecked the link.</p>
-                <p class="reference-note" data-i18n="infusion_reference_note">
-                  Label은 허가사항 기반 자료이고, Clinical과 Study-specific은 마취 관행 또는 특정 연구 상황을 요약한 자료입니다. 앱이 제시하는 범위는 절대적 표준 처방이 아니라 참고값이므로, 실제 사용 전 기관 프로토콜과 원문 레퍼런스를 함께 확인해야 합니다.
-                </p>
-              </div>
-            </details>
-          </div>
+	          <div class="reference-panel">
+	            <details id="infusion-references-disclosure" class="context-disclosure context-disclosure-compact" open>
+	              <summary class="context-disclosure-summary" data-i18n="view_references_and_verification">References and verification</summary>
+	              <div class="context-disclosure-content">
+	                <p class="preset-summary-label" data-i18n="references">References</p>
+	                <ul id="infusion-reference-list" class="reference-list"></ul>
+	                <details class="context-disclosure context-disclosure-compact">
+	                  <summary class="context-disclosure-summary" data-i18n="view_reference_checklist">How to verify references</summary>
+	                  <div class="context-disclosure-content">
+	                    <p class="helper-text" data-i18n="current_references_verified">You can open each reference link and review the original source directly.</p>
+	                    <p class="helper-text" data-i18n="reference_years_note">Source year refers to the original document year when available, while Last reviewed is the date this app rechecked the link.</p>
+	                    <p class="reference-note" data-i18n="infusion_reference_note">
+	                      Label은 허가사항 기반 자료이고, Clinical과 Study-specific은 마취 관행 또는 특정 연구 상황을 요약한 자료입니다. 앱이 제시하는 범위는 절대적 표준 처방이 아니라 참고값이므로, 실제 사용 전 기관 프로토콜과 원문 레퍼런스를 함께 확인해야 합니다.
+	                    </p>
+	                  </div>
+	                </details>
+	              </div>
+	            </details>
+	          </div>
 
           <div id="reference-table-card" class="reference-table-card hidden">
             <div class="reference-table-header">
@@ -587,22 +597,10 @@
             </details>
           </div>
 
-          <div class="workspace-toolbar">
-            <label class="field">
-              <span class="field-label" data-i18n="shared_patient_weight">Shared Patient Weight</span>
-              <div class="input-row">
-                <input id="workspace-shared-weight" name="workspace-shared-weight" type="number" inputmode="decimal" step="any" placeholder="예: 70" data-i18n-placeholder="placeholder_weight">
-                <span class="unit">kg</span>
-              </div>
-              <div class="workspace-shared-stepper-row">
-                <button type="button" class="workspace-stepper-button" data-workspace-shared-step="-1" data-i18n-aria-label="decrease_value" aria-label="Decrease value">-</button>
-                <button type="button" class="workspace-stepper-button" data-workspace-shared-step="1" data-i18n-aria-label="increase_value" aria-label="Increase value">+</button>
-              </div>
-            </label>
-
-            <div class="mode-selector workspace-layout-selector" role="tablist" aria-label="Multi Drug layout mode" data-i18n-aria-label="workspace_layout_aria">
-              <p class="mode-title" data-i18n="workspace_layout_title">Layout</p>
-              <div class="mode-options">
+		          <div class="workspace-toolbar">
+		            <div class="mode-selector workspace-layout-selector" role="tablist" aria-label="Multi Drug layout mode" data-i18n-aria-label="workspace_layout_aria">
+	              <p class="mode-title" data-i18n="workspace_layout_title">Layout</p>
+	              <div class="mode-options">
                 <button
                   type="button"
                   class="mode-option-button is-active"
@@ -618,12 +616,30 @@
                   data-workspace-layout-tab="full"
                   role="tab"
                   aria-selected="false"
-                >
-                  <span data-i18n="full_mode">Full</span>
-                </button>
-              </div>
-            </div>
-          </div>
+	                >
+		                  <span data-i18n="full_mode">Full</span>
+		                </button>
+		              </div>
+		            </div>
+
+		            <label class="field">
+		              <span class="field-label" data-i18n="shared_patient_weight">Shared Patient Weight</span>
+		              <div class="workspace-input-control-row is-inline-stepper">
+		                <div class="input-row">
+		                  <input id="workspace-shared-weight" name="workspace-shared-weight" type="number" inputmode="decimal" step="any" placeholder="예: 70" data-i18n-placeholder="placeholder_weight">
+		                  <span class="unit">kg</span>
+		                </div>
+		                <div class="workspace-shared-stepper-row workspace-stepper-row-inline">
+		                  <button type="button" class="workspace-stepper-button" data-workspace-shared-step="-1" data-i18n-aria-label="decrease_value" aria-label="Decrease value">-</button>
+		                  <button type="button" class="workspace-stepper-button" data-workspace-shared-step="1" data-i18n-aria-label="increase_value" aria-label="Increase value">+</button>
+		                </div>
+		              </div>
+		            </label>
+
+		            <div class="workspace-toolbar-actions">
+		              <button type="button" id="workspace-add-card-button" class="btn btn-secondary" data-i18n="add_drug">+ Add drug</button>
+		            </div>
+	          </div>
 
           <p id="workspace-quick-mode-hint" class="helper-text workspace-quick-hint" data-i18n="workspace_quick_mode_help">
             Quick에서는 카드 조작을 우선으로 보여주고, Full에서는 템플릿/근거 정보를 더 자세히 봅니다.
@@ -670,13 +686,9 @@
           </p>
 
           <div id="workspace-card-list" class="workspace-card-list" aria-live="polite"></div>
-
-          <div class="actions">
-            <button type="button" id="workspace-add-card-button" class="btn btn-secondary" data-i18n="add_drug">+ Add drug</button>
-          </div>
-        </section>
-        </section>
-      </section>
+	        </section>
+	        </section>
+	      </section>
 
       <section
         id="calculator-pediatric"

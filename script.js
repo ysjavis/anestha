@@ -32,6 +32,7 @@ const drugHelp = document.getElementById("drug-help");
 const favoriteDrugButton = document.getElementById("favorite-drug-button");
 const favoriteDrugsContainer = document.getElementById("favorite-drugs");
 const recentDrugsContainer = document.getElementById("recent-drugs");
+const infusionShortcutsDisclosure = document.getElementById("infusion-shortcuts-disclosure");
 const presetSummary = document.getElementById("preset-summary");
 const referenceRangeText = document.getElementById("reference-range-text");
 const referenceRangeBadge = document.getElementById("reference-range-badge");
@@ -54,6 +55,7 @@ const customDrugFields = document.getElementById("custom-drug-fields");
 const referenceTableCard = document.getElementById("reference-table-card");
 const referenceTableCaption = document.getElementById("reference-table-caption");
 const referenceTableBody = document.getElementById("reference-table-body");
+const infusionReferencesDisclosure = document.getElementById("infusion-references-disclosure");
 const infusionModeTabs = document.querySelectorAll("[data-infusion-mode-tab]");
 const infusionModePanels = document.querySelectorAll("[data-infusion-mode-panel]");
 const infusionLayoutTabs = document.querySelectorAll("[data-infusion-layout-tab]");
@@ -331,7 +333,7 @@ const TRANSLATIONS = {
     infusion_layout_title: "입력 방식",
     quick_mode: "Quick",
     full_mode: "Full",
-    infusion_quick_mode_help: "Quick mode는 값을 바꾸면 자동으로 계산됩니다. Full mode에서는 전체 폼과 수동 계산 흐름을 사용할 수 있습니다.",
+    infusion_quick_mode_help: "Quick mode는 값을 바꾸면 자동으로 계산됩니다. Full mode는 상세 설정이 필요할 때 사용하세요.",
     calculation_mode: "계산 방식",
     dose_to_rate: "Dose to Rate",
     rate_to_dose: "Rate to Dose",
@@ -359,8 +361,10 @@ const TRANSLATIONS = {
     reference_context: "적용 맥락",
     reference_check_section: "우선 확인할 섹션",
     usage_note: "사용 메모",
+    view_drug_shortcuts: "즐겨찾기와 최근 약물 보기",
     view_reference_interpretation: "레퍼런스 해석 보기",
     view_reference_checklist: "레퍼런스 확인 방법",
+    view_references_and_verification: "레퍼런스와 검증 정보 보기",
     view_reference_table_note: "Reference Table 안내",
     view_calculation_details: "계산 과정 보기",
     view_additional_details: "추가 정보 보기",
@@ -402,7 +406,7 @@ const TRANSLATIONS = {
     load_template: "Template 불러오기",
     save_current_setup: "현재 구성 저장",
     delete_template: "Template 삭제",
-    workspace_help: "Shared weight를 입력하면 모든 card에 같은 환자 체중이 적용됩니다.",
+    workspace_help: "Shared weight가 모든 card에 적용됩니다.",
     add_drug: "+ 약물 추가",
     pediatric_heading: "Pediatric Calculator",
     pediatric_description: "소아 약물 용량, emergency drug quick reference, airway / ETT reference를 한곳에서 빠르게 확인합니다.",
@@ -725,7 +729,7 @@ const TRANSLATIONS = {
     infusion_layout_title: "Input layout",
     quick_mode: "Quick",
     full_mode: "Full",
-    infusion_quick_mode_help: "Quick mode recalculates automatically while you edit. Use Full mode when you want the full form and manual calculate flow.",
+    infusion_quick_mode_help: "Quick mode recalculates automatically while you edit. Use Full mode when you need the detailed setup.",
     calculation_mode: "Calculation Mode",
     dose_to_rate: "Dose to Rate",
     rate_to_dose: "Rate to Dose",
@@ -753,8 +757,10 @@ const TRANSLATIONS = {
     reference_context: "Context",
     reference_check_section: "Check section",
     usage_note: "Usage note",
+    view_drug_shortcuts: "View drug shortcuts",
     view_reference_interpretation: "Reference interpretation",
     view_reference_checklist: "How to verify references",
+    view_references_and_verification: "View references and verification",
     view_reference_table_note: "Reference table note",
     view_calculation_details: "View calculation details",
     view_additional_details: "View more details",
@@ -796,7 +802,7 @@ const TRANSLATIONS = {
     load_template: "Load template",
     save_current_setup: "Save current setup",
     delete_template: "Delete template",
-    workspace_help: "When shared weight is entered, all cards use the same patient weight.",
+    workspace_help: "Shared weight applies to all cards.",
     add_drug: "+ Add drug",
     pediatric_heading: "Pediatric Calculator",
     pediatric_description: "Quickly review pediatric drug dosing, emergency drug quick reference, and airway / ETT references in one place.",
@@ -5052,12 +5058,31 @@ function renderQuickDrugButtons(container, drugIds) {
 function updateQuickDrugUI() {
   const selectedDrugId = drugSelect.value;
   const isFavorite = getFavoriteDrugIds().includes(selectedDrugId);
+  const favoriteDrugIds = getFavoriteDrugIds();
+  const recentDrugIds = getRecentDrugIds();
+  const favoriteDrugRow = favoriteDrugsContainer ? favoriteDrugsContainer.closest(".quick-drug-row") : null;
+  const recentDrugRow = recentDrugsContainer ? recentDrugsContainer.closest(".quick-drug-row") : null;
+  const quickDrugGroups = infusionShortcutsDisclosure
+    ? infusionShortcutsDisclosure.querySelector(".quick-drug-groups")
+    : null;
 
   favoriteDrugButton.textContent = isFavorite ? t("remove_favorite") : t("add_to_favorites");
   favoriteDrugButton.classList.toggle("is-active", isFavorite);
   favoriteDrugButton.disabled = selectedDrugId === "custom";
-  renderQuickDrugButtons(favoriteDrugsContainer, getFavoriteDrugIds());
-  renderQuickDrugButtons(recentDrugsContainer, getRecentDrugIds());
+  renderQuickDrugButtons(favoriteDrugsContainer, favoriteDrugIds);
+  renderQuickDrugButtons(recentDrugsContainer, recentDrugIds);
+
+  if (favoriteDrugRow) {
+    favoriteDrugRow.classList.toggle("hidden", !favoriteDrugIds.length);
+  }
+
+  if (recentDrugRow) {
+    recentDrugRow.classList.toggle("hidden", !recentDrugIds.length);
+  }
+
+  if (quickDrugGroups) {
+    quickDrugGroups.classList.toggle("hidden", !favoriteDrugIds.length && !recentDrugIds.length);
+  }
 }
 
 function syncPediatricCustomUnits(sourceField) {
@@ -5175,6 +5200,22 @@ function activateInfusionLayoutMode(modeId, options) {
     infusionQuickModeHint.classList.toggle("hidden", !isQuickMode);
   }
 
+  if (infusionReferencesDisclosure) {
+    if (isQuickMode) {
+      infusionReferencesDisclosure.removeAttribute("open");
+    } else {
+      infusionReferencesDisclosure.setAttribute("open", "open");
+    }
+  }
+
+  if (infusionShortcutsDisclosure) {
+    if (isQuickMode) {
+      infusionShortcutsDisclosure.removeAttribute("open");
+    } else {
+      infusionShortcutsDisclosure.setAttribute("open", "open");
+    }
+  }
+
   if (calculateButton) {
     calculateButton.classList.toggle("hidden", isQuickMode);
   }
@@ -5237,15 +5278,21 @@ function syncWorkspaceLayoutUi(modeId) {
   }
 
   if (workspaceQuickModeHint) {
-    workspaceQuickModeHint.classList.toggle("hidden", !isQuickMode);
+    workspaceQuickModeHint.classList.add("hidden");
   }
 
   if (workspaceTemplateDisclosure) {
     if (isQuickMode) {
+      workspaceTemplateDisclosure.classList.add("hidden");
       workspaceTemplateDisclosure.removeAttribute("open");
     } else {
+      workspaceTemplateDisclosure.classList.remove("hidden");
       workspaceTemplateDisclosure.setAttribute("open", "open");
     }
+  }
+
+  if (workspaceHelp) {
+    workspaceHelp.classList.toggle("hidden", !isQuickMode);
   }
 }
 
@@ -5594,22 +5641,22 @@ function renderInfusionWorkspace() {
       return `<option value="${drugPreset.id}" ${drugPreset.id === card.selectedDrugId ? "selected" : ""}>${drugPreset.name}</option>`;
     }).join("");
 
-    return `
-      <article class="workspace-card is-${drugCategory.key} ${isQuickWorkspaceMode ? "is-quick" : "is-full"}" data-workspace-card-id="${card.cardId}">
-        <div class="workspace-card-header">
-          <div>
-            <h3 class="workspace-card-title">${index + 1}. ${preset.name}</h3>
-            ${isQuickWorkspaceMode ? "" : `<p class="workspace-card-meta">${formatNumber(concentration, 1)} ${preset.concentrationUnit} / ${getDisplaySourceLabel(preset.metadata.source)} / Last reviewed ${preset.metadata.lastReviewed}</p>`}
-            <div class="workspace-card-tag-row">
-              <span class="workspace-card-tag is-${drugCategory.key}">${drugCategory.label}</span>
-              ${useCaseBadge}
-              ${rangeBadge}
-            </div>
-          </div>
-          <div class="quick-drug-list">
-            <button
-              type="button"
-              class="chip-button chip-button-secondary"
+	    return `
+	      <article class="workspace-card is-${drugCategory.key} ${isQuickWorkspaceMode ? "is-quick" : "is-full"}" data-workspace-card-id="${card.cardId}">
+	        <div class="workspace-card-header">
+	          <div class="workspace-card-header-main">
+	            <h3 class="workspace-card-title">${index + 1}. ${preset.name}</h3>
+	            ${isQuickWorkspaceMode ? "" : `<p class="workspace-card-meta">${formatNumber(concentration, 1)} ${preset.concentrationUnit} / ${getDisplaySourceLabel(preset.metadata.source)} / Last reviewed ${preset.metadata.lastReviewed}</p>`}
+	            <div class="workspace-card-tag-row">
+	              <span class="workspace-card-tag is-${drugCategory.key}">${drugCategory.label}</span>
+	              ${useCaseBadge}
+	              ${rangeBadge}
+	            </div>
+	          </div>
+	          <div class="quick-drug-list workspace-card-header-actions">
+	            <button
+	              type="button"
+	              class="chip-button chip-button-secondary"
               data-move-workspace-card-up="${card.cardId}"
               ${index === 0 ? "disabled" : ""}
             >
@@ -5630,11 +5677,11 @@ function renderInfusionWorkspace() {
               ${workspaceState.cards.length === 1 ? "disabled" : ""}
             >
               ${t("remove")}
-            </button>
-          </div>
-        </div>
+	            </button>
+	          </div>
+	        </div>
 
-        <div class="form-grid">
+	        <div class="form-grid workspace-card-fields ${isQuickWorkspaceMode ? "workspace-card-fields-quick" : ""}">
           <label class="field">
             <span class="field-label">${t("workspace_drug")}</span>
             <div class="select-row">
@@ -5721,12 +5768,12 @@ function renderInfusionWorkspace() {
               ${t("workspace_standard_dilution_note", { dilution: formatDilutionPreset(preset.dilutionPresets[0] || null) })}
             </p>
           </div>
-        </details>
+	        </details>
 
-        <div class="quick-drug-actions">
-          <button
-            type="button"
-            class="chip-button chip-button-secondary"
+	        <div class="quick-drug-actions workspace-card-footer-actions">
+	          <button
+	            type="button"
+	            class="chip-button chip-button-secondary"
             data-apply-workspace-dilution="${card.cardId}"
             ${dilutionPreset ? "" : "disabled"}
             title="${dilutionPreset ? t("workspace_apply_standard_dilution_title") : t("workspace_no_standard_dilution_title")}"
@@ -6325,6 +6372,7 @@ function clearResult() {
   referenceTableCaption.textContent = "-";
   referenceTableBody.innerHTML = "";
   resultWarning.textContent = t("result_warning_default");
+  resultWarning.classList.add("is-neutral");
   if (resultRangeBadge) {
     resultRangeBadge.innerHTML = "";
   }
@@ -6488,6 +6536,7 @@ function showDoseToRateResult(values) {
   resultWarning.textContent = isOutOfRange
     ? t("infusion_result_out_of_range")
     : t("infusion_result_reference_only");
+  resultWarning.classList.toggle("is-neutral", !isOutOfRange);
   resultCard.classList.remove("hidden");
   renderQuickResultPreview({
     primary: `${formatNumber(rate, 2)} mL/hr`,
@@ -6550,6 +6599,7 @@ function showRateToDoseResult(values) {
   resultWarning.textContent = isOutOfRange
     ? t("infusion_result_out_of_range")
     : t("infusion_result_reference_only");
+  resultWarning.classList.toggle("is-neutral", !isOutOfRange);
   resultCard.classList.remove("hidden");
   renderQuickResultPreview({
     primary: formatInfusionDoseDisplay(displayedDose, doseUnit, values.drug, values.weight),
@@ -6620,6 +6670,7 @@ function showReferenceTableResult(values) {
   resultWarning.textContent = hasOutOfRangeRow
     ? t("infusion_result_out_of_range")
     : t("infusion_result_reference_only");
+  resultWarning.classList.toggle("is-neutral", !hasOutOfRangeRow);
   resultCard.classList.remove("hidden");
 }
 
@@ -7328,6 +7379,85 @@ function handleWorkspaceAddCard() {
   renderInfusionWorkspace();
 }
 
+function captureWorkspaceCardInputFocusState(input) {
+  if (!input || !input.dataset.workspaceCardId || !input.dataset.workspaceField) {
+    return null;
+  }
+
+  const focusState = {
+    cardId: input.dataset.workspaceCardId,
+    field: input.dataset.workspaceField,
+    selectionStart: null,
+    selectionEnd: null
+  };
+
+  try {
+    if (typeof input.selectionStart === "number") {
+      focusState.selectionStart = input.selectionStart;
+      focusState.selectionEnd = typeof input.selectionEnd === "number"
+        ? input.selectionEnd
+        : input.selectionStart;
+    }
+  } catch (error) {
+    focusState.selectionStart = null;
+    focusState.selectionEnd = null;
+  }
+
+  return focusState;
+}
+
+function restoreWorkspaceCardInputFocusState(focusState) {
+  if (!focusState || !workspaceCardList) {
+    return;
+  }
+
+  const nextInput = workspaceCardList.querySelector(
+    `[data-workspace-card-id="${focusState.cardId}"][data-workspace-field="${focusState.field}"]`
+  );
+
+  if (!nextInput) {
+    return;
+  }
+
+  nextInput.focus({
+    preventScroll: true
+  });
+
+  if (
+    typeof focusState.selectionStart === "number"
+    && typeof nextInput.setSelectionRange === "function"
+  ) {
+    try {
+      nextInput.setSelectionRange(
+        focusState.selectionStart,
+        typeof focusState.selectionEnd === "number"
+          ? focusState.selectionEnd
+          : focusState.selectionStart
+      );
+    } catch (error) {
+      // Some input types do not support selection restoration.
+    }
+  }
+}
+
+function renderInfusionWorkspacePreservingFocus(focusState) {
+  renderInfusionWorkspace();
+  restoreWorkspaceCardInputFocusState(focusState);
+}
+
+function shouldDeferWorkspaceQuickRender(input) {
+  if (!input || input.tagName !== "INPUT" || input.type !== "number") {
+    return false;
+  }
+
+  const trimmedValue = input.value.trim();
+
+  return trimmedValue === "-"
+    || trimmedValue === "."
+    || trimmedValue === "-."
+    || trimmedValue.endsWith(".");
+}
+
 function updateWorkspaceCardState(cardId, field, value, options) {
   const workspaceState = getInfusionWorkspaceState();
   const sharedWeight = Number(workspaceState.sharedWeight);
@@ -7564,6 +7694,11 @@ function handleWorkspaceCardInput(event) {
     return;
   }
 
+  const isQuickWorkspaceMode = sanitizeWorkspaceLayoutMode(getInfusionWorkspaceState().viewMode) === "quick";
+  const focusState = isQuickWorkspaceMode
+    ? captureWorkspaceCardInputFocusState(input)
+    : null;
+
   updateWorkspaceCardState(
     input.dataset.workspaceCardId,
     input.dataset.workspaceField,
@@ -7572,6 +7707,10 @@ function handleWorkspaceCardInput(event) {
       displayDoseUnit: input.dataset.workspaceDoseDisplayUnit
     }
   );
+
+  if (isQuickWorkspaceMode && !shouldDeferWorkspaceQuickRender(input)) {
+    renderInfusionWorkspacePreservingFocus(focusState);
+  }
 }
 
 function handleWorkspaceCardChange(event) {
