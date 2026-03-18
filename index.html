@@ -92,6 +92,17 @@
           <button
             type="button"
             class="calculator-tab"
+            id="tab-weight"
+            data-calculator-tab="weight"
+            role="tab"
+            aria-selected="false"
+            aria-controls="calculator-weight"
+          >
+            <span data-i18n="tab_weight">Weight</span>
+          </button>
+          <button
+            type="button"
+            class="calculator-tab"
             id="tab-support"
             data-calculator-tab="support"
             role="tab"
@@ -1233,6 +1244,92 @@
       </section>
 
       <section
+        id="calculator-weight"
+        class="calculator-view hidden"
+        data-calculator-view="weight"
+        role="tabpanel"
+        aria-labelledby="tab-weight"
+      >
+        <section class="calculator-panel">
+          <div class="calculator-heading">
+            <p class="calculator-kicker" data-i18n="weight_tools_kicker">Weight Tools</p>
+            <h2 data-i18n="weight_tools_heading">Body Weight Calculator</h2>
+            <p class="calculator-description" data-i18n="weight_tools_description">
+              입력한 Height/Weight와 biological sex를 기준으로 BMI, IBW, LBW, AdjBW를 빠르게 계산합니다.
+            </p>
+          </div>
+
+          <section class="support-card">
+            <div class="weight-tools-grid">
+              <label class="field">
+                <span class="field-label" data-i18n="biological_sex">Biological Sex</span>
+                <div class="select-row">
+                  <select id="support-weight-sex" name="support-weight-sex">
+                    <option value="male" data-i18n="male">Male</option>
+                    <option value="female" data-i18n="female">Female</option>
+                  </select>
+                </div>
+              </label>
+
+              <label class="field">
+                <span class="field-label" data-i18n="height_cm">Height (cm)</span>
+                <div class="input-row">
+                  <input id="support-weight-height" name="support-weight-height" type="number" inputmode="decimal" step="any" placeholder="예: 170" data-i18n-placeholder="placeholder_height_cm">
+                  <span class="unit">cm</span>
+                </div>
+              </label>
+
+              <label class="field">
+                <span class="field-label" data-i18n="total_body_weight_kg">Total Body Weight (kg)</span>
+                <div class="input-row">
+                  <input id="support-weight-total" name="support-weight-total" type="number" inputmode="decimal" step="any" placeholder="예: 70" data-i18n-placeholder="placeholder_weight">
+                  <span class="unit">kg</span>
+                </div>
+              </label>
+            </div>
+
+            <div class="weight-tools-result-grid" aria-live="polite">
+              <div class="weight-tools-result-item">
+                <p class="pump-setting-label" data-i18n="weight_tools_bmi">BMI</p>
+                <p id="support-weight-bmi" class="pump-setting-range">-</p>
+              </div>
+              <div class="weight-tools-result-item">
+                <p class="pump-setting-label" data-i18n="weight_tools_ibw">IBW (Devine)</p>
+                <p id="support-weight-ibw" class="pump-setting-range">-</p>
+              </div>
+              <div class="weight-tools-result-item">
+                <p class="pump-setting-label" data-i18n="weight_tools_lbw">LBW (Janmahasatian)</p>
+                <p id="support-weight-lbw" class="pump-setting-range">-</p>
+              </div>
+              <div class="weight-tools-result-item">
+                <p class="pump-setting-label" data-i18n="weight_tools_adjbw">AdjBW (40%)</p>
+                <p id="support-weight-adjbw" class="pump-setting-range">-</p>
+              </div>
+            </div>
+
+            <details class="context-disclosure context-disclosure-compact weight-tools-advanced">
+              <summary class="context-disclosure-summary" data-i18n="view_advanced_weight_metrics">고급 지표 보기</summary>
+              <div class="context-disclosure-content">
+                <div class="weight-tools-advanced-grid" aria-live="polite">
+                  <div class="weight-tools-result-item">
+                    <p class="pump-setting-label" data-i18n="weight_tools_bsa">BSA (Mosteller)</p>
+                    <p id="support-weight-bsa" class="pump-setting-range">-</p>
+                  </div>
+                </div>
+                <p class="helper-text" data-i18n="weight_tools_bsa_note">
+                  BSA는 일부 약물/영역에서 쓰이는 지표이며 마취과 일반 도징의 기본값은 아닙니다.
+                </p>
+              </div>
+            </details>
+
+            <p id="support-weight-note" class="helper-text" data-i18n="weight_tools_note_default">
+              Height와 Total Body Weight를 입력하면 체중 지표를 계산합니다.
+            </p>
+          </section>
+        </section>
+      </section>
+
+      <section
         id="calculator-support"
         class="calculator-view hidden"
         data-calculator-view="support"
@@ -1249,80 +1346,6 @@
           </div>
 
           <div class="support-grid">
-            <section class="support-card support-card-wide" aria-labelledby="support-weight-tools-heading">
-              <p class="support-card-kicker" data-i18n="weight_tools_kicker">Weight Tools</p>
-              <h3 id="support-weight-tools-heading" data-i18n="weight_tools_heading">Body Weight Calculator</h3>
-              <p class="support-card-description" data-i18n="weight_tools_description">
-                입력한 Height/Weight와 biological sex를 기준으로 BMI, IBW, LBW, AdjBW를 빠르게 계산합니다.
-              </p>
-
-              <div class="weight-tools-grid">
-                <label class="field">
-                  <span class="field-label" data-i18n="biological_sex">Biological Sex</span>
-                  <div class="select-row">
-                    <select id="support-weight-sex" name="support-weight-sex">
-                      <option value="male" data-i18n="male">Male</option>
-                      <option value="female" data-i18n="female">Female</option>
-                    </select>
-                  </div>
-                </label>
-
-                <label class="field">
-                  <span class="field-label" data-i18n="height_cm">Height (cm)</span>
-                  <div class="input-row">
-                    <input id="support-weight-height" name="support-weight-height" type="number" inputmode="decimal" step="any" placeholder="예: 170" data-i18n-placeholder="placeholder_height_cm">
-                    <span class="unit">cm</span>
-                  </div>
-                </label>
-
-                <label class="field">
-                  <span class="field-label" data-i18n="total_body_weight_kg">Total Body Weight (kg)</span>
-                  <div class="input-row">
-                    <input id="support-weight-total" name="support-weight-total" type="number" inputmode="decimal" step="any" placeholder="예: 70" data-i18n-placeholder="placeholder_weight">
-                    <span class="unit">kg</span>
-                  </div>
-                </label>
-              </div>
-
-              <div class="weight-tools-result-grid" aria-live="polite">
-                <div class="weight-tools-result-item">
-                  <p class="pump-setting-label" data-i18n="weight_tools_bmi">BMI</p>
-                  <p id="support-weight-bmi" class="pump-setting-range">-</p>
-                </div>
-                <div class="weight-tools-result-item">
-                  <p class="pump-setting-label" data-i18n="weight_tools_ibw">IBW (Devine)</p>
-                  <p id="support-weight-ibw" class="pump-setting-range">-</p>
-                </div>
-                <div class="weight-tools-result-item">
-                  <p class="pump-setting-label" data-i18n="weight_tools_lbw">LBW (Janmahasatian)</p>
-                  <p id="support-weight-lbw" class="pump-setting-range">-</p>
-                </div>
-                <div class="weight-tools-result-item">
-                  <p class="pump-setting-label" data-i18n="weight_tools_adjbw">AdjBW (40%)</p>
-                  <p id="support-weight-adjbw" class="pump-setting-range">-</p>
-                </div>
-              </div>
-
-              <details class="context-disclosure context-disclosure-compact weight-tools-advanced">
-                <summary class="context-disclosure-summary" data-i18n="view_advanced_weight_metrics">고급 지표 보기</summary>
-                <div class="context-disclosure-content">
-                  <div class="weight-tools-advanced-grid" aria-live="polite">
-                    <div class="weight-tools-result-item">
-                      <p class="pump-setting-label" data-i18n="weight_tools_bsa">BSA (Mosteller)</p>
-                      <p id="support-weight-bsa" class="pump-setting-range">-</p>
-                    </div>
-                  </div>
-                  <p class="helper-text" data-i18n="weight_tools_bsa_note">
-                    BSA는 일부 약물/영역에서 쓰이는 지표이며 마취과 일반 도징의 기본값은 아닙니다.
-                  </p>
-                </div>
-              </details>
-
-              <p id="support-weight-note" class="helper-text" data-i18n="weight_tools_note_default">
-                Height와 Total Body Weight를 입력하면 체중 지표를 계산합니다.
-              </p>
-            </section>
-
             <section id="support-donate-card" class="support-card hidden" aria-labelledby="support-donate-heading">
               <p class="support-card-kicker" data-i18n="support_donate_kicker">Support</p>
               <h3 id="support-donate-heading" data-i18n="support_donate_heading">Support ongoing updates</h3>
