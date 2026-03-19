@@ -1219,6 +1219,8 @@ body {
 }
 
 .input-row input {
+  flex: 1 1 auto;
+  min-width: 0;
   width: 100%;
   border: 0;
   outline: none;
@@ -1267,6 +1269,9 @@ body {
 }
 
 .unit {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
   padding: 0 14px;
   border-left: 1px solid var(--border);
   font-size: 0.9rem;
@@ -1276,6 +1281,9 @@ body {
 }
 
 .unit-select {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
   border: 0;
   border-left: 1px solid var(--border);
   outline: none;
@@ -1637,12 +1645,28 @@ body {
 
 #infusion-view-workspace.is-quick-mode .workspace-card-fields-quick {
   order: 3;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-fields-quick > .field:first-child {
+  grid-column: 1 / -1;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-fields-quick .workspace-input-control-row.is-inline-stepper {
+  grid-template-columns: 1fr;
+  align-items: stretch;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-fields-quick .input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
 }
 
 #infusion-view-workspace.is-quick-mode .workspace-card-fields-quick .input-row input {
   min-height: 56px;
+  width: 100%;
   padding: 16px 14px;
   font-size: 1.18rem;
   font-weight: 800;
@@ -1653,10 +1677,26 @@ body {
   opacity: 1;
 }
 
+#infusion-view-workspace.is-quick-mode .workspace-card-fields-quick .input-row input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-fields-quick .input-row input[type="number"]::-webkit-outer-spin-button,
+#infusion-view-workspace.is-quick-mode .workspace-card-fields-quick .input-row input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 #infusion-view-workspace.is-quick-mode .workspace-card-fields-quick .unit,
 #infusion-view-workspace.is-quick-mode .workspace-card-fields-quick .unit-select {
   min-height: 56px;
   font-size: 0.94rem;
+}
+
+#infusion-view-workspace.is-quick-mode .workspace-card-fields-quick .workspace-stepper-row.workspace-stepper-row-inline {
+  margin-top: 8px;
+  justify-content: flex-start;
 }
 
 #infusion-view-workspace.is-quick-mode .workspace-card-fields-quick .workspace-stepper-button {
