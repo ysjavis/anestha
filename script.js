@@ -35,6 +35,9 @@ import {
   updateDantroleneQuickState, updateInfusionWorkspaceState, updateInfusionTemplates,
   getFavoriteDrugIds, getRecentDrugIds
 } from './js/store/state.js';
+import { currentLanguage, setCurrentLanguage, t, loadLanguagePreference, saveLanguagePreference } from './js/i18n.js';
+import { getPreferredNitroglycerinDoseView, getWorkspaceNitroglycerinDoseView, getDisplayDoseUnit, convertDoseValueForDisplay, convertDoseValueToReferenceUnit, convertDoseListForDisplay, convertDoseListToReferenceUnit, formatDoseValueWithEquivalent, formatDoseRangeWithEquivalent, formatInfusionDoseDisplay, formatInfusionRangeDisplay, formatEditableDoseValue, formatEditableDoseList } from './js/calc/infusion-display.js';
+import { SUPRAGLOTTIC_DEVICE_GUIDES, ORAL_AIRWAY_GUIDE, LARYNGOSCOPE_GUIDE, NASAL_AIRWAY_GUIDE, FACE_MASK_GUIDE, getSupraglotticDeviceRecommendation, findGuideItemByWeightOrAge, getOralAirwayRecommendation, getLaryngoscopeRecommendation, getNasalAirwayRecommendation, getFaceMaskRecommendation } from './js/data/pediatric-airway.js';
 
 // -----------------------------
 // DOM references
@@ -294,37 +297,6 @@ const SUPPORT_CONFIG = {
   kofiUrl: ""
 };
 
-let currentLanguage = "ko";
-
-function t(key, replacements) {
-  const dictionary = TRANSLATIONS[currentLanguage] || TRANSLATIONS.ko;
-  const fallbackDictionary = TRANSLATIONS.ko;
-  let template = dictionary[key] || fallbackDictionary[key] || key;
-
-  if (!replacements) {
-    return template;
-  }
-
-  Object.keys(replacements).forEach(function (token) {
-    template = template.replace(new RegExp(`\\{${token}\\}`, "g"), replacements[token]);
-  });
-
-  return template;
-}
-
-function loadLanguagePreference() {
-  const savedLanguage = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
-  if (savedLanguage === "ko" || savedLanguage === "en") {
-    return savedLanguage;
-  }
-
-  return "en";
-}
-
-function saveLanguagePreference(language) {
-  window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
-}
-
 function applyStaticTranslations() {
   document.documentElement.lang = currentLanguage === "en" ? "en" : "ko";
 
@@ -513,130 +485,6 @@ function getSelectedNitroglycerinDoseView() {
   );
 }
 
-function getPreferredNitroglycerinDoseView() {
-  return sanitizeNitroglycerinDoseUnitView(getSingleDrugState().nitroglycerinDoseUnitView);
-}
-
-function getWorkspaceNitroglycerinDoseView(card, weightKg) {
-  const preferredView = sanitizeNitroglycerinDoseUnitView(card && card.nitroglycerinDoseUnitView);
-
-  if (preferredView === "mcg/kg/min" && !isPositiveNumber(weightKg)) {
-    return "mcg/min";
-  }
-
-  return preferredView;
-}
-
-function getDisplayDoseUnit(drug, weightKg, preferredView) {
-  if (!isNitroglycerinDrug(drug)) {
-    return (drug && drug.referenceRange && drug.referenceRange.unit) || "mcg/kg/min";
-  }
-
-  return sanitizeNitroglycerinDoseUnitView(preferredView || getPreferredNitroglycerinDoseView());
-}
-
-function convertDoseValueForDisplay(value, drug, weightKg, displayUnit) {
-  if (!isNitroglycerinDrug(drug) || displayUnit !== "mcg/kg/min" || !isPositiveNumber(weightKg)) {
-    return value;
-  }
-
-  return value / weightKg;
-}
-
-function convertDoseValueToReferenceUnit(value, drug, weightKg, displayUnit) {
-  if (!isNitroglycerinDrug(drug) || displayUnit !== "mcg/kg/min" || !isPositiveNumber(weightKg)) {
-    return value;
-  }
-
-  return value * weightKg;
-}
-
-function convertDoseListForDisplay(values, drug, weightKg, displayUnit) {
-  return values.map(function (value) {
-    return convertDoseValueForDisplay(value, drug, weightKg, displayUnit);
-  });
-}
-
-function convertDoseListToReferenceUnit(values, drug, weightKg, displayUnit) {
-  return values.map(function (value) {
-    return convertDoseValueToReferenceUnit(value, drug, weightKg, displayUnit);
-  });
-}
-
-function formatDoseValueWithEquivalent(value, unit) {
-  if (unit === "mcg/kg/hr") {
-    return `${formatNumber(value, 3)} ${unit} (${formatNumber(value / 1000, 3)} mg/kg/hr)`;
-  }
-
-  return `${formatNumber(value, 3)} ${unit}`;
-}
-
-function formatDoseRangeWithEquivalent(min, max, unit) {
-  if (unit === "mcg/kg/hr") {
-    return `${formatNumber(min, 3)} - ${formatNumber(max, 3)} ${unit} (${formatNumber(min / 1000, 3)} - ${formatNumber(max / 1000, 3)} mg/kg/hr)`;
-  }
-
-  return `${formatNumber(min, 3)} - ${formatNumber(max, 3)} ${unit}`;
-}
-
-function formatInfusionDoseDisplay(value, unit, drug, weightKg) {
-  const baseText = formatDoseValueWithEquivalent(value, unit);
-
-  if (
-    drug &&
-    drug.id === "nitroglycerin" &&
-    unit === "mcg/kg/min" &&
-    isPositiveNumber(weightKg)
-  ) {
-    return `${baseText} (${formatNumber(value * weightKg, 3)} mcg/min)`;
-  }
-
-  if (
-    drug &&
-    drug.id === "nitroglycerin" &&
-    unit === "mcg/min" &&
-    isPositiveNumber(weightKg)
-  ) {
-    return `${baseText} (${formatNumber(value / weightKg, 3)} mcg/kg/min)`;
-  }
-
-  return baseText;
-}
-
-function formatInfusionRangeDisplay(min, max, unit, drug, weightKg) {
-  const baseText = formatDoseRangeWithEquivalent(min, max, unit);
-
-  if (
-    drug &&
-    drug.id === "nitroglycerin" &&
-    unit === "mcg/kg/min" &&
-    isPositiveNumber(weightKg)
-  ) {
-    return `${baseText} (${formatNumber(min * weightKg, 3)} - ${formatNumber(max * weightKg, 3)} mcg/min)`;
-  }
-
-  if (
-    drug &&
-    drug.id === "nitroglycerin" &&
-    unit === "mcg/min" &&
-    isPositiveNumber(weightKg)
-  ) {
-    return `${baseText} (${formatNumber(min / weightKg, 3)} - ${formatNumber(max / weightKg, 3)} mcg/kg/min)`;
-  }
-
-  return baseText;
-}
-
-function formatEditableDoseValue(value) {
-  return Number(Number(value).toFixed(3)).toString();
-}
-
-function formatEditableDoseList(values) {
-  return values.map(function (value) {
-    return formatEditableDoseValue(value);
-  }).join(", ");
-}
-
 function getPediatricEmergencyCards(weightKg) {
   const epinephrineDoseMg = weightKg * 0.01;
   const epinephrineVolumeMl = epinephrineDoseMg / 0.1;
@@ -710,127 +558,6 @@ function getPediatricEmergencyCards(weightKg) {
         : "Amiodarone을 사용하지 않을 때 shock-refractory VF/pVT의 대안 antiarrhythmic입니다."
     }
   ];
-}
-
-const SUPRAGLOTTIC_DEVICE_GUIDES = {
-  "i-gel": {
-    label: "i-gel",
-    sourceLabel: "Intersurgical weight guide",
-    sizes: [
-      { size: "1", minWeight: 2, maxWeight: 5 },
-      { size: "1.5", minWeight: 5, maxWeight: 12 },
-      { size: "2", minWeight: 10, maxWeight: 25 },
-      { size: "2.5", minWeight: 25, maxWeight: 35 },
-      { size: "3", minWeight: 30, maxWeight: 60 }
-    ]
-  },
-  "lma-supreme": {
-    label: "LMA Supreme",
-    sourceLabel: "Teleflex weight guide",
-    sizes: [
-      { size: "1", minWeight: 0, maxWeight: 5 },
-      { size: "1.5", minWeight: 5, maxWeight: 10 },
-      { size: "2", minWeight: 10, maxWeight: 20 },
-      { size: "2.5", minWeight: 20, maxWeight: 30 },
-      { size: "3", minWeight: 30, maxWeight: 50 }
-    ]
-  }
-};
-
-const ORAL_AIRWAY_GUIDE = [
-  { minWeight: 0, maxWeight: 5, minAge: 0, maxAge: 0.5, size: "000", length: "40 mm", label: "Neonate / small infant" },
-  { minWeight: 5, maxWeight: 10, minAge: 0.5, maxAge: 1.5, size: "0", length: "50 mm", label: "Infant" },
-  { minWeight: 10, maxWeight: 20, minAge: 1.5, maxAge: 5, size: "1", length: "60 mm", label: "Toddler / preschool" },
-  { minWeight: 20, maxWeight: 35, minAge: 5, maxAge: 9, size: "2", length: "70 mm", label: "School-age child" },
-  { minWeight: 35, maxWeight: 50, minAge: 9, maxAge: 13, size: "3", length: "80 mm", label: "Older child" },
-  { minWeight: 50, maxWeight: 999, minAge: 13, maxAge: 99, size: "4", length: "90 mm", label: "Adolescent" }
-];
-
-const LARYNGOSCOPE_GUIDE = [
-  {
-    minWeight: 0,
-    maxWeight: 5,
-    minAge: 0,
-    maxAge: 0.25,
-    primaryBlade: "Miller 0",
-    secondaryBlade: "Miller 1 if needed",
-    label: "Neonate / small infant"
-  },
-  {
-    minWeight: 5,
-    maxWeight: 10,
-    minAge: 0.25,
-    maxAge: 2,
-    primaryBlade: "Miller 1",
-    secondaryBlade: "Miller 0-1 depending on anatomy",
-    label: "Infant / toddler"
-  },
-  {
-    minWeight: 10,
-    maxWeight: 20,
-    minAge: 2,
-    maxAge: 6,
-    primaryBlade: "Miller 2 or Macintosh 2",
-    secondaryBlade: "Choose straight vs curved by anatomy and operator preference",
-    label: "Young child"
-  },
-  {
-    minWeight: 20,
-    maxWeight: 40,
-    minAge: 6,
-    maxAge: 12,
-    primaryBlade: "Macintosh 2",
-    secondaryBlade: "Macintosh 3 for larger child",
-    label: "School-age child"
-  },
-  {
-    minWeight: 40,
-    maxWeight: 999,
-    minAge: 12,
-    maxAge: 99,
-    primaryBlade: "Macintosh 3",
-    secondaryBlade: "Macintosh 2-3 depending on size and anatomy",
-    label: "Adolescent"
-  }
-];
-
-const NASAL_AIRWAY_GUIDE = [
-  { minAge: 0, maxAge: 1, minWeight: 0, maxWeight: 10, insertionDepth: "7.0-8.5 cm", label: "First year of life" },
-  { minAge: 1, maxAge: 2, minWeight: 8, maxWeight: 15, insertionDepth: "8.0-10.0 cm", label: "Second year of life" }
-];
-
-const FACE_MASK_GUIDE = [
-  { minWeight: 0, maxWeight: 5, minAge: 0, maxAge: 0.5, size: "0-1", label: "Neonate / small infant" },
-  { minWeight: 5, maxWeight: 10, minAge: 0.5, maxAge: 1.5, size: "1", label: "Infant" },
-  { minWeight: 10, maxWeight: 20, minAge: 1.5, maxAge: 5, size: "2", label: "Toddler / preschool child" },
-  { minWeight: 20, maxWeight: 35, minAge: 5, maxAge: 10, size: "3", label: "School-age child" },
-  { minWeight: 35, maxWeight: 60, minAge: 10, maxAge: 18, size: "4", label: "Older child / adolescent" }
-];
-
-function getSupraglotticDeviceRecommendation(deviceId, weightKg) {
-  const guide = SUPRAGLOTTIC_DEVICE_GUIDES[deviceId];
-
-  if (!guide || !isPositiveNumber(weightKg)) {
-    return null;
-  }
-
-  const matchingSize = guide.sizes.find(function (sizeItem) {
-    return weightKg >= sizeItem.minWeight && weightKg <= sizeItem.maxWeight;
-  });
-
-  return matchingSize
-    ? {
-      deviceLabel: guide.label,
-      sourceLabel: guide.sourceLabel,
-      size: matchingSize.size,
-      weightRange: `${matchingSize.minWeight}-${matchingSize.maxWeight} kg`
-    }
-    : {
-      deviceLabel: guide.label,
-      sourceLabel: guide.sourceLabel,
-      size: "Out of listed range",
-      weightRange: "Verify manufacturer guidance"
-    };
 }
 
 function getReferenceItems(referenceIds) {
@@ -1168,42 +895,6 @@ function getPediatricAirwayReferenceIds(values) {
   }
 
   return [];
-}
-
-function findGuideItemByWeightOrAge(guideItems, weightKg, ageYears) {
-  if (isPositiveNumber(weightKg)) {
-    const weightMatch = guideItems.find(function (item) {
-      return weightKg >= item.minWeight && weightKg <= item.maxWeight;
-    });
-
-    if (weightMatch) {
-      return weightMatch;
-    }
-  }
-
-  if (isPositiveNumber(ageYears)) {
-    return guideItems.find(function (item) {
-      return ageYears >= item.minAge && ageYears < item.maxAge;
-    }) || null;
-  }
-
-  return null;
-}
-
-function getOralAirwayRecommendation(weightKg, ageYears) {
-  return findGuideItemByWeightOrAge(ORAL_AIRWAY_GUIDE, weightKg, ageYears);
-}
-
-function getLaryngoscopeRecommendation(weightKg, ageYears) {
-  return findGuideItemByWeightOrAge(LARYNGOSCOPE_GUIDE, weightKg, ageYears);
-}
-
-function getNasalAirwayRecommendation(weightKg, ageYears) {
-  return findGuideItemByWeightOrAge(NASAL_AIRWAY_GUIDE, weightKg, ageYears);
-}
-
-function getFaceMaskRecommendation(weightKg, ageYears) {
-  return findGuideItemByWeightOrAge(FACE_MASK_GUIDE, weightKg, ageYears);
 }
 
 function getPediatricAirwayWarningText(deviceCategory) {
@@ -3818,7 +3509,7 @@ function handleInfusionQuickStepperClick(event) {
 }
 
 function setLanguage(language) {
-  currentLanguage = language === "en" ? "en" : "ko";
+  setCurrentLanguage(language === "en" ? "en" : "ko");
   saveLanguagePreference(currentLanguage);
   applyStaticTranslations();
   updateFeedbackLinks();
@@ -4796,7 +4487,7 @@ if (languageSelect) {
 // Initial restore
 // -----------------------------
 
-currentLanguage = loadLanguagePreference();
+setCurrentLanguage(loadLanguagePreference());
 applyStaticTranslations();
 updateFeedbackLinks();
 updateSupportLinks();
