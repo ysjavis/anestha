@@ -39,6 +39,11 @@ Implemented calculators:
 
 ### 2026-03-20
 
+ES module refactoring Phase 4e completed:
+- Extracted `js/ui/support.js`: feedback/support DOM refs, config, link resolution, static translations
+- `script.js` is now a pure bootstrap (~124 lines): imports, tab routing, language orchestration, initial restore
+- ES module refactoring is complete — all application logic lives in dedicated modules
+
 ES module refactoring Phase 4d completed:
 - Extracted `js/ui/infusion.js` (~1558 lines): Infusion Single Drug DOM refs, drug config, view state, validation, quick mode sliders/steppers, result rendering, all event handlers and wiring
 - Extracted `js/ui/workspace.js` (~887 lines): Multi Drug workspace DOM refs, card rendering, layout mode management, card state management, template handlers, all event handlers and wiring
@@ -315,6 +320,7 @@ The codebase is being progressively split from a single `script.js` into ES modu
 | 4b | Dilution UI (`js/ui/dilution.js`) | 3994 → ~3888 |
 | 4c | Pediatric UI (`js/ui/pediatric.js`) | ~3888 → ~2694 |
 | 4d | Infusion Single Drug UI (`js/ui/infusion.js`) + Workspace UI (`js/ui/workspace.js`) + shared utils | ~2694 → ~286 |
+| 4e | Support/Feedback UI (`js/ui/support.js`) | ~286 → ~124 |
 
 Current module structure:
 - `js/data/` — translations, drug presets, pediatric presets, reference registry, mh-presets, pediatric-airway
@@ -327,12 +333,13 @@ Current module structure:
 - `js/ui/pediatric.js` — Pediatric tab DOM refs, all rendering/display functions, all event handlers, wiring
 - `js/ui/infusion.js` — Infusion Single Drug DOM refs, drug config layer, view state, validation, quick mode sliders/steppers, result rendering, event handlers, wiring
 - `js/ui/workspace.js` — Multi Drug workspace DOM refs, card rendering, layout mode, card state management, template handlers, event wiring
+- `js/ui/support.js` — Support/Feedback DOM refs, config, feedback/contact link resolution, i18n static translations
 
-Remaining in `script.js` (~286 lines, thin orchestration layer):
+Remaining in `script.js` (~124 lines, pure bootstrap):
 - Imports from all UI modules
 - Calculator tab / infusion view routing
-- Support / feedback config and link management
 - `setLanguage()` orchestration across modules
+- Event wiring for calculator tabs, infusion view tabs, language select
 - Initial restore bootstrap
 
 Important state structures:
