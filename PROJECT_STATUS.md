@@ -304,6 +304,7 @@ The codebase is being progressively split from a single `script.js` into ES modu
 | 2 | Persistence + state layer | 5538 → 4823 |
 | 3 | i18n layer + infusion display helpers + pediatric airway data | 4823 → 4509 |
 | 4a | Reference helpers, Weight UI, MH/Dantrolene UI | 4509 → 3994 |
+| 4b | Dilution UI (`js/ui/dilution.js`) | 3994 → ~3888 |
 
 Current module structure:
 - `js/data/` — translations, drug presets, pediatric presets, reference registry, mh-presets, pediatric-airway
@@ -312,9 +313,10 @@ Current module structure:
 - `js/i18n.js` — t(), currentLanguage, language preference
 - `js/ui/weight.js` — Weight tab DOM refs, render, event wiring
 - `js/ui/mh.js` — MH/Dantrolene tab DOM refs, render, event wiring
+- `js/ui/dilution.js` — Dilution tab DOM refs, `formatDilutionPreset`, `activateDilutionMode`, submit/reset/mode-change handlers, event wiring
 
-Remaining in `script.js` (~3994 lines):
-- DOM references (infusion, pediatric, dilution, support links)
+Remaining in `script.js` (~3888 lines):
+- DOM references (infusion, pediatric, support links)
 - Calculation engine remnants (pediatric verification helpers, emergency card builder)
 - Drug config layer (buildCustomDrugFromInputs, getSelectedDrugDefinition, etc.)
 - View state layer (DOM-dependent getters, renderPediatricDrugSelectOptions)
