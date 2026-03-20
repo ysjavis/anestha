@@ -37,9 +37,17 @@ Implemented calculators:
 
 ## Recent Progress
 
+### 2026-03-19
+
+Latest committed progress:
+- `Infusion > Multi Drug Quick` concentration / target-dose input layout was stabilized so numeric values remain visible during quick editing
+- `Multi Drug Quick` now uses a more reliable `Drug full-width + 2-column numeric fields` layout
+- quick `Concentration` / `Target Dose` steppers were moved below the input row to reduce layout collisions with unit suffixes
+- `main` and `next` are currently synced at commit `f86d50a`
+
 ### 2026-03-18
 
-Latest local workspace progress (including uncommitted UI polish work):
+Completed UI polish:
 - `Infusion > Multi Drug` toolbar order refined to `Quick / Full -> Shared Patient Weight -> Add drug`
 - `Multi Drug Quick` now preserves input focus more carefully while re-rendering
 - `Multi Drug Quick` now recalculates during input editing instead of feeling delayed until blur/change
@@ -50,7 +58,7 @@ Latest local workspace progress (including uncommitted UI polish work):
 - `Multi Drug` top-right `Add drug` action was visually softened to behave more like a secondary toolbar action
 
 Current follow-up check:
-- visually confirm that `Multi Drug Quick` number inputs remain clearly visible after the latest typography/touch-target adjustments
+- manually review `Multi Drug Quick` on real mobile browsers for spacing consistency after the latest input-layout stabilization
 
 ## Infusion Status
 
@@ -125,7 +133,8 @@ Multi Drug behavior:
 - `Quick` supports compact card controls with stepper-based adjustment
 - template controls are moved behind disclosure in `Quick`
 - `Quick` now prioritizes manipulation-first layout with faster visual scan and lighter reference density
-- current local polish work is improving live input response while preserving focus during quick edits
+- recent quick-mode polish improved live input response while preserving focus during quick edits
+- quick numeric fields were rebalanced so `Concentration` and `Target Dose` values stay visible even with unit suffixes and steppers
 
 Current multi-drug card UI:
 - drug name shown clearly in header
@@ -138,7 +147,9 @@ Current multi-drug card UI:
 - range-type badge shown (`Label` / `Clinical`)
 - source note and rationale shown in card reference note
 - quick cards use denser layout and larger touch-friendly inputs on mobile
-- quick header/actions are being visually simplified to reduce control clutter
+- quick header/actions are simplified to reduce control clutter
+- quick cards use `Drug` as a full-width row, with `Concentration` and `Target Dose` shown in a stable 2-column layout
+- quick `Concentration` / `Target Dose` steppers are placed below the input row to protect input visibility
 
 Current limits:
 - maximum 6 multi-drug cards
@@ -355,7 +366,7 @@ Current product principle:
 - notice out-of-range cards without opening extra text
 
 **Proposed v1 scope**
-- workspace-level `Quick / Detail` toggle (not per-card)
+- workspace-level `Quick / Full` toggle (not per-card)
 - `Quick` as the default view
 - compact card layout with:
   - drug name
@@ -388,7 +399,7 @@ Current product principle:
 **Workspace-level layout direction**
 - top row:
   - shared weight
-  - `Quick / Detail`
+  - `Quick / Full`
   - `Add drug`
 - template management should be visually reduced or placed behind a secondary disclosure
 - drug cards should be short enough that multiple cards can be scanned on mobile without excessive scrolling
@@ -408,7 +419,7 @@ Current product principle:
 - expanded case tabs
 
 **Implementation order**
-1. add workspace-level `Quick / Detail` state
+1. add workspace-level `Quick / Full` state
 2. update `renderInfusionWorkspace()` to render compact cards in `Quick`
 3. reduce template controls visually in `Quick`
 4. move range/source/rationale text into disclosures
