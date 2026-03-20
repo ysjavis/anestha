@@ -225,8 +225,8 @@ body {
 .weight-tools-result-item {
   padding: 12px 14px;
   border-radius: 14px;
-  border: 1px solid rgba(216, 224, 234, 0.95);
-  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(15, 118, 110, 0.14);
+  background: linear-gradient(180deg, rgba(215, 243, 239, 0.45) 0%, rgba(255, 255, 255, 0.9) 100%);
 }
 
 .weight-tools-result-item .pump-setting-label {
@@ -1474,8 +1474,8 @@ body {
   margin-top: 14px;
   padding: 14px 16px;
   border-radius: 16px;
-  background: rgba(20, 32, 51, 0.04);
-  border: 1px solid rgba(20, 32, 51, 0.08);
+  background: linear-gradient(180deg, rgba(215, 243, 239, 0.5) 0%, rgba(255, 255, 255, 0.92) 100%);
+  border: 1px solid rgba(15, 118, 110, 0.14);
 }
 
 .workspace-card-result.is-warning {
@@ -1594,11 +1594,13 @@ body {
 
 #infusion-view-workspace.is-quick-mode .workspace-card-list {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
   gap: 14px;
 }
 
 #infusion-view-workspace.is-quick-mode .workspace-card {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
   padding: 16px;
 }
@@ -1628,7 +1630,7 @@ body {
 }
 
 #infusion-view-workspace.is-quick-mode .workspace-card-result {
-  order: 2;
+  order: 3;
   margin-top: 0;
   padding: 14px 16px;
 }
@@ -1644,8 +1646,10 @@ body {
 }
 
 #infusion-view-workspace.is-quick-mode .workspace-card-fields-quick {
-  order: 3;
+  order: 2;
+  flex: 1;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
   gap: 12px;
 }
 
@@ -1820,8 +1824,8 @@ body {
   margin-top: 16px;
   padding: 14px 16px;
   border-radius: 16px;
-  background: rgba(20, 32, 51, 0.04);
-  border: 1px solid rgba(20, 32, 51, 0.08);
+  background: rgba(15, 118, 110, 0.05);
+  border: 1px solid rgba(15, 118, 110, 0.1);
 }
 
 .pump-setting-label {

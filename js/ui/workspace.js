@@ -1,5 +1,5 @@
 import { isWeightBasedReferenceRange, isNitroglycerinDrug, doseToRate } from '../calc/infusion.js';
-import { formatNumber, isPositiveNumber, createClientId, getAdaptiveQuickStep, getStepPrecision } from '../calc/utils.js';
+import { formatNumber, isPositiveNumber, createClientId, getAdaptiveQuickStep, getStepPrecision, shouldDeferDecimalInput } from '../calc/utils.js';
 import { getDisplayDoseUnit, convertDoseValueForDisplay, convertDoseValueToReferenceUnit, getWorkspaceNitroglycerinDoseView, formatEditableDoseValue } from '../calc/infusion-display.js';
 import { getReferenceTypeBadge, getUseCaseBadge, getRangeSourceType, getDrugUseCaseSummary, getDisplaySourceLabel, getRangeSourceSummary, getRangeRationale } from '../calc/reference-helpers.js';
 import { DRUG_PRESETS } from '../data/drug-presets.js';
@@ -739,15 +739,7 @@ function handleWorkspaceCardInput(event) {
     return;
   }
 
-  // Skip re-render when the user is typing a decimal point.
-  // type="number" inputs may not include "." in input.value in some browsers,
-  // so shouldDeferWorkspaceQuickRender alone cannot reliably catch it.
-  var inputData = event.data;
-  if (inputData === "." || inputData === ",") {
-    return;
-  }
-
-  if (!shouldDeferWorkspaceQuickRender(input)) {
+  if (!shouldDeferDecimalInput(event) && !shouldDeferWorkspaceQuickRender(input)) {
     renderInfusionWorkspacePreservingFocus(focusState);
   }
 }

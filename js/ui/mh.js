@@ -1,5 +1,5 @@
 import { calculateDantroleneDose } from '../calc/pediatric.js';
-import { formatNumber, isPositiveNumber } from '../calc/utils.js';
+import { formatNumber, isPositiveNumber, shouldDeferDecimalInput } from '../calc/utils.js';
 import { DANTROLENE_FORMULATIONS } from '../data/mh-presets.js';
 import { getDantroleneQuickState, updateDantroleneQuickState, normalizeDantroleneQuickState, createDefaultDantroleneQuickState, savePersistedState, persistedState } from '../store/state.js';
 import { t } from '../i18n.js';
@@ -121,7 +121,10 @@ function handleDantroleneSubmit(event) {
   showDantroleneResult(values);
 }
 
-function handleDantroleneInputChange() {
+function handleDantroleneInputChange(event) {
+  if (shouldDeferDecimalInput(event)) {
+    return;
+  }
   updateDantroleneQuickState({
     inputs: {
       weight: dantroleneInputs.weight.value,

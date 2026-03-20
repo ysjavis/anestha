@@ -1,5 +1,5 @@
 import { calculateBodyWeightMetrics } from '../calc/body-weight.js';
-import { formatNumber, isPositiveNumber } from '../calc/utils.js';
+import { formatNumber, isPositiveNumber, shouldDeferDecimalInput } from '../calc/utils.js';
 import { t } from '../i18n.js';
 
 const supportWeightSexInput = document.getElementById("support-weight-sex");
@@ -52,7 +52,10 @@ function renderSupportWeightTools() {
     : t("weight_tools_note_non_obese");
 }
 
-function handleSupportWeightInputChange() {
+function handleSupportWeightInputChange(event) {
+  if (shouldDeferDecimalInput(event)) {
+    return;
+  }
   renderSupportWeightTools();
 }
 

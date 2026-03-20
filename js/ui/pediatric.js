@@ -1,5 +1,5 @@
 import { calculatePediatricAirwayEstimates } from '../calc/pediatric.js';
-import { formatNumber, isPositiveNumber, getUnitBase } from '../calc/utils.js';
+import { formatNumber, isPositiveNumber, getUnitBase, shouldDeferDecimalInput } from '../calc/utils.js';
 import { PEDIATRIC_DRUG_PRESETS, DEFAULT_CUSTOM_PEDIATRIC_DRUG } from '../data/pediatric-presets.js';
 import { SUPRAGLOTTIC_DEVICE_GUIDES, getSupraglotticDeviceRecommendation, getOralAirwayRecommendation, getLaryngoscopeRecommendation, getNasalAirwayRecommendation, getFaceMaskRecommendation } from '../data/pediatric-airway.js';
 import {
@@ -994,7 +994,10 @@ function handlePediatricDrugChange() {
   pediatricErrorMessage.textContent = "";
 }
 
-function handlePediatricInputChange() {
+function handlePediatricInputChange(event) {
+  if (shouldDeferDecimalInput(event)) {
+    return;
+  }
   const selectedOptionValue = pediatricDrugSelect.value;
   const drugSettingsKey = isCustomPediatricSelection(selectedOptionValue) ? "custom" : selectedOptionValue;
   pediatricAirwayDeviceModelField.classList.toggle("hidden", pediatricInputs.airwayDeviceCategory.value !== "supraglottic");

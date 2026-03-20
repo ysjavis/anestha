@@ -83,3 +83,27 @@ export function getStepPrecision(stepValue) {
 export function clampNumber(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
+
+export function shouldDeferDecimalInput(event) {
+  var input = event.target;
+  if (!input || input.tagName !== "INPUT" || input.type !== "number") {
+    return false;
+  }
+  if (event.data === "." || event.data === ",") {
+    return true;
+  }
+  var v = input.value.trim();
+  if (v === "" || v === "-" || v === "." || v === "-.") {
+    return true;
+  }
+  if (v.endsWith(".")) {
+    return true;
+  }
+  if (v.includes(".")) {
+    var n = Number(v);
+    if (Number.isFinite(n) && String(n) !== v) {
+      return true;
+    }
+  }
+  return false;
+}

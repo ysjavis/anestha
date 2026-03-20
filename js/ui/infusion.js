@@ -1,5 +1,5 @@
 import { isWeightBasedReferenceRange, isNitroglycerinDrug, getReferenceTimeFactor, doseToRate, rateToDose, buildReferenceTable } from '../calc/infusion.js';
-import { formatNumber, formatList, parseDoseList, isPositiveNumber, getAdaptiveQuickStep, getStepPrecision, clampNumber } from '../calc/utils.js';
+import { formatNumber, formatList, parseDoseList, isPositiveNumber, getAdaptiveQuickStep, getStepPrecision, clampNumber, shouldDeferDecimalInput } from '../calc/utils.js';
 import { REFERENCE_REGISTRY } from '../data/reference-registry.js';
 import { DEFAULT_CUSTOM_DRUG, DRUG_PRESETS } from '../data/drug-presets.js';
 import {
@@ -1383,7 +1383,10 @@ function handleDrugChange() {
   });
 }
 
-function handleSessionInputChange() {
+function handleSessionInputChange(event) {
+  if (shouldDeferDecimalInput(event)) {
+    return;
+  }
   commitSingleDrugInputsFromView();
   updateDrugUI();
   refreshInfusionResultForCurrentMode({
@@ -1391,7 +1394,10 @@ function handleSessionInputChange() {
   });
 }
 
-function handleDrugSettingsChange() {
+function handleDrugSettingsChange(event) {
+  if (shouldDeferDecimalInput(event)) {
+    return;
+  }
   commitSingleDrugStateFromView();
   updateDrugUI();
   refreshInfusionResultForCurrentMode({
