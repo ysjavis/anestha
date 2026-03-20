@@ -36,3 +36,7 @@ export function isPositiveNumber(value) {
 export function getUnitBase(unitValue) {
   return typeof unitValue === "string" ? unitValue.split("/")[0] : "";
 }
+
+export function createClientId(prefix) {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
