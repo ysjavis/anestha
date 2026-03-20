@@ -303,16 +303,19 @@ The codebase is being progressively split from a single `script.js` into ES modu
 | 1 | Static data + pure calc functions | 8100 → 5538 |
 | 2 | Persistence + state layer | 5538 → 4823 |
 | 3 | i18n layer + infusion display helpers + pediatric airway data | 4823 → 4509 |
+| 4a | Reference helpers, Weight UI, MH/Dantrolene UI | 4509 → 3994 |
 
 Current module structure:
 - `js/data/` — translations, drug presets, pediatric presets, reference registry, mh-presets, pediatric-airway
-- `js/calc/` — infusion, body-weight, pediatric, utils, infusion-display
+- `js/calc/` — infusion, body-weight, pediatric, utils, infusion-display, reference-helpers
 - `js/store/` — state (persistence + state getters/setters)
 - `js/i18n.js` — t(), currentLanguage, language preference
+- `js/ui/weight.js` — Weight tab DOM refs, render, event wiring
+- `js/ui/mh.js` — MH/Dantrolene tab DOM refs, render, event wiring
 
-Remaining in `script.js` (~4509 lines):
-- DOM references
-- Calculation engine remnants (reference card builders, pediatric verification helpers, emergency card builder)
+Remaining in `script.js` (~3994 lines):
+- DOM references (infusion, pediatric, dilution, support links)
+- Calculation engine remnants (pediatric verification helpers, emergency card builder)
 - Drug config layer (buildCustomDrugFromInputs, getSelectedDrugDefinition, etc.)
 - View state layer (DOM-dependent getters, renderPediatricDrugSelectOptions)
 - Validation and input reading
@@ -320,9 +323,9 @@ Remaining in `script.js` (~4509 lines):
 - Event handlers
 - Wiring + initial restore
 
-Next steps for Phase 4:
-- Extract reference card builder helpers (`getReferenceItems`, `getReferenceType`, `renderReferenceList`, etc.)
+Next steps for Phase 4 (continued):
 - Extract pediatric verification + dose helpers
+- Extract infusion single-drug UI module
 - Continue shrinking script.js toward a thin orchestration layer
 
 Important state structures:

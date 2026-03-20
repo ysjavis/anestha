@@ -38,6 +38,9 @@ import {
 import { currentLanguage, setCurrentLanguage, t, loadLanguagePreference, saveLanguagePreference } from './js/i18n.js';
 import { getPreferredNitroglycerinDoseView, getWorkspaceNitroglycerinDoseView, getDisplayDoseUnit, convertDoseValueForDisplay, convertDoseValueToReferenceUnit, convertDoseListForDisplay, convertDoseListToReferenceUnit, formatDoseValueWithEquivalent, formatDoseRangeWithEquivalent, formatInfusionDoseDisplay, formatInfusionRangeDisplay, formatEditableDoseValue, formatEditableDoseList } from './js/calc/infusion-display.js';
 import { SUPRAGLOTTIC_DEVICE_GUIDES, ORAL_AIRWAY_GUIDE, LARYNGOSCOPE_GUIDE, NASAL_AIRWAY_GUIDE, FACE_MASK_GUIDE, getSupraglotticDeviceRecommendation, findGuideItemByWeightOrAge, getOralAirwayRecommendation, getLaryngoscopeRecommendation, getNasalAirwayRecommendation, getFaceMaskRecommendation } from './js/data/pediatric-airway.js';
+import { getReferenceItems, getReferenceType, getReferenceTypeBadge, getUseCaseBadge, getRangeSourceType, renderRangeSourceBadge, applyRangeSourceTheme, getDrugUseCaseSummary, getDisplaySourceLabel, extractReferenceYears, getReferenceSourceYear, getReferenceMetaText, getReferenceDisclaimer, getReferenceDetailMetadataMarkup, renderUseCaseBadge, getRangeSourceSummary, getRangeRationale, renderReferenceList } from './js/calc/reference-helpers.js';
+import { renderSupportWeightTools } from './js/ui/weight.js';
+import { applyDantroleneQuickStateToView, clearDantroleneResult } from './js/ui/mh.js';
 
 // -----------------------------
 // DOM references
@@ -120,22 +123,6 @@ const quickPumpRateSliderWrap = document.getElementById("quick-pump-rate-slider-
 const quickPumpRateSlider = document.getElementById("quick-pump-rate-slider");
 const quickPumpRateSliderMin = document.getElementById("quick-pump-rate-slider-min");
 const quickPumpRateSliderMax = document.getElementById("quick-pump-rate-slider-max");
-const dantroleneForm = document.getElementById("dantrolene-form");
-const dantroleneResetButton = document.getElementById("dantrolene-reset-button");
-const dantroleneErrorMessage = document.getElementById("dantrolene-error-message");
-const dantroleneResultCard = document.getElementById("dantrolene-result-card");
-const dantrolenePrimaryResult = document.getElementById("dantrolene-primary-result");
-const dantroleneSecondaryResult = document.getElementById("dantrolene-secondary-result");
-const dantroleneContext = document.getElementById("dantrolene-context");
-const dantroleneInitialVials = document.getElementById("dantrolene-initial-vials");
-const dantroleneMaxVials = document.getElementById("dantrolene-max-vials");
-const dantroleneVialExplanation = document.getElementById("dantrolene-vial-explanation");
-const dantroleneReconstitutionExplanation = document.getElementById("dantrolene-reconstitution-explanation");
-const dantroleneInitialGuide = document.getElementById("dantrolene-initial-guide");
-const dantroleneRepeatGuide = document.getElementById("dantrolene-repeat-guide");
-const dantroleneMaintenanceGuide = document.getElementById("dantrolene-maintenance-guide");
-const dantroleneReferenceList = document.getElementById("dantrolene-reference-list");
-const dantroleneResultWarning = document.getElementById("dantrolene-result-warning");
 const pediatricForm = document.getElementById("pediatric-form");
 const pediatricResetButton = document.getElementById("pediatric-reset-button");
 const pediatricDrugSelect = document.getElementById("pediatric-drug-select");
@@ -253,12 +240,6 @@ const dilutionInputs = {
   reverseFinalVolume: document.getElementById("dilution-reverse-final-volume")
 };
 
-const dantroleneInputs = {
-  weight: document.getElementById("dantrolene-weight"),
-  formulation: document.getElementById("dantrolene-formulation"),
-  initialDose: document.getElementById("dantrolene-initial-dose")
-};
-
 const languageSelect = document.getElementById("language-select");
 const feedbackGeneralLink = document.getElementById("feedback-general-link");
 const feedbackReferenceLink = document.getElementById("feedback-reference-link");
@@ -271,16 +252,6 @@ const supportDonateCard = document.getElementById("support-donate-card");
 const supportTossLink = document.getElementById("support-toss-link");
 const supportKofiLink = document.getElementById("support-kofi-link");
 const supportStatus = document.getElementById("support-status");
-const supportWeightSexInput = document.getElementById("support-weight-sex");
-const supportWeightHeightInput = document.getElementById("support-weight-height");
-const supportWeightTotalInput = document.getElementById("support-weight-total");
-const supportWeightBmi = document.getElementById("support-weight-bmi");
-const supportWeightBsa = document.getElementById("support-weight-bsa");
-const supportWeightIbw = document.getElementById("support-weight-ibw");
-const supportWeightLbw = document.getElementById("support-weight-lbw");
-const supportWeightAdjbw = document.getElementById("support-weight-adjbw");
-const supportWeightNote = document.getElementById("support-weight-note");
-
 const LANGUAGE_STORAGE_KEY = "anestha.language";
 const FEEDBACK_CONFIG = {
   generalUrl: "https://docs.google.com/forms/d/e/1FAIpQLSekcnkvm28ePkxhL0tGtDDtIas3uVhr4mwiGdcKnwTn_W2qvw/viewform?usp=publish-editor",
@@ -431,50 +402,6 @@ function updateSupportLinks() {
   }
 }
 
-function renderSupportWeightTools() {
-  if (
-    !supportWeightSexInput ||
-    !supportWeightHeightInput ||
-    !supportWeightTotalInput ||
-    !supportWeightBmi ||
-    !supportWeightBsa ||
-    !supportWeightIbw ||
-    !supportWeightLbw ||
-    !supportWeightAdjbw ||
-    !supportWeightNote
-  ) {
-    return;
-  }
-
-  const sex = supportWeightSexInput.value;
-  const heightCm = Number(supportWeightHeightInput.value);
-  const totalWeightKg = Number(supportWeightTotalInput.value);
-  const metrics = calculateBodyWeightMetrics(sex, heightCm, totalWeightKg);
-
-  if (!metrics) {
-    supportWeightBmi.textContent = "-";
-    supportWeightBsa.textContent = "-";
-    supportWeightIbw.textContent = "-";
-    supportWeightLbw.textContent = "-";
-    supportWeightAdjbw.textContent = "-";
-    supportWeightNote.textContent = t("weight_tools_note_default");
-    return;
-  }
-
-  supportWeightBmi.textContent = `${formatNumber(metrics.bmi, 2)} kg/m²`;
-  supportWeightBsa.textContent = `${formatNumber(metrics.bsaMosteller, 2)} m²`;
-  supportWeightIbw.textContent = `${formatNumber(metrics.ibw, 1)} kg`;
-  supportWeightLbw.textContent = `${formatNumber(metrics.lbw, 1)} kg`;
-  supportWeightAdjbw.textContent = `${formatNumber(metrics.adjbw, 1)} kg`;
-  supportWeightNote.textContent = metrics.usesAdjustedBodyWeight
-    ? t("weight_tools_note_ready")
-    : t("weight_tools_note_non_obese");
-}
-
-function handleSupportWeightInputChange() {
-  renderSupportWeightTools();
-}
-
 // -----------------------------
 // Calculation engine
 // -----------------------------
@@ -558,307 +485,6 @@ function getPediatricEmergencyCards(weightKg) {
         : "Amiodarone을 사용하지 않을 때 shock-refractory VF/pVT의 대안 antiarrhythmic입니다."
     }
   ];
-}
-
-function getReferenceItems(referenceIds) {
-  return referenceIds.map(function (referenceId) {
-    return REFERENCE_REGISTRY[referenceId];
-  }).filter(Boolean);
-}
-
-function getReferenceType(item) {
-  if (!item) {
-    return "";
-  }
-
-  if (item.referenceType) {
-    return item.referenceType;
-  }
-
-  if (item.source === "AHA" || /algorithm|guideline/i.test(item.title)) {
-    return "guideline";
-  }
-
-  if (item.source === "DailyMed" || item.source === "FDA" || /label dose/i.test(item.title)) {
-    return "label";
-  }
-
-  if (item.source === "PubMed" || /study|meta-analysis/i.test(item.title)) {
-    return "study";
-  }
-
-  if (item.source === "OpenAnesthesia" || /clinical|context|dosing/i.test(item.title)) {
-    return "clinical";
-  }
-
-  return "";
-}
-
-function getReferenceTypeBadge(type) {
-  if (type === "guideline") {
-    return '<span class="reference-badge is-guideline">Guideline</span>';
-  }
-
-  if (type === "label") {
-    return '<span class="reference-badge is-label">Label</span>';
-  }
-
-  if (type === "clinical") {
-    return '<span class="reference-badge is-clinical">Clinical</span>';
-  }
-
-  if (type === "study") {
-    return '<span class="reference-badge is-study">Study-specific</span>';
-  }
-
-  return "";
-}
-
-function getUseCaseBadge(useCase) {
-  if (useCase === "ga-induction") {
-    return '<span class="reference-badge is-use-case-induction">GA induction</span>';
-  }
-
-  if (useCase === "ga-maintenance") {
-    return '<span class="reference-badge is-use-case-maintenance">GA maintenance</span>';
-  }
-
-  if (useCase === "procedural-sedation") {
-    return '<span class="reference-badge is-use-case-sedation">Procedural sedation</span>';
-  }
-
-  if (useCase === "vasopressor-support") {
-    return '<span class="reference-badge is-use-case-support">Hemodynamic support</span>';
-  }
-
-  return "";
-}
-
-function getRangeSourceType(drug) {
-  return drug && drug.rangeSourceType ? drug.rangeSourceType : "";
-}
-
-function renderRangeSourceBadge(container, drug) {
-  if (!container) {
-    return;
-  }
-
-  container.innerHTML = getReferenceTypeBadge(getRangeSourceType(drug));
-}
-
-function applyRangeSourceTheme(element, drug) {
-  if (!element) {
-    return;
-  }
-
-  element.classList.remove("has-range-label", "has-range-clinical", "has-range-study");
-
-  const type = getRangeSourceType(drug);
-  if (type) {
-    element.classList.add(`has-range-${type}`);
-  }
-}
-
-function getDrugUseCaseSummary(drug) {
-  if (!drug || !drug.useCaseLabel) {
-    return "Not specified";
-  }
-
-  return drug.useCaseLabel;
-}
-
-function getDisplaySourceLabel(rawSource) {
-  const source = (rawSource || "").trim();
-
-  if (!source) {
-    return "-";
-  }
-
-  if (source === "Editable local preset") {
-    return currentLanguage === "en" ? "Literature-based summary value" : "문헌 기반 요약값";
-  }
-
-  return source;
-}
-
-function extractReferenceYears(text) {
-  if (typeof text !== "string" || !text.trim()) {
-    return [];
-  }
-
-  const matches = text.match(/\b(19|20)\d{2}\b/g);
-  return matches ? Array.from(new Set(matches)) : [];
-}
-
-function getReferenceSourceYear(item) {
-  if (!item) {
-    return "";
-  }
-
-  if (item.sourceYear) {
-    return String(item.sourceYear);
-  }
-
-  const candidateYears = [
-    ...extractReferenceYears(item.title),
-    ...extractReferenceYears(item.url)
-  ];
-
-  return candidateYears.length ? candidateYears[0] : "";
-}
-
-function getReferenceMetaText(item) {
-  if (!item) {
-    return "";
-  }
-
-  const sourceLine = item.source
-    ? `<span class="reference-summary-meta-line reference-summary-meta-source">${item.source}</span>`
-    : "";
-  const secondaryParts = [];
-  const sourceYear = getReferenceSourceYear(item);
-
-  if (sourceYear) {
-    secondaryParts.push(`${t("source_year")}: ${sourceYear}`);
-  }
-
-  if (item.lastReviewed) {
-    secondaryParts.push(`${t("last_reviewed")}: ${item.lastReviewed}`);
-  }
-
-  const secondaryLine = secondaryParts.length
-    ? `<span class="reference-summary-meta-line reference-summary-meta-secondary">${secondaryParts.join(" · ")}</span>`
-    : "";
-
-  return `${sourceLine}${secondaryLine}`;
-}
-
-function getReferenceDisclaimer(item) {
-  const type = getReferenceType(item);
-  const isEnglish = currentLanguage === "en";
-
-  if (type === "label") {
-    return isEnglish
-      ? "Label references reflect approved prescribing information. Confirm concentration, indication, and local protocol before use."
-      : "Label reference는 허가사항 기반 자료입니다. 실제 사용 전 농도, 적응증, 기관 프로토콜을 함께 확인하세요.";
-  }
-
-  if (type === "guideline") {
-    return isEnglish
-      ? "Guideline references summarize official algorithm or society recommendations, but they still require patient-specific interpretation and protocol alignment."
-      : "Guideline reference는 공식 algorithm 또는 학회 권고를 요약한 자료이지만, 실제 적용에는 환자 상태와 기관 프로토콜을 함께 반영해야 합니다.";
-  }
-
-  if (type === "study") {
-    return isEnglish
-      ? "Study-specific references describe selected protocols or research settings and should not be treated as universal dosing standards."
-      : "Study-specific reference는 특정 연구 프로토콜 또는 제한된 연구 환경을 반영하므로, 절대적 표준 용법으로 해석하면 안 됩니다.";
-  }
-
-  return isEnglish
-    ? "Clinical references describe common practice patterns or selected educational summaries and should be checked against the original source and local protocol."
-    : "Clinical reference는 관행적 사용이나 교육용 요약을 반영하므로, 원문과 기관 프로토콜을 함께 확인해야 합니다.";
-}
-
-function getReferenceDetailMetadataMarkup(item) {
-  const detailRows = [];
-
-  if (item.referenceContext) {
-    detailRows.push(`<p class="reference-detail-meta"><strong>${t("reference_context")}:</strong> ${item.referenceContext}</p>`);
-  }
-
-  if (item.checkSection) {
-    detailRows.push(`<p class="reference-detail-meta"><strong>${t("reference_check_section")}:</strong> ${item.checkSection}</p>`);
-  }
-
-  if (!detailRows.length) {
-    return "";
-  }
-
-  return `<div class="reference-detail-grid">${detailRows.join("")}</div>`;
-}
-
-function renderUseCaseBadge(container, drug) {
-  if (!container) {
-    return;
-  }
-
-  container.innerHTML = getUseCaseBadge(drug && drug.useCase ? drug.useCase : "");
-}
-
-function getRangeSourceSummary(drug) {
-  if (!drug || !drug.rangeSourceType) {
-    return "Not specified";
-  }
-
-  if (drug.rangeSourceType === "label") {
-    return drug.rangeSourceNote || "Derived from product labeling and intended label-based dosing context.";
-  }
-
-  if (drug.rangeSourceType === "clinical") {
-    return drug.rangeSourceNote || "Derived from clinical or perioperative practice references rather than a single package insert range.";
-  }
-
-  if (drug.rangeSourceType === "study") {
-    return drug.rangeSourceNote || "Derived from a specific study context and not intended as a universal range.";
-  }
-
-  return drug.rangeSourceNote || "Not specified";
-}
-
-function getRangeRationale(drug) {
-  return drug && drug.rangeRationale
-    ? drug.rangeRationale
-    : "Verify against the original source, local protocol, and patient-specific context before use.";
-}
-
-function renderReferenceList(container, referenceIds) {
-  if (!container) {
-    return;
-  }
-
-  const referenceItems = getReferenceItems(referenceIds);
-
-  if (!referenceItems.length) {
-    container.innerHTML = '<li>No references attached yet.</li>';
-    return;
-  }
-
-  container.innerHTML = referenceItems.map(function (item) {
-    const badgeStr = getReferenceTypeBadge(getReferenceType(item));
-    const metaText = getReferenceMetaText(item);
-    const detailMetadataMarkup = getReferenceDetailMetadataMarkup(item);
-    const hasExpandedDetail = Boolean(item.usageNote || detailMetadataMarkup);
-
-    if (hasExpandedDetail) {
-      return `<li class="reference-item">
-                <details class="reference-details">
-                  <summary class="reference-summary">
-                    <span class="reference-summary-title-row">
-                      <span class="reference-summary-title">${item.title}</span>
-                      ${badgeStr}
-                    </span>
-                    <span class="reference-summary-meta">${metaText}</span>
-                  </summary>
-                  <div class="reference-detail-body">
-                    ${detailMetadataMarkup}
-                    ${item.usageNote ? `<p class="reference-usage-note"><strong>${t("usage_note")}:</strong> ${item.usageNote}</p>` : ""}
-                    <p class="reference-disclaimer">${getReferenceDisclaimer(item)}</p>
-                    <a class="reference-external-link" href="${item.url}" target="_blank" rel="noreferrer">${item.linkLabel || "Open reference"}</a>
-                  </div>
-                </details>
-              </li>`;
-    }
-
-    return `<li class="reference-item">
-              <span class="reference-summary-title-row">
-                <span class="reference-summary-title">${item.title}</span>
-                ${badgeStr}
-              </span>
-              <span class="reference-summary-meta">${metaText}</span>
-              <a class="reference-external-link" href="${item.url}" target="_blank" rel="noreferrer">${item.linkLabel || "Open reference"}</a>
-            </li>`;
-  }).join("");
 }
 
 function getPediatricAirwayReferenceIds(values) {
@@ -1519,14 +1145,6 @@ function applyPediatricDoseStateToView(pediatricDoseState) {
   pediatricAirwayDeviceModelField.classList.toggle("hidden", normalizedState.inputs.airwayDeviceCategory !== "supraglottic");
   pediatricAirwayWarning.textContent = getPediatricAirwayWarningText(normalizedState.inputs.airwayDeviceCategory);
   activatePediatricMode(normalizedState.activeMode);
-}
-
-function applyDantroleneQuickStateToView(dantroleneQuickState) {
-  const normalizedState = normalizeDantroleneQuickState(dantroleneQuickState);
-
-  dantroleneInputs.weight.value = normalizedState.inputs.weight;
-  dantroleneInputs.formulation.value = normalizedState.inputs.formulationId;
-  dantroleneInputs.initialDose.value = normalizedState.inputs.initialDoseMgKg;
 }
 
 function activateCalculator(calculatorId) {
@@ -2713,30 +2331,6 @@ function validatePediatricValues(values) {
   return "";
 }
 
-function readDantroleneFormValues() {
-  const formulation = DANTROLENE_FORMULATIONS.find(function (item) {
-    return item.id === dantroleneInputs.formulation.value;
-  }) || DANTROLENE_FORMULATIONS[0];
-
-  return {
-    weight: Number(dantroleneInputs.weight.value),
-    formulation: formulation,
-    initialDoseMgKg: Number(dantroleneInputs.initialDose.value)
-  };
-}
-
-function validateDantroleneValues(values) {
-  if (!isPositiveNumber(values.weight)) {
-    return t("validation_patient_weight");
-  }
-
-  if (!isPositiveNumber(values.initialDoseMgKg)) {
-    return t("validation_initial_dose_target");
-  }
-
-  return "";
-}
-
 // -----------------------------
 // Rendering layer
 // -----------------------------
@@ -2845,22 +2439,6 @@ function clearPediatricResult() {
   pediatricEmergencyDoseGrid.innerHTML = "";
   pediatricEmergencyReferenceList.innerHTML = "";
   pediatricEmergencyResultWarning.textContent = t("pediatric_emergency_warning_default");
-}
-
-function clearDantroleneResult() {
-  dantroleneResultCard.classList.add("hidden");
-  dantrolenePrimaryResult.textContent = "0 mg";
-  dantroleneSecondaryResult.textContent = "-";
-  dantroleneContext.textContent = "";
-  dantroleneInitialVials.textContent = "-";
-  dantroleneMaxVials.textContent = "-";
-  dantroleneVialExplanation.textContent = "";
-  dantroleneReconstitutionExplanation.textContent = "";
-  dantroleneInitialGuide.textContent = "";
-  dantroleneRepeatGuide.textContent = "";
-  dantroleneMaintenanceGuide.textContent = "";
-  dantroleneReferenceList.innerHTML = "";
-  dantroleneResultWarning.textContent = t("dantrolene_result_warning_default");
 }
 
 function renderReferenceRows(rows, doseUnit, drug, weightKg) {
@@ -3296,33 +2874,6 @@ function showPediatricEmergencyResult(values) {
   pediatricEmergencyResultCard.classList.remove("hidden");
 }
 
-function showDantroleneResult(values) {
-  const initialDoseMg = calculateDantroleneDose(values.weight, values.initialDoseMgKg);
-  const maxDoseMg = calculateDantroleneDose(values.weight, values.formulation.cumulativeMaxMgKg);
-  const initialVials = Math.ceil(initialDoseMg / values.formulation.vialStrengthMg);
-  const maxVials = Math.ceil(maxDoseMg / values.formulation.vialStrengthMg);
-
-  dantrolenePrimaryResult.textContent = `${formatNumber(initialDoseMg, 1)} mg`;
-  dantroleneSecondaryResult.textContent = `${formatNumber(maxDoseMg, 1)} mg (${values.formulation.cumulativeMaxMgKg} mg/kg)`;
-  dantroleneContext.textContent = `${formatNumber(values.weight, 1)} kg / ${values.formulation.name} / target ${formatNumber(values.initialDoseMgKg, 2)} mg/kg`;
-  dantroleneInitialVials.textContent = `${initialVials} vial(s)`;
-  dantroleneMaxVials.textContent = `${maxVials} vial(s)`;
-  dantroleneVialExplanation.textContent = t("dantrolene_vial_explanation", {
-    formulation: values.formulation.name,
-    initialVials: initialVials,
-    maxVials: maxVials
-  });
-  dantroleneReconstitutionExplanation.textContent = `${values.formulation.reconstitution} ${values.formulation.notes}`;
-  dantroleneInitialGuide.textContent = t("dantrolene_initial_guide", {
-    dose: formatNumber(values.initialDoseMgKg, 2)
-  });
-  dantroleneRepeatGuide.textContent = t("dantrolene_repeat_guide");
-  dantroleneMaintenanceGuide.textContent = t("dantrolene_maintenance_guide");
-  renderReferenceList(dantroleneReferenceList, values.formulation.references);
-  dantroleneResultWarning.textContent = t("dantrolene_emergency_reference_only");
-  dantroleneResultCard.classList.remove("hidden");
-}
-
 // -----------------------------
 // Event handlers
 // -----------------------------
@@ -3696,35 +3247,6 @@ function handlePediatricToggleUnverified() {
   updatePediatricDrugUI();
   clearPediatricResult();
   pediatricErrorMessage.textContent = "";
-}
-
-function handleDantroleneSubmit(event) {
-  event.preventDefault();
-
-  const values = readDantroleneFormValues();
-  const validationError = validateDantroleneValues(values);
-
-  if (validationError) {
-    dantroleneErrorMessage.textContent = validationError;
-    clearDantroleneResult();
-    return;
-  }
-
-  dantroleneErrorMessage.textContent = "";
-  clearDantroleneResult();
-  showDantroleneResult(values);
-}
-
-function handleDantroleneInputChange() {
-  updateDantroleneQuickState({
-    inputs: {
-      weight: dantroleneInputs.weight.value,
-      formulationId: dantroleneInputs.formulation.value,
-      initialDoseMgKg: dantroleneInputs.initialDose.value
-    }
-  });
-  clearDantroleneResult();
-  dantroleneErrorMessage.textContent = "";
 }
 
 function handleWorkspaceSharedWeightChange() {
@@ -4207,15 +3729,6 @@ function handleWorkspaceDeleteTemplate() {
   renderInfusionWorkspace();
 }
 
-function resetDantroleneForm() {
-  persistedState.dantroleneQuick = createDefaultDantroleneQuickState();
-  savePersistedState(persistedState);
-  dantroleneForm.reset();
-  applyDantroleneQuickStateToView(getDantroleneQuickState());
-  clearDantroleneResult();
-  dantroleneErrorMessage.textContent = "";
-}
-
 function resetPediatricForm() {
   persistedState.pediatricDose = normalizePediatricDoseState({
     ...createDefaultPediatricDoseState(),
@@ -4286,8 +3799,6 @@ pediatricDrugSelect.addEventListener("change", handlePediatricDrugChange);
 pediatricInputs.ageGroup.addEventListener("change", handlePediatricInputChange);
 pediatricForm.addEventListener("submit", handlePediatricSubmit);
 pediatricResetButton.addEventListener("click", resetPediatricForm);
-dantroleneForm.addEventListener("submit", handleDantroleneSubmit);
-dantroleneResetButton.addEventListener("click", resetDantroleneForm);
 workspaceSharedWeightInput.addEventListener("input", handleWorkspaceSharedWeightChange);
 workspaceSharedWeightStepButtons.forEach(function (button) {
   button.addEventListener("click", handleWorkspaceSharedWeightStepClick);
@@ -4345,32 +3856,6 @@ pediatricInputs.concentrationUnit.addEventListener("change", function () {
   input.addEventListener("input", handlePediatricInputChange);
   if (input.tagName === "SELECT") {
     input.addEventListener("change", handlePediatricInputChange);
-  }
-});
-
-[
-  dantroleneInputs.weight,
-  dantroleneInputs.formulation,
-  dantroleneInputs.initialDose
-].forEach(function (input) {
-  input.addEventListener("input", handleDantroleneInputChange);
-  if (input.tagName === "SELECT") {
-    input.addEventListener("change", handleDantroleneInputChange);
-  }
-});
-
-[
-  supportWeightSexInput,
-  supportWeightHeightInput,
-  supportWeightTotalInput
-].forEach(function (input) {
-  if (!input) {
-    return;
-  }
-
-  input.addEventListener("input", handleSupportWeightInputChange);
-  if (input.tagName === "SELECT") {
-    input.addEventListener("change", handleSupportWeightInputChange);
   }
 });
 
