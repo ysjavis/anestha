@@ -294,13 +294,38 @@ Current weight-tools behavior:
 
 ## Architecture Notes
 
-`script.js` is already organized into clearer layers:
-- calculation engine
-- drug config layer
-- persistence layer
-- view state layer
+### ES Module Refactoring (next branch)
 
-Important state structures already exist:
+The codebase is being progressively split from a single `script.js` into ES modules. Current status:
+
+| Phase | Extracted | script.js lines |
+|-------|-----------|-----------------|
+| 1 | Static data + pure calc functions | 8100 → 5538 |
+| 2 | Persistence + state layer | 5538 → 4823 |
+| 3 | i18n layer + infusion display helpers + pediatric airway data | 4823 → 4509 |
+
+Current module structure:
+- `js/data/` — translations, drug presets, pediatric presets, reference registry, mh-presets, pediatric-airway
+- `js/calc/` — infusion, body-weight, pediatric, utils, infusion-display
+- `js/store/` — state (persistence + state getters/setters)
+- `js/i18n.js` — t(), currentLanguage, language preference
+
+Remaining in `script.js` (~4509 lines):
+- DOM references
+- Calculation engine remnants (reference card builders, pediatric verification helpers, emergency card builder)
+- Drug config layer (buildCustomDrugFromInputs, getSelectedDrugDefinition, etc.)
+- View state layer (DOM-dependent getters, renderPediatricDrugSelectOptions)
+- Validation and input reading
+- Rendering layer
+- Event handlers
+- Wiring + initial restore
+
+Next steps for Phase 4:
+- Extract reference card builder helpers (`getReferenceItems`, `getReferenceType`, `renderReferenceList`, etc.)
+- Extract pediatric verification + dose helpers
+- Continue shrinking script.js toward a thin orchestration layer
+
+Important state structures:
 - `singleDrug`
 - `pediatricDose`
 - `dantroleneQuick`
