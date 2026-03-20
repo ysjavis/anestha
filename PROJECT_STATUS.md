@@ -37,6 +37,14 @@ Implemented calculators:
 
 ## Recent Progress
 
+### 2026-03-20
+
+ES module refactoring Phase 4d completed:
+- Extracted `js/ui/infusion.js` (~1558 lines): Infusion Single Drug DOM refs, drug config, view state, validation, quick mode sliders/steppers, result rendering, all event handlers and wiring
+- Extracted `js/ui/workspace.js` (~887 lines): Multi Drug workspace DOM refs, card rendering, layout mode management, card state management, template handlers, all event handlers and wiring
+- Moved shared utility functions (`getAdaptiveQuickStep`, `getStepPrecision`, `clampNumber`) to `js/calc/utils.js`
+- `script.js` is now a thin orchestration layer (~286 lines): imports, calculator/view routing, support/feedback config, language switching, and initial restore
+
 ### 2026-03-19
 
 Latest committed progress:
@@ -305,30 +313,27 @@ The codebase is being progressively split from a single `script.js` into ES modu
 | 3 | i18n layer + infusion display helpers + pediatric airway data | 4823 → 4509 |
 | 4a | Reference helpers, Weight UI, MH/Dantrolene UI | 4509 → 3994 |
 | 4b | Dilution UI (`js/ui/dilution.js`) | 3994 → ~3888 |
+| 4c | Pediatric UI (`js/ui/pediatric.js`) | ~3888 → ~2694 |
+| 4d | Infusion Single Drug UI (`js/ui/infusion.js`) + Workspace UI (`js/ui/workspace.js`) + shared utils | ~2694 → ~286 |
 
 Current module structure:
 - `js/data/` — translations, drug presets, pediatric presets, reference registry, mh-presets, pediatric-airway
-- `js/calc/` — infusion, body-weight, pediatric, utils, infusion-display, reference-helpers
+- `js/calc/` — infusion, body-weight, pediatric, utils (+ getAdaptiveQuickStep, getStepPrecision, clampNumber), infusion-display, reference-helpers
 - `js/store/` — state (persistence + state getters/setters)
 - `js/i18n.js` — t(), currentLanguage, language preference
 - `js/ui/weight.js` — Weight tab DOM refs, render, event wiring
 - `js/ui/mh.js` — MH/Dantrolene tab DOM refs, render, event wiring
 - `js/ui/dilution.js` — Dilution tab DOM refs, `formatDilutionPreset`, `activateDilutionMode`, submit/reset/mode-change handlers, event wiring
+- `js/ui/pediatric.js` — Pediatric tab DOM refs, all rendering/display functions, all event handlers, wiring
+- `js/ui/infusion.js` — Infusion Single Drug DOM refs, drug config layer, view state, validation, quick mode sliders/steppers, result rendering, event handlers, wiring
+- `js/ui/workspace.js` — Multi Drug workspace DOM refs, card rendering, layout mode, card state management, template handlers, event wiring
 
-Remaining in `script.js` (~3888 lines):
-- DOM references (infusion, pediatric, support links)
-- Calculation engine remnants (pediatric verification helpers, emergency card builder)
-- Drug config layer (buildCustomDrugFromInputs, getSelectedDrugDefinition, etc.)
-- View state layer (DOM-dependent getters, renderPediatricDrugSelectOptions)
-- Validation and input reading
-- Rendering layer
-- Event handlers
-- Wiring + initial restore
-
-Next steps for Phase 4 (continued):
-- Extract pediatric verification + dose helpers
-- Extract infusion single-drug UI module
-- Continue shrinking script.js toward a thin orchestration layer
+Remaining in `script.js` (~286 lines, thin orchestration layer):
+- Imports from all UI modules
+- Calculator tab / infusion view routing
+- Support / feedback config and link management
+- `setLanguage()` orchestration across modules
+- Initial restore bootstrap
 
 Important state structures:
 - `singleDrug`

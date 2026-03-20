@@ -40,3 +40,46 @@ export function getUnitBase(unitValue) {
 export function createClientId(prefix) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
+
+export function getAdaptiveQuickStep(value) {
+  const absValue = Math.abs(Number(value));
+
+  if (!Number.isFinite(absValue) || absValue === 0) {
+    return 0.1;
+  }
+
+  if (absValue >= 100) {
+    return 10;
+  }
+
+  if (absValue >= 20) {
+    return 5;
+  }
+
+  if (absValue >= 5) {
+    return 0.5;
+  }
+
+  if (absValue >= 1) {
+    return 0.1;
+  }
+
+  if (absValue >= 0.2) {
+    return 0.05;
+  }
+
+  if (absValue >= 0.05) {
+    return 0.01;
+  }
+
+  return 0.005;
+}
+
+export function getStepPrecision(stepValue) {
+  const stepText = String(stepValue);
+  return stepText.includes(".") ? stepText.split(".")[1].length : 0;
+}
+
+export function clampNumber(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
