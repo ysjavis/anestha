@@ -728,3 +728,7 @@ export function getFavoriteDrugIds() {
 export function getRecentDrugIds() {
   return getSingleDrugState().recentDrugIds || [];
 }
+
+export function resetPersistedState(newState) {
+  persistedState = newState;
+}

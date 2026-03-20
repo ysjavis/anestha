@@ -28,7 +28,7 @@ import {
   getInfusionWorkspaceState, getInfusionTemplates,
   getSavedCustomPediatricDrugs, getActiveSavedCustomPediatricDrugId,
   getSavedCustomOptionValue, getSavedCustomDrugIdFromOptionValue,
-  isCustomPediatricSelection, getPediatricSelectValueFromState,
+  isCustomPediatricSelection, getPediatricSelectValueFromState, resetPersistedState,
   updateSingleDrugState, updatePediatricDoseState,
   updateDantroleneQuickState, updateInfusionWorkspaceState, updateInfusionTemplates,
   getFavoriteDrugIds, getRecentDrugIds
@@ -1424,13 +1424,6 @@ function renderPediatricDrugSelectOptions() {
     : "";
 
   pediatricDrugSelect.innerHTML = `${presetOptions}${savedCustomOptions}<option value="custom">Custom drug</option>`;
-}
-
-function getPediatricSelectValueFromState(pediatricDoseState) {
-  const normalizedState = normalizePediatricDoseState(pediatricDoseState);
-  return normalizedState.selectedDrugId === "custom" && normalizedState.activeSavedCustomDrugId
-    ? getSavedCustomOptionValue(normalizedState.activeSavedCustomDrugId)
-    : normalizedState.selectedDrugId;
 }
 
 function getActivePediatricMode() {
@@ -3670,10 +3663,10 @@ function handleSubmit(event) {
 }
 
 function resetInfusionForm() {
-  persistedState = normalizePersistedState({
+  resetPersistedState(normalizePersistedState({
     ...persistedState,
     singleDrug: createDefaultSingleDrugState()
-  });
+  }));
   savePersistedState(persistedState);
   form.reset();
   applySingleDrugStateToView(getSingleDrugState());
