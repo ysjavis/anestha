@@ -22,6 +22,8 @@ import {
   normalizeInfusionWorkspaceCardState, normalizeInfusionWorkspaceState,
   normalizeInfusionTemplate, normalizeInfusionTemplates,
   normalizeDantroleneQuickState, normalizePediatricDoseState,
+  sanitizePediatricActiveMode, sanitizePediatricSelectedDrugId,
+  normalizeSavedCustomPediatricDrug,
   loadPersistedState, savePersistedState,
   persistedState,
   getSingleDrugState, getPediatricDoseState, getDantroleneQuickState,
