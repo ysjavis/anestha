@@ -1,6 +1,7 @@
 import { DRUG_PRESETS, DEFAULT_CUSTOM_DRUG } from '../data/drug-presets.js';
 import { PEDIATRIC_DRUG_PRESETS, DEFAULT_CUSTOM_PEDIATRIC_DRUG } from '../data/pediatric-presets.js';
 import { DANTROLENE_FORMULATIONS } from '../data/mh-presets.js';
+import { LOCAL_ANESTHETIC_PRESETS } from '../data/last-presets.js';
 import { formatList, parseDoseList, isPositiveNumber, createClientId } from '../calc/utils.js';
 
 // -----------------------------
@@ -332,11 +333,23 @@ export function normalizeQuickDrugIds(rawIds) {
   }).slice(0, 5);
 }
 
+export function createDefaultLASTQuickState() {
+  return {
+    inputs: {
+      weight: "",
+      drugId: LOCAL_ANESTHETIC_PRESETS[0].id,
+      withEpinephrine: false,
+      plannedDose: ""
+    }
+  };
+}
+
 export function createDefaultPersistedState() {
   return {
     singleDrug: createDefaultSingleDrugState(),
     pediatricDose: createDefaultPediatricDoseState(),
     dantroleneQuick: createDefaultDantroleneQuickState(),
+    lastQuick: createDefaultLASTQuickState(),
     infusionWorkspace: createDefaultInfusionWorkspaceState(),
     infusionTemplates: []
   };
@@ -410,6 +423,23 @@ export function createInfusionTemplateState(name, note, cards, existingTemplateI
   };
 }
 
+export function normalizeLASTQuickState(rawState) {
+  const fallback = createDefaultLASTQuickState();
+  const source = rawState && typeof rawState === "object" ? rawState : {};
+  const rawInputs = source.inputs && typeof source.inputs === "object" ? source.inputs : {};
+
+  return {
+    inputs: {
+      weight: sanitizeString(rawInputs.weight, fallback.inputs.weight),
+      drugId: LOCAL_ANESTHETIC_PRESETS.some(function (item) {
+        return item.id === rawInputs.drugId;
+      }) ? rawInputs.drugId : fallback.inputs.drugId,
+      withEpinephrine: typeof rawInputs.withEpinephrine === "boolean" ? rawInputs.withEpinephrine : fallback.inputs.withEpinephrine,
+      plannedDose: sanitizeString(rawInputs.plannedDose, fallback.inputs.plannedDose)
+    }
+  };
+}
+
 export function normalizePersistedState(rawState) {
   const source = rawState && typeof rawState === "object" ? rawState : {};
   const legacySingleDrugState = source.singleDrug && typeof source.singleDrug === "object"
@@ -420,6 +450,7 @@ export function normalizePersistedState(rawState) {
     singleDrug: normalizeSingleDrugState(legacySingleDrugState),
     pediatricDose: normalizePediatricDoseState(source.pediatricDose),
     dantroleneQuick: normalizeDantroleneQuickState(source.dantroleneQuick),
+    lastQuick: normalizeLASTQuickState(source.lastQuick),
     infusionWorkspace: normalizeInfusionWorkspaceState(source.infusionWorkspace),
     infusionTemplates: normalizeInfusionTemplates(source.infusionTemplates)
   };
@@ -647,6 +678,10 @@ export function getDantroleneQuickState() {
   return persistedState.dantroleneQuick;
 }
 
+export function getLASTQuickState() {
+  return persistedState.lastQuick;
+}
+
 export function getInfusionWorkspaceState() {
   return persistedState.infusionWorkspace;
 }
@@ -703,6 +738,14 @@ export function updatePediatricDoseState(patch) {
 export function updateDantroleneQuickState(patch) {
   persistedState.dantroleneQuick = normalizeDantroleneQuickState({
     ...getDantroleneQuickState(),
+    ...patch
+  });
+  savePersistedState(persistedState);
+}
+
+export function updateLASTQuickState(patch) {
+  persistedState.lastQuick = normalizeLASTQuickState({
+    ...getLASTQuickState(),
     ...patch
   });
   savePersistedState(persistedState);

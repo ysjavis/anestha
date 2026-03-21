@@ -24,6 +24,7 @@ Top-level calculator tabs:
 - `Dilution`
 - `Pediatric`
 - `MH / Dantrolene`
+- `LAST`
 - `Weight`
 - `Support`
 
@@ -32,10 +33,24 @@ Implemented calculators:
 - `Dilution`
 - `Pediatric`
 - `MH / Dantrolene`
+- `LAST` (Local Anesthetic Systemic Toxicity)
 - `Weight`
 - `Support`
 
 ## Recent Progress
+
+### 2026-03-21
+
+LAST (Local Anesthetic Systemic Toxicity) Calculator implemented:
+- New tab with weight-based max safe dose calculation for 6 local anesthetics (Lidocaine, Bupivacaine, Ropivacaine, Levobupivacaine, Mepivacaine, Chloroprocaine)
+- Epinephrine toggle adjusts max dose where applicable
+- Optional planned dose input with safety ratio assessment (% of max, warning if exceeded)
+- LAST signs/symptoms quick reference (CNS → Cardiovascular progression)
+- Intralipid 20% treatment protocol summary
+- ASRA Practice Advisory (2020) references
+- Full KO/EN localization
+- State persistence following existing MH/Dantrolene pattern
+- Files: `js/data/last-presets.js` (new), `js/ui/last.js` (new), `js/store/state.js`, `js/data/translations.js`, `js/data/reference-registry.js`, `index.html`, `style.css`, `script.js`
 
 ### 2026-03-20
 
@@ -547,7 +562,22 @@ Current product principle:
 - Body surface area (`BSA`) calculator.
 - Quick comparison of actual body weight vs `IBW / LBW / AdjBW` for dosing context.
 
-**13. Liver Disease Risk / Severity**
+**13. Drug Name Lookup (약물 검색 도구)**
+- 환자 복용 약물의 상품명으로 성분명(generic name)을 빠르게 검색
+- 식약처 공공데이터 API 연동 (방법 2)
+- 한국 상품명 + 영문 성분명 양방향 검색
+- 검색 결과에서 Regional Anesthesia Medication Hold 연동 가능 (해당 약물이 중단 대상인 경우 알림)
+- API 키 발급 필요 (공공데이터포털), 인터넷 연결 필수
+
+**14. Regional Anesthesia Medication Hold (항응고제 중단 기간)**
+- ASRA guidelines 기반 quick reference
+- 약물 선택 → regional anesthesia 전 중단 기간 / 시술 후 재개 기간 표시
+- 대상 약물: Aspirin, Clopidogrel, Ticagrelor, Prasugrel, Warfarin, Heparin (UFH/LMWH), DOACs (Apixaban, Rivaroxaban, Edoxaban, Dabigatran), NSAIDs, etc.
+- Neuraxial vs peripheral nerve block 구분 (해당 시)
+- 주요 참조: ASRA 4th Edition (2018) / 5th Edition (2024 update if available)
+- 반드시 institutional protocol과 교차 확인 필요 안내 포함
+
+**14. Liver Disease Risk / Severity**
 - Cirrhosis `Child-Turcotte-Pugh (CTP)` score calculator.
 - Show component inputs clearly (`bilirubin`, `albumin`, `INR`, `ascites`, `encephalopathy`).
 - Display class (`A / B / C`) with a reminder that this is a severity stratification aid, not a stand-alone perioperative decision tool.

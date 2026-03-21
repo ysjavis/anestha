@@ -103,6 +103,17 @@
           <button
             type="button"
             class="calculator-tab"
+            id="tab-last"
+            data-calculator-tab="last"
+            role="tab"
+            aria-selected="false"
+            aria-controls="calculator-last"
+          >
+            <span data-i18n="tab_last">LAST</span>
+          </button>
+          <button
+            type="button"
+            class="calculator-tab"
             id="tab-support"
             data-calculator-tab="support"
             role="tab"
@@ -1256,6 +1267,147 @@
       </section>
 
       <section
+        id="calculator-last"
+        class="calculator-view hidden"
+        data-calculator-view="last"
+        role="tabpanel"
+        aria-labelledby="tab-last"
+      >
+        <section class="calculator-panel">
+          <div class="calculator-heading">
+            <p class="calculator-kicker" data-i18n="emergency_tool">Emergency Tool</p>
+            <h2 data-i18n="last_heading">Local Anesthetic Toxicity Calculator</h2>
+            <p class="calculator-description" data-i18n="last_description">
+              체중 기반 국소마취제 최대 안전 용량을 확인하고, 투여 예정 용량의 안전 비율을 평가합니다.
+            </p>
+            <details class="context-disclosure context-disclosure-compact">
+              <summary class="context-disclosure-summary" data-i18n="last_view_note">사용 참고사항</summary>
+              <div class="context-disclosure-content">
+                <p class="reference-note" data-i18n="last_note">
+                  ASRA Practice Advisory (2020) 기반. 실제 최대 용량은 주사 부위, 혈관 분포, 환자 상태에 따라 달라질 수 있습니다.
+                </p>
+              </div>
+            </details>
+          </div>
+
+          <form id="last-form" novalidate>
+            <div class="form-stack">
+              <div class="form-grid">
+                <label class="field">
+                  <span class="field-label" data-i18n="patient_weight">Patient Weight</span>
+                  <div class="input-row">
+                    <input id="last-weight" name="last-weight" type="number" inputmode="decimal" step="any" placeholder="예: 70" data-i18n-placeholder="placeholder_weight">
+                    <span class="unit">kg</span>
+                  </div>
+                </label>
+
+                <label class="field">
+                  <span class="field-label" data-i18n="last_drug_select">국소마취제</span>
+                  <div class="select-row">
+                    <select id="last-drug" name="last-drug">
+                      <option value="lidocaine">Lidocaine</option>
+                      <option value="bupivacaine">Bupivacaine</option>
+                      <option value="ropivacaine">Ropivacaine</option>
+                      <option value="levobupivacaine">Levobupivacaine</option>
+                      <option value="mepivacaine">Mepivacaine</option>
+                      <option value="chloroprocaine">Chloroprocaine</option>
+                    </select>
+                  </div>
+                </label>
+
+                <label class="field field-inline">
+                  <input id="last-epinephrine" name="last-epinephrine" type="checkbox">
+                  <span class="field-label" data-i18n="last_with_epinephrine">Epinephrine 포함</span>
+                </label>
+
+                <label class="field">
+                  <span class="field-label" data-i18n="last_planned_dose">투여 예정 용량 (선택)</span>
+                  <div class="input-row">
+                    <input id="last-planned-dose" name="last-planned-dose" type="number" inputmode="decimal" step="any" placeholder="예: 300" data-i18n-placeholder="placeholder_planned_dose">
+                    <span class="unit">mg</span>
+                  </div>
+                </label>
+              </div>
+
+              <p id="last-error-message" class="error-message" role="alert" aria-live="polite"></p>
+
+              <div class="actions">
+                <button type="submit" class="btn btn-primary" data-i18n="calculate">Calculate</button>
+                <button type="button" id="last-reset-button" class="btn btn-secondary" data-i18n="reset">Reset</button>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        <section id="last-result-card" class="result-card hidden" aria-live="polite">
+          <p class="result-label" data-i18n="last_max_dose">최대 안전 용량</p>
+          <h2 id="last-primary-result">0 mg</h2>
+          <p id="last-dose-basis" class="concentration-result"></p>
+
+          <div id="last-epi-section" class="pump-setting hidden">
+            <p class="pump-setting-label" data-i18n="last_max_dose_with_epi">Epinephrine 포함 시 최대 용량</p>
+            <p id="last-epi-result" class="pump-setting-range">-</p>
+          </div>
+
+          <div class="result-summary-grid">
+            <div class="result-summary-item">
+              <p class="pump-setting-label" data-i18n="last_onset">Onset</p>
+              <p id="last-onset" class="pump-setting-range">-</p>
+            </div>
+            <div class="result-summary-item">
+              <p class="pump-setting-label" data-i18n="last_duration">Duration</p>
+              <p id="last-duration" class="pump-setting-range">-</p>
+            </div>
+          </div>
+
+          <div id="last-safety-section" class="pump-setting hidden">
+            <p class="pump-setting-label" data-i18n="last_safety_label">안전성 평가</p>
+            <p id="last-safety-result" class="pump-setting-range">-</p>
+          </div>
+
+          <p id="last-drug-notes" class="helper-text"></p>
+
+          <div class="reference-panel">
+            <p class="preset-summary-label" data-i18n="references">References</p>
+            <ul id="last-reference-list" class="reference-list"></ul>
+          </div>
+
+          <p id="last-result-warning" class="result-warning" data-i18n="last_result_warning">
+            ASRA guideline 기반 참고 정보입니다. 기관 프로토콜과 환자 상태를 함께 확인하세요.
+          </p>
+        </section>
+
+        <section class="calculator-panel">
+          <details class="context-disclosure">
+            <summary class="context-disclosure-summary" data-i18n="last_quick_guide_title">LAST 증상 & Intralipid 치료</summary>
+            <div class="context-disclosure-content">
+              <h3 data-i18n="last_signs_title">LAST 증상/징후 (진행 순서)</h3>
+              <p class="helper-text" data-i18n="last_signs_cns">
+                CNS: 이명, 구강 주위 저림, 금속 맛, 시각 장애, 어지러움, 불안/흥분 → 경련 → 의식 소실
+              </p>
+              <p class="helper-text" data-i18n="last_signs_cvs">
+                심혈관: 고혈압/빈맥 → 저혈압/서맥 → 전도 장애 → 심실부정맥 → 심정지
+              </p>
+
+              <h3 data-i18n="last_intralipid_title">Intralipid 20% 치료 프로토콜</h3>
+              <ul class="helper-text-list">
+                <li data-i18n="last_intralipid_bolus">Bolus: 1.5 mL/kg IV over 1 min (70 kg → 약 100 mL)</li>
+                <li data-i18n="last_intralipid_infusion">Infusion: 0.25 mL/kg/min for 30–60 min</li>
+                <li data-i18n="last_intralipid_repeat">Repeat bolus: 증상 지속 시 5분 간격으로 1–2회 반복 가능</li>
+                <li data-i18n="last_intralipid_max">최대 총 용량: 약 12 mL/kg</li>
+                <li data-i18n="last_intralipid_avoid">Propofol은 lipid rescue의 대체제가 아닙니다.</li>
+              </ul>
+
+              <div class="reference-panel">
+                <p class="preset-summary-label" data-i18n="references">References</p>
+                <ul id="last-guide-reference-list" class="reference-list"></ul>
+              </div>
+            </div>
+          </details>
+        </section>
+      </section>
+
+      <section
         id="calculator-weight"
         class="calculator-view hidden"
         data-calculator-view="weight"
@@ -1302,20 +1454,29 @@
 
             <div class="weight-tools-result-grid" aria-live="polite">
               <div class="weight-tools-result-item">
-                <p class="pump-setting-label" data-i18n="weight_tools_bmi">BMI</p>
+                <p class="pump-setting-label"><span data-i18n="weight_tools_bmi">BMI</span> <span class="weight-full-name" data-i18n="weight_tools_bmi_full">Body Mass Index</span></p>
                 <p id="support-weight-bmi" class="pump-setting-range">-</p>
+                <p class="weight-formula" data-i18n="weight_tools_bmi_formula">체중(kg) ÷ 신장(m)²</p>
               </div>
               <div class="weight-tools-result-item">
-                <p class="pump-setting-label" data-i18n="weight_tools_ibw">IBW (Devine)</p>
+                <p class="pump-setting-label"><span data-i18n="weight_tools_ibw">IBW</span> <span class="weight-full-name" data-i18n="weight_tools_ibw_full">Ideal Body Weight</span></p>
                 <p id="support-weight-ibw" class="pump-setting-range">-</p>
+                <p class="weight-formula" data-i18n="weight_tools_ibw_formula">Devine: ♂ 50 + 0.9 × (Ht cm − 152.4) / ♀ 45.5 + 0.9 × (Ht cm − 152.4)</p>
               </div>
               <div class="weight-tools-result-item">
-                <p class="pump-setting-label" data-i18n="weight_tools_lbw">LBW (Janmahasatian)</p>
-                <p id="support-weight-lbw" class="pump-setting-range">-</p>
+                <p class="pump-setting-label"><span data-i18n="weight_tools_ffm">FFM</span> <span class="weight-full-name" data-i18n="weight_tools_ffm_full">Fat-Free Mass</span></p>
+                <p id="support-weight-ffm" class="pump-setting-range">-</p>
+                <p class="weight-formula" data-i18n="weight_tools_ffm_formula">Janmahasatian: 9270 × TBW ÷ (6680 + 216 × BMI) [♂] 또는 (8780 + 244 × BMI) [♀]</p>
               </div>
               <div class="weight-tools-result-item">
-                <p class="pump-setting-label" data-i18n="weight_tools_adjbw">AdjBW (40%)</p>
+                <p class="pump-setting-label"><span data-i18n="weight_tools_lbm">LBM</span> <span class="weight-full-name" data-i18n="weight_tools_lbm_full">Lean Body Mass</span></p>
+                <p id="support-weight-lbm" class="pump-setting-range">-</p>
+                <p class="weight-formula" data-i18n="weight_tools_lbm_formula">James: ♂ 1.1 × TBW − 128 × (TBW/Ht)² / ♀ 1.07 × TBW − 148 × (TBW/Ht)²</p>
+              </div>
+              <div class="weight-tools-result-item">
+                <p class="pump-setting-label"><span data-i18n="weight_tools_adjbw">AdjBW</span> <span class="weight-full-name" data-i18n="weight_tools_adjbw_full">Adjusted Body Weight</span></p>
                 <p id="support-weight-adjbw" class="pump-setting-range">-</p>
+                <p class="weight-formula" data-i18n="weight_tools_adjbw_formula">IBW + 0.4 × (TBW − IBW) — TBW와 IBW 차이의 40%를 보정</p>
               </div>
             </div>
 
@@ -1324,8 +1485,9 @@
               <div class="context-disclosure-content">
                 <div class="weight-tools-advanced-grid" aria-live="polite">
                   <div class="weight-tools-result-item">
-                    <p class="pump-setting-label" data-i18n="weight_tools_bsa">BSA (Mosteller)</p>
+                    <p class="pump-setting-label"><span data-i18n="weight_tools_bsa">BSA</span> <span class="weight-full-name" data-i18n="weight_tools_bsa_full">Body Surface Area</span></p>
                     <p id="support-weight-bsa" class="pump-setting-range">-</p>
+                    <p class="weight-formula" data-i18n="weight_tools_bsa_formula">Mosteller: √(Height × Weight ÷ 3600)</p>
                   </div>
                 </div>
                 <p class="helper-text" data-i18n="weight_tools_bsa_note">

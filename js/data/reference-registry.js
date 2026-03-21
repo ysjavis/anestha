@@ -487,5 +487,23 @@ export const REFERENCE_REGISTRY = {
     checkSection: "Methods / infusion regimen",
     usageNote: "Phase IIb/III trial context: induction infusion arms of 6 or 12 mg/kg/hr were evaluated, followed by maintenance infusion around 1 mg/kg/hr with adjustment as needed.",
     lastReviewed: "2026-03-15"
+  },
+  last_asra_2020: {
+    title: "The Third ASRA Practice Advisory on Local Anesthetic Systemic Toxicity",
+    source: "ASRA via Regional Anesthesia & Pain Medicine (2018)",
+    url: "https://rapm.bmj.com/content/43/2/113",
+    lastReviewed: "2026-03-21"
+  },
+  last_asra_checklist: {
+    title: "ASRA LAST Checklist (2020)",
+    source: "ASRA",
+    url: "https://www.asra.com/news-publications/asra-updates/blog-landing/guidelines/2020/11/01/checklist-for-treatment-of-local-anesthetic-systemic-toxicity",
+    lastReviewed: "2026-03-21"
+  },
+  last_lipid_rescue: {
+    title: "Lipid Emulsion Therapy for LAST",
+    source: "lipidrescue.org",
+    url: "https://www.lipidrescue.org",
+    lastReviewed: "2026-03-21"
   }
 };

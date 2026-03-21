@@ -1,11 +1,12 @@
 import { currentLanguage, setCurrentLanguage, loadLanguagePreference, saveLanguagePreference } from './js/i18n.js';
 import {
-  getSingleDrugState, getDantroleneQuickState,
+  getSingleDrugState, getDantroleneQuickState, getLASTQuickState,
   getInfusionWorkspaceState,
   updateInfusionWorkspaceState
 } from './js/store/state.js';
 import { renderSupportWeightTools } from './js/ui/weight.js';
 import { applyDantroleneQuickStateToView, clearDantroleneResult } from './js/ui/mh.js';
+import { applyLASTStateToView, clearLASTResult } from './js/ui/last.js';
 import './js/ui/dilution.js';
 import './js/ui/pediatric.js';
 import { renderInfusionWorkspace } from './js/ui/workspace.js';
@@ -74,6 +75,7 @@ function setLanguage(language) {
   renderInfusionWorkspace();
   clearResult();
   clearDantroleneResult();
+  clearLASTResult();
   maybeRenderLiveInfusionResult({
     showValidation: false
   });
@@ -112,6 +114,7 @@ updateSupportLinks();
 renderSupportWeightTools();
 applySingleDrugStateToView(getSingleDrugState());
 applyDantroleneQuickStateToView(getDantroleneQuickState());
+applyLASTStateToView(getLASTQuickState());
 activateCalculator("infusion");
 activateInfusionView(getInfusionWorkspaceState().activeView);
 activateInfusionMode(getSingleDrugState().activeMode);
@@ -119,6 +122,7 @@ updateDrugUI();
 renderInfusionWorkspace();
 clearResult();
 clearDantroleneResult();
+clearLASTResult();
 maybeRenderLiveInfusionResult({
   showValidation: false
 });
